@@ -1,3 +1,7 @@
 # Git-The-Man-Overboard-AERSP497
 
-we should put something here
+Jackson Fezell
+Nicholas Giampetro
+Ankit Gupta
+Sebastian Nahme
+Davis Wetzel
