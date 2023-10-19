@@ -1,0 +1,203 @@
+%ifndef RMAX_DBH_PROTECT
+%define RMAX_DBH_PROTECT 1
+
+%Dir rmaxCommandMessage_ref {
+  uchar sync[3] = {0xAA,0x44,0x11} :sync;
+  uchar csum    = 0       :checksum;
+
+  ushort throttle = 1500 :engine throttle servo (900-2100 us PWM);
+  ushort sright = 1500   :straight right servo servo;
+  ushort sback = 1500    :straight back servo servo;
+  ushort rudder = 1500   :rudder servo;
+  ushort throttleStick = 1500 :throttle stick position;
+  ushort sleft = 1500    :straight left servo;
+  ushort rudderStick = 1500 :rudder stick position;
+  ushort controlSW = 900 :control switch;
+
+  ushort transmitterRxError  = 900 :transmitter receive error (0x4B), set to 0;
+  ushort transmitterFailSafe = 900 :transmitter fail safe (0x4B), set to 0;
+  ushort aileronNeutral      = 1500 :aileron neutral (us), set to 0;
+  ushort elevatorNeutral     = 1500 :elevator neutral (us), set to 0;
+};
+
+%Dir rmaxServoMapping_ref {
+  ushort biasThrottle      = 1390 :1450-200*.3 bias on servo, 1345;
+  ushort biasThrottleStick = 1500 :bias on servo;
+  ushort biasAft           = 1471 :bias on servo;
+  ushort biasRight         = 1481 :bias on servo;
+  ushort biasLeft          = 1436 :bias on servo;
+  ushort biasRudder        = 1394 :bias on servo;
+  ushort biasRudderStick   = 1500 :bias on servo;
+  short  gainThrottle      = 200  :400/2  gain on servo;
+  short  gainThrottleStick = 600  :gain on servo;
+  short  gainCollective    = -100 :gain on servo;
+  short  gainAft           = 250  :gain on servo;
+  short  gainRight         = 260  :gain on servo;
+  short  gainRudder        = -490 :gain on servo;
+  short  gainRudderStick   = -600 :gain on servo;
+  short  gainMix           = -170 :gain on servo;
+  short  gainMix2          = -0   :temp gain per throt;
+  double gainMix3          = -0.0 :temp gain per rpm;
+};
+
+%Dir rmaxYCSraw_ref {
+  uchar sync[3] = {0xaa,0x44,0x11} :sync bytes;
+  uchar csum = 0 :checksum;
+  uchar mode = 0 :mode;
+  uchar data[50]  = {0} : ;
+};
+
+%define YASSIZE 18
+%define YRDSIZE 24
+
+%define NUM_PWM_CHANNELS 17
+
+%define MIX_NONE         0
+%define MIX_3SWASH120DEG 1
+%define MIX_MTR          2
+%define MIX_SLTHR        3
+%define MIX_DRAGONEYE    4
+%define MIX_ELEVON       5
+%define MIX_3SWASH90DEG  6
+%define MIX_MULTIROTOR   7
+%define MIX_FREEWING     8
+%define MIX_3SWASH120DEGCOAX 9
+%define MIX_ALIA         10
+
+%Dir pwmServoMapping_ref {
+  uchar mixMode   = 0 :0=none(normal), 1=3swash120, 2=MTR, 3=slthr, 4=dragoneye, 5=elevon, 6=swash90, 7=multirotor, 9=3swash120 coax;
+  uchar roll      = 3 :channel;
+  uchar pitch     = 2 :channel;
+  uchar yaw       = 1 :channel;
+  uchar thrust    = 4 :channel;
+  uchar autopilot = 0 :channel;
+  uchar aux       = 5 :channel, set to bias val;
+  uchar throttle  = 6 :channel;
+  uchar pan       = 5 :channel;
+  uchar tilt      = 6 :channel;
+  uchar aux2      = 9 :channel;
+  uchar yaw2      = 9 :channel;
+  uchar nws       = 9 :channel;
+  uchar flaps     = 9 :channel;
+  uchar autoSPMode = 9 :channel - used to change auto control modes (augmented, helo, full auto) when controlled through the safety pilot radio;
+  uchar dfcX      = 10:channel for dfc body forward;
+  uchar dfcY      = 11:channel for dfc body right;
+  uchar align[1]  = {0} :for alignment;
+  char rev[10] = {1,1,1,1,1,1,1,1,1,1} : ;
+  ushort bias[10] = {  500,  500,  500,  500,  500, 500,500,500,500,500}  : ;
+  short gain[10]  = { -500, +500, +500, -375, -500, 250,250,250,250,250}  : ;
+};
+
+%rem %Dir pwmSuperMix_ref {
+%rem   ushort bias[17] = {500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500} : ;
+%rem   short gain[17][5] = {{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},
+%rem                       {0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0}} : ;
+%rem};
+
+%Dir pwmServoMixing_ref {
+  uchar leftServo          = 1 :channel;
+  uchar rightServo         = 2 :channel;
+  uchar backServo          = 3 :channel;
+  uchar frontServo         = 9 :channel;
+
+  uchar yaw                = 4 :channel;
+  uchar throttle           = 5 :channel;
+  uchar aux                = 6 :channel;
+  uchar autopilot          = 0 :channel;
+
+  uchar tailthrottle       = 9 :channel for tail throttle;
+  uchar payload            = 9 :channel for payload control;
+  uchar align1[2]          = {0,0} :for alignment;
+
+  short rollKR             = 0 :right servo roll gain;
+  short rollKL             = 0 :left servo roll gain;
+  short rollKB             = 0 :back servo roll gain;
+  short rollKF             = 0 :front servo roll gain;
+  short pitchKR            = 0 :right servo pitch gain;
+  short pitchKL            = 0 :left servo pitch gain;
+  short pitchKB            = 0 :back servo pitch gain;
+  short pitchKF            = 0 :front servo pitch gain;
+  short collKR             = 0 :right servo collective gain;
+  short collKL             = 0 :left servo collective gain;
+  short collKB             = 0 :back servo collective gain;
+  short collKF             = 0 :front servo collective gain;
+  short biasR              = 500 :right servo bias;
+  short biasL              = 500 :left servo bias;
+  short biasB              = 500 :back servo bias;
+  short biasF              = 500 :front servo bias;
+  short biasA              = 500 :autopilot bias;
+  short biasY              = 500 :yaw bias;
+  short biasT              = 500 :throttle bias;
+  short biasAux            = 500 :auxiliary bias;
+  short biasTailT          = 500 :tail throttle bias;
+  short biasPayload        = 500 :payload bias;
+  short gainA              = 0 :autopilot gain;
+  short gainY              = 0 :yaw gain;
+  short gainT              = 0 :throttle gain;
+  short gainTailT          = 0 :tail throttle gain;
+  short gainPayload        = 0 :payload gain;
+};
+
+%Dir pwmMTRServoMixing_ref {
+  short channel[17] = {500,500,500,500, 500,500,500,500, 500,500,500,500, 500,500,500,500} : ;
+  ushort bias[17] = {500,500,500,500, 500,500,500,500, 500,500,500,500, 500,500,500,500} : ;
+  short gainM0[17] = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0} : ;
+  short gainM1[17] = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0} : ;
+  short gainM2[17] = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0} : ;
+  short gainF0[17] = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0} : ;
+  short gainT0[17] = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0} : ;
+  short gainA = -500 : ;
+  uchar autopilot = 0 : ;
+  uchar throttle = 3 : ;
+  char inversionIdx[4] = {4,5,6,7} : ;
+};
+
+%define PWM_MULTIROTOR_MAXROTORS 12
+%Dir pwmMultirotor_ref {
+  uchar numberOfRotors      = 4   :number of rotors (max 12);
+  uchar rotorsPaired        = 0   :pairs of rotors on each arm;
+  generic char align[2] = {0,0} : ;
+  ushort motorOffPWM        = 0   :PWM for motor off;
+  ushort motorFlightIdlePWM = 0   :PWM for minimim in flight;
+  ushort motorMaxPWM        = 999 :PWM for maximum;
+  short rollGain            = 500  :PWM for full;
+  short pitchGain           = 500  :PWM for full;
+  short yawGain             = 500  :PWM for full;
+  short dfxGain             = 500  :PWM for full;
+  short dfyGain             = 500  :PWM for full;
+  uchar order[12]     = {1,2,3,4,5,6,7,8,9,10,11,12} :servo order(CW);
+  schar direction[12] = {-1,1,-1,1,-1,1,-1,1,-1,1,-1,1} :(+CW)(-CCW);
+  float phaseAngle = 0 :extra phase angle of motors (degrees, CW), normally zero;
+};
+
+%define PWM_ALIA_MAXROTORS 5
+%Dir pwmAlia_ref {
+  uchar numberOfRotors      = 5   :number of total rotors (5);
+  uchar rotorsPaired        = 0   :pairs of rotors on each arm;
+  uchar numberOfLiftRotors  = 4   :number of lift rotors(4);
+  generic char align[2] = {0,0} : ;
+  ushort motorOffPWM        = 0   :PWM for motor off;
+  ushort motorFlightIdlePWM = 0   :PWM for minimim in flight;
+  ushort motorMaxPWM        = 999 :PWM for maximum;
+  short rollGain            = 500  :PWM for full;
+  short pitchGain           = 500  :PWM for full;
+  short yawGain             = 500  :PWM for full;
+  short dfxGain             = 500  :PWM for full;
+  short dfyGain             = 500  :PWM for full;
+  short propGain            = 500  :PM for full?;
+  uchar order[5]     = {1,2,3,4,5} :servo order(CW);
+  schar direction[5] = {1,-1,1,-1,1} :(+CW)(-CCW);
+  double quadArduModelSet_rollGain = 0.15 : OB version of quadArduModelSet sas parameter;
+  double quadArduModelSet_pitchGain = 0.15 : OB version of quadArduModelSet sas parameter;
+  double quadArduModelSet_yawGain = 0.3 : OB version of quadArduModelSet sas parameter;
+  Double rotor_x[5] = {0,0,0,0,0} : OB duplicate of rotor x position relative to cg;
+  Double rotor_y[5] = {0,0,0,0,0} : OB duplicate of rotor y position relative to cg;
+  Double rotor_z[5] = {0,0,0,0,0} : OB duplicate of rotor z position relative to cg;
+  Double cant[5]       = {0.0,0.0,0.0,0.0,0.0} :OB duplicate of roll of motor mount realtive to body axis (rad);
+  Double tilt[5]       = {0.0,0.0,0.0,0.0,0.0} :OB duplicate of pitch of motor mount realtive to body axis (rad);
+  Double phase[5] = {0.0,0.0,0.0,0.0,0.0} : OB duplciate of yaw of motor position (arm) in xy plane relative to CG (not yaw in DCM of body to rotor which is 0).;
+  float phaseAngle = 0 :extra phase angle of motors (degrees, CW), normally zero;
+};
+
+%endif
+

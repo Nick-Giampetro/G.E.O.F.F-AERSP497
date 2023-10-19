@@ -1,0 +1,21 @@
+%include "esim/db.h"
+%include "stdio.h"
+
+%define LOG_LEVEL_CRITICAL 1
+%define LOG_LEVEL_ERROR    2
+%define LOG_LEVEL_WARNING  3
+%define LOG_LEVEL_INFO     4
+%define LOG_LEVEL_DEBUG    5
+%define LOG_LEVEL_VERBOSE  6
+
+
+%Dir logger_ref {
+  uchar         init            = 1     :Whether to initialize - must be available since these settings aren't set until after onboard initializes...;
+  uchar         fileLogLevel    = 0     :The current log level (leave at 0 to turn off datalogging);
+  uchar         consoleLogLevel = 4     :Logs data to the console (default is INFO and higher priority);
+  uchar         maxFiles        = 5     :The maximum number of log files allowed;
+  uint          maxFileSizeKb   = 10000 :The maximum file size in KB before starting the next file;
+  string        dir             = "./logs\0                                 " : directory where to save files;
+  string        fileBaseName    = "logger.log\0                             " : logger base file name (will include numerical ID of file) ;
+} logger;
+

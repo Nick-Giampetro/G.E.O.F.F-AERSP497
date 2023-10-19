@@ -1,0 +1,149 @@
+%define MOTIONINPUT_JOYSTICK 0
+%define MOTIONINPUT_MOUSE 1
+%define MOTIONINPUT_RMAX 2
+%define MOTIONINPUT_NONE 3
+
+%define JOYSTICK_MODE_1 1
+%define JOYSTICK_MODE_2 2
+%define JOYSTICK_MODE_3 3
+%define JOYSTICK_MODE_3_REV 4
+%define JOYSTICK_MODE_2_AIRPLANE 5
+%define JOYSTICK_MODE_FIGHTERSTICK 6
+%define JOYSTICK_MODE_LOGITECHRUMBLE2 7
+%define JOYSTICK_MODE_SAITEKFPS 8
+%define JOYSTICK_MODE_XBOX360 9
+%define JOYSTICK_MODE_2_TWINSTAR 10
+%define JOYSTICK_MODE_ESTERLINE 11
+%define JOYSTICK_MODE_LOGITECH_F310 12
+%define JOYSTICK_MODE_FLYSKY 13
+%define JOYSTICK_MAPPABLE 99
+
+%Dir digitalFunction_ref {
+  string name = "digital function              32" : The name of the digital function to be user friendly - max 32 characters;
+  string label = "dgf" : The three letter label of this digital function for the panel/scene output - used if a function is held to activate;
+  char input = 0 : The input to this function;
+  short output = 0 : Whether this function is active (the output, may be changed in multiple locations);
+  char inUse = 0 : Whether this function is in use;
+  char maintainToggle = 0 : Whether to maintain the toggle value or reset the output when the input returns to zero;
+  int joystickId = 0 :The ID of the joystick from which to use the inputs to activate this function (0 default for backwards compatiblity);
+  int numOnButtons = 0 : The number of buttons that together activate this function;
+  int onButton[3] = { 0, 0, 0 } : The buttons that together activate this function - a max of three;
+  char onButtonsAnd = 1 : Whether the on buttons are an AND condition (1) or an OR condition (0);
+  int numOffButtons = 0 : The number of buttons that must be off together to activate this function;
+  int offButton[3] = { 0, 0, 0 } : The buttons that must be released to activate this function - a max of three;
+  char offBtnLockout = 0 : Locks out activating the function when a NOT button is released;
+  float secHold = -1.0 : The length of time to hold before the function is activated (-1 means instantly);
+  double secTimePressed = -1.0 : The time that the activation sequence was started, only applicable if secHold > 0.0;
+  double secRemaining = 0.0 : Only applicable if secHold > 0.0 - > 0.0 while holding buttons to activate;
+  int analogAxis = -1 : Set to an analog axis to map an analog axis to a digital function (still uses the second hold feature);
+  char analogPositive = 1 : Whether to use the max positive or max negative value of the analog axis to activate this function;
+  char releaseToReactivate = 0 :  Whether the button must be released to reactivate the function;
+  char wasReleased = 1 : Used in conjunction with the release to reactivate;
+  char activeToSend = 0 : If releaseToReactivate is true and output goes to true, then set to true until sent over datalink;
+  float analogMin = 0.9f : The minimum absolute value that will activate this fuction - must be >= 0.0;
+  int numHatSwitch = 0 : The number of hat switch directions activated (max of 2);
+  int hatSwitch[2] = { 0, 0 } : The hat switch directions that must be activated (still uses the second hold feature);
+} manOverrideDgcs0, armDgcs0, gndDgcs0, gndLandDgcs0, airDgcs0, airTODgcs0, sfOffDgcs0, sfOnDgcs0, shutdownDgcs0, suppressStickDgcs0, dashDgcs0, gpsDeniedDgcs0,
+restoreGpsDgcs0, restorePosDgcs0, suppressSonarDgcs0, zoomInDgcs0, zoomOutDgcs0, runPlanDgcs0, tglPlanDgcs0, tglVideoDgcs0, joySiManDgcs0, rtbDgcs0, stopPlanDgcs0, sysSfDgcs0,
+camStopDgcs0, camPauseDgcs0, camPlayDgcs0, camRewindDgcs0, camFFDgcs0, camRecordDgcs0, camPowerOnDgcs0, tglCamFocusManAutoDgcs0, camManFocusFartherDgcs0, camManFocusCloserDgcs0,
+camModeJSDgcs0, camModeStowDgcs0, camModeGeoDgcs0, camModeVideoDgcs0, videoOverlayDgcs0, camModeToggleDgcs0,
+yellowButtonDgcs0, whiteButtonDgcs0, blueButtonDgcs0, greenButtonDgcs0, bigRedButtonDgcs0;
+
+%Dir analogFunction_ref {
+  string name = "analog function               32" : The name of the analog function to be user friendly - max 32 characters;
+  double input = 0.0 : The raw input to this function;
+  double output = 0.0 : The current output value of this function;
+  char inUse = 0 : Whether this function is in use;
+  int joystickId = 0 :The ID of the joystick from which to use the inputs to activate this function (0 default for backwards compatiblity);
+  int axis = 0 : The axis from which the analog function is mapped;
+  char reverseAxis = 0 : Whether to reverse the input axis - only applies to analog to analog mapping;
+  float deadBand = 0.15f : The deadband in this input;
+  float maxValue = 1.0 : The maximum value to which the axis is mapped;
+  float minValue = -1.0 : The minimum value to which the axis is mapped;
+  char useDigital = 0 : Whether to use a digital button to map to the analog axis;
+  int digitalMax = 0 : The digital button that corresponds to the max analog value;
+  int digitalMin = 0 : The digital button that corresponds to the min analog value;
+  char useHat = 0 : Whether to use a hat switch to map to the analog axis;
+  int hatMax = 0 : The hat direction that corresponds to the max analog value;
+  int hatMin = 0 : The hat direction that corresponds to the min analog value;
+} rollAgcs0, pitchAgcs0, rudderAgcs0, throttleAgcs0, panAgcs0, tiltAgcs0, zoomAgcs0;
+
+
+%Dir controlInput_ref {
+  int mode      = MOTIONINPUT_JOYSTICK   :(0=joystick)(1=mouse)(2=RMax)(3=none);
+  int joystickMode = JOYSTICK_MODE_FLYSKY :1=mode1,2=mode2,3=mode3,4=m3rev,5=m2air,6=ftrstck,7=logrmble2,8=saitek,9=xbox,10=twinstar,11=esterline,12=bluelogitech,13=flysky,99=mappable (supports multiple joysticks);
+  char whichJoyInput  = 0 : ;
+  char leftVirtualJoystickInUse  = 0 : ;
+  char rightVirtualJoystickInUse = 0 : ;
+
+  int old46 = 0 : For backwards compatibility with manual override;
+  int videoTogglePrev = 0 : For backwards compatibility with video toggle;
+
+  double pitchStick = 0.0      :pitch stick FOM;
+  double rollStick = 0.0       :roll stick FOM;
+  double rudderPedal = 0.0     :rudderPedal FOM;
+  double throttleLever = 0.0   :throttle (0-1);
+  double collectiveLever = 0.0 :collective (0-1);
+
+  double lastdzoom = 0.0 :The last zoom rate command (used to ensure a final 0 is sent);
+  double lastdtheta = 0.0 :The last elevation rate command (used to ensure a final 0 is sent);
+  double lastdpsi = 0.0 :The last azimuth rate command (used to ensure a final 0 is sent);
+
+  float joystickAutoTakeoffAlt = 10.0 : The altitude to which to takeoff when using auto-takeoff via the joystick control;
+
+  dir analogFunction_ref roll = rollAgcs0 : roll;
+  dir analogFunction_ref pitch = pitchAgcs0 : pitch;
+  dir analogFunction_ref rudder = rudderAgcs0 : rudder;
+  dir analogFunction_ref throttle = throttleAgcs0 : throttle;
+  dir analogFunction_ref pan = panAgcs0 : pan - gimbal control;
+  dir analogFunction_ref tilt = tiltAgcs0 : tilt - gimbal control;
+  dir analogFunction_ref zoom = zoomAgcs0 : zoom - camera control;
+
+  dir digitalFunction_ref manOverride = manOverrideDgcs0 : manual override;
+  dir digitalFunction_ref arm = armDgcs0 : arm;
+  dir digitalFunction_ref ground = gndDgcs0 : ground mode;
+  dir digitalFunction_ref groundLanding = gndLandDgcs0 : ground mode with landing;
+  dir digitalFunction_ref air = airDgcs0 : air mode;
+  dir digitalFunction_ref airTakeoff = airTODgcs0 : air mode with takeoff;
+  dir digitalFunction_ref safeOff = sfOffDgcs0 : safe off / rotor spin up;
+  dir digitalFunction_ref safeOn = sfOnDgcs0 : safe on / rotor stop;
+  dir digitalFunction_ref shutdown = shutdownDgcs0 : shutdown when landing;
+  dir digitalFunction_ref suppressStick = suppressStickDgcs0 : suppress right stick when arming with inferred wow;
+  dir digitalFunction_ref dash = dashDgcs0 : dash;
+  dir digitalFunction_ref gpsDenied = gpsDeniedDgcs0 : GPS denied mode;
+  dir digitalFunction_ref gpsDenRestGps = restoreGpsDgcs0 : GPS denied - restore GPS;
+  dir digitalFunction_ref gpsDenRestPos = restorePosDgcs0 : GPS denied - restore postion control;
+  dir digitalFunction_ref suppressSonar = suppressSonarDgcs0 : Suppress sonar (psp);
+  dir digitalFunction_ref zoomIn = zoomInDgcs0 : Camera zoom in;
+  dir digitalFunction_ref zoomOut = zoomOutDgcs0 : Camera zoom out;
+  dir digitalFunction_ref loadRunPlan = runPlanDgcs0 : trajUpload, trajGo;
+  dir digitalFunction_ref planToggle = tglPlanDgcs0 : flight plan toggle;
+  dir digitalFunction_ref videoToggle = tglVideoDgcs0 : video toggle;
+  dir digitalFunction_ref joySiMan = joySiManDgcs0 : joystick SI/Manual toggle;
+  dir digitalFunction_ref rtb = rtbDgcs0 : Return to base command (at current altitude);
+  dir digitalFunction_ref stopPlan = stopPlanDgcs0 : trajStop;
+  dir digitalFunction_ref systemSafety = sysSfDgcs0 : system safety lock on/off;
+
+  dir digitalFunction_ref camStop = camStopDgcs0 :Camera stop;
+  dir digitalFunction_ref camPause = camPauseDgcs0 :Camera pause;
+  dir digitalFunction_ref camPlay = camPlayDgcs0 :Camera play;
+  dir digitalFunction_ref camRewind = camRewindDgcs0 :Camera rewind;
+  dir digitalFunction_ref camFF = camFFDgcs0 :Camera fast-forward;
+  dir digitalFunction_ref camRecord = camRecordDgcs0 :Camera record;
+  dir digitalFunction_ref camPowerOn = camPowerOnDgcs0 :Camera power on from sleep;
+  dir digitalFunction_ref tglCamFocusManAuto = tglCamFocusManAutoDgcs0 :Camera manual/auto focus toggle;
+  dir digitalFunction_ref camManFocusFarther = camManFocusFartherDgcs0 :Camera manual focus farther away;
+  dir digitalFunction_ref camManFocusCloser = camManFocusCloserDgcs0 :Camera manual focus closer/nearer;
+  dir digitalFunction_ref camModeJS = camModeJSDgcs0 :Camera mode joystick;
+  dir digitalFunction_ref camModeStow = camModeStowDgcs0 :Camera mode stow;
+  dir digitalFunction_ref camModeGeo = camModeGeoDgcs0 :Camera mode geo positioning;
+  dir digitalFunction_ref camModeVideo = camModeVideoDgcs0 :Camera mode video tracking;
+  dir digitalFunction_ref camModeToggle = camModeToggleDgcs0 :Camera mode toggle (Stow, Joystick Rate, Encoder, Video Tracking, Geo);
+  dir digitalFunction_ref videoOverlay = videoOverlayDgcs0 :Camera video overlay mode;
+
+  dir digitalFunction_ref yellowButton = yellowButtonDgcs0 : custom command for yellow button ;
+  dir digitalFunction_ref whiteButton = whiteButtonDgcs0   : custom command for white  button ;
+  dir digitalFunction_ref blueButton = blueButtonDgcs0     : custom command for blue   button ;
+  dir digitalFunction_ref greenButton = greenButtonDgcs0   : custom command for green  button ;
+  dir digitalFunction_ref bigRedButton = bigRedButtonDgcs0 : custom command for big red button ;
+} gcs0Ci;

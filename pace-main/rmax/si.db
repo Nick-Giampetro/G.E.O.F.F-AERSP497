@@ -1,0 +1,572 @@
+%include "serial.dbh"
+%include "datalink.dbh"
+
+%define MAX_SITL_PORTS 61
+
+%Dir sitlPorts_ref {
+  voidptr con[65][2] = {{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0}} :port emulator connections;
+} sitlPorts;
+
+
+%Dir serialPort_ref {
+  int dataSource = PORT_SITL :0=off,1=on,2=SITL;
+  int port=1 : ;
+  int si_port = SI_IMU :SITL port;
+  int baud = 115200 : ;
+  int isServer  = 0: ;
+  string connectTo = "hunter\0                     ": host name of machine to connect to;
+  int portNum   = SI_IMU: ;
+} siPortIMU;
+
+%Dir serialPort_ref {
+  int dataSource = PORT_SITL :0=off,1=on,2=SITL;
+  int port=2 : ;
+  int si_port = SI_GPS :SITL port;
+  int baud = 38400 : ;
+  int isServer  = 0: ;
+  string connectTo = "javelin\0                     ": host name of machine to connect to;
+  int portNum   = SI_GPS: ;
+} siPortGPS;
+
+%Dir serialPort_ref {
+  int dataSource = PORT_SITL :0=off,1=on,2=SITL;
+  int port=5 : ;
+  int si_port = SI_MAGNET :SITL port;
+  int baud = 9600 : ;
+  int isServer  = 0: ;
+  string connectTo = "hunter\0                     ": host name of machine to connect to;
+  int portNum   = SI_MAGNET: ;
+} siPortMagnet;
+
+%Dir serialPort_ref {
+  int dataSource = PORT_SITL :0=off,1=on,2=SITL;
+  int port=5 : ;
+  int si_port = SI_SONAR :SITL port;
+  int baud = 19200 : ;
+  int isServer  = 0: ;
+  string connectTo = "hunter\0                     ": host name of machine to connect to;
+  int portNum   = SI_SONAR: ;
+} siPortSonar;
+
+%Dir serialPort_ref {
+  int dataSource = PORT_SITL :0=off,1=on,2=SITL;
+  int port=3 : ;
+  int si_port = SI_PWM :SITL port;
+  int baud = 115200 : ;
+  int isServer  = 0: ;
+  int portNum   = SI_PWM: ;
+} siPortPWM;
+
+%Dir serialPort_ref {
+  int dataSource = PORT_OFF :0=off,1=on,2=SITL;
+  int si_port = SI_NONE :SITL port;
+  int isServer  = 0: ;
+  int portNum      = 70 : port number;
+  int useSerial    = 0 : Default is to use the hardware serial;
+  int useSock      = 1 : Use Sockets;
+  string connectTo = "localhost\0              ": host name of machine to connect to;
+} siPortVehicleMotionModel;
+
+%Dir imuMessage_ref {
+  uchar header = 0x7E :header;
+  uchar status = 123  :factory use;
+  short rate[3] = {0,0,0} :gyro;
+  short accel[3] = {0,0,0} :spec force;
+  uchar count = 0 :counter;
+  uchar csum = 0 :check sum;
+} imuMessage;
+
+%Dir imuModel_ref {
+  dir serialPort_ref p = siPortIMU :serial port;
+  dir imuMessage_ref m = imuMessage :raw message sent;
+  double lastUpdate = 0.0 :time of last update;
+  double updateDt = 0.01 :update time step;
+  double grav0 = 32.08822 :gravity at equator (ft/s2);
+  double grav1 = 0.00529  :gravity model parameter (nd);
+  double gravity = 32.174 :gravity model;
+  double r[3] = {2.0/12,0,(25.0-15.5)/12} :position of IMU (ft);
+  double sb_b_e_B[3] = {5.5,-6.0,0} :accel bias;
+  double wb_b_e_B[3] = {0,0,0} :gyro bias;
+  double w_sigma[3] = {0.02,0.02,0.02} :1 stan dev of gyro noise;
+  double s_sigma[3] = {0.1,0.1,0.1}    :1 stan dev of accel noise;
+  double w_shake[3] = {0.18,0.18,0.18} :shake magnitude;
+  double s_shake[3] = {1.9,1.9,1.9}    :shake magnttude;
+  double w_shake2[3] = {0,0,0} :shake magnitude;
+  double s_shake2[3] = {0,0,0} :shake magnttude;
+  double omega_shake  = 33*2*3.1415 :shake freq (rad/sec);
+  double omega_shake2 = 33*2*3.1415 :2nd shake freq (rad/sec);
+  double phase_w_shake[3] = {0,0,0} :shake phase;
+  double phase_s_shake[3] = {0,0,0} :shake phase;
+  double phase_w_shake2[3] = {0,0,0} :shake phase;
+  double phase_s_shake2[3] = {0,0,0} :shake phase;
+  double s_b_e_L[3] = {0,0,0} :meas specific force at c.g. in local;
+  double s_b_e_B[3] = {0,0,0} :meas specific force at c.g. in body;
+  double w_b_e_B[3] = {0,0,0} :meas gyro at c.g. in body;
+  double s_b_e_S[3] = {0,0,0} :meas specific force at c.g. in sensor frame;
+  double w_b_e_S[3] = {0,0,0} :meas gyro at c.g. in sensor frame;
+  double sfr = (150.0/30000*3.1416/180.0) :scale factor for gyro;
+  double sfa = (10.0*32.174/30000) :for accels;
+  double w_max = (150.0/30000*3.1416/180.0)*32750 :max gyro;
+  double s_max = (10.0*32.174/30000)*32750 :max for accels;
+  double dcm_sb[3][3] = {{1,0,0},{0,-1,0},{0,0,-1}} : ;
+  double dcm_bs[3][3] = {{0,0,0},{0,0,0},{0,0,0}} : ;
+  uchar ourcsum = 0 :our calculated check sum;
+  uchar emulateADIS = 0 :If true, negate the accelerometers since the ADIS inverts those;
+} imuModel;
+
+%Dir serialPort_ref {
+  int dataSource = PORT_SITL  : 0=off,1=on,2=SITL;
+  int si_port    = SI_SHIPIMU :SITL port;
+  int portNum    = SI_SHIPIMU : ;
+  int baud = 115200 : ;
+} siPortShipImu;
+
+%rem Wit Motion IMU for waterTarget2
+%Dir imuModel_ref {
+  dir serialPort_ref p = siPortShipImu :serial port;
+  double r[3]         = {0,0,0} :position of IMU (ft);
+  double sb_b_e_B[3]  = {0,0,0} :accel bias;
+  double w_shake[3]   = {0,0,0} :shake magnitude;
+  double s_shake[3]   = {0,0,0} :shake magnttude;
+  double w_shake2[3]  = {0,0,0} :shake magnitude;
+  double s_shake2[3]  = {0,0,0} :shake magnttude;
+  double omega_shake  = 0       :shake freq (rad/sec);
+  double omega_shake2 = 0       :2nd shake freq (rad/sec);
+  double sfr   = 0.00106526443  : (1/32768)*2000*(pi/180) gyro scale factor;
+  double sfa   = 0.01570996093  : (1/32768)*16*32.174 accel scale factor;
+  double w_max = 34.9065850399  : 2000*(pi/180) ;
+  double s_max = 514.784        : 16*32.174 ;
+  double dcm_sb[3][3] = {{0,1,0},{1,0,0},{0,0,-1}} : mouting orientation of Wit IMU;
+} waterTargetImuModel;
+
+%define SI_POS_LATENCY 100
+%define SI_VEL_LATENCY 100
+%define SI_HDG_LATENCY 100
+
+%Dir gpsModel_ref {
+  dir serialPort_ref   p        = siPortGPS :serial port;
+  dir gps_header_ref   header   = sigps_header :raw data;
+  dir gps_bestposb_ref bestposb = sigps_bestposb :raw data;
+  dir gps_bestvelb_ref bestvelb = sigps_bestvelb :raw data;
+  dir gps_headingb_ref headingb = sigps_headingb :raw data;
+  dir gps_heading2b_ref heading2b = sigps_heading2b :raw data;
+  dir gps_gpsephem_ref ephem    = sigps_gpsephem :raw data;
+  dir gps_range_ref    range    = sigps_range    :raw data;
+  dir gps_satxyz_ref   satpos   = sigps_satxyz   :raw data;
+  dir gpsSatModel_ref  sat      = gpsSatModel : GPS satellite constellation model;
+  double lastUpdatePos = 0.0 :time of last update;
+  double lastUpdateVel = 0.0 :time of last update;
+  double lastUpdateHdg = 0.0 :time of last update;
+  double lastUpdateDelay = 0.0 :time of last update;
+  char doHeading = 0 :do heading message;
+  double updateDtPos = 0.2   :update time step;
+  double updateDtVel = 0.2   :update time step;
+  double updateDtHdg = 0.2   :update time step;
+  double updateDtDelay = 0.01 :update time step for time delay buffer;
+  double r[3] = {-29.0/12,3.5/12,(25.0-31)/12} :position of GPS (ft);
+  double p_T = 10 :time const of pos error (sec);
+  double p_sigma[3] = {0.1,0.1,0.15} :pos stan dev (ft);
+  double v_sigma[3] = {0.03,0.03,0.05} :vel stan dev (ft/s);
+  char p_outlierEnable = 0 :enable pos outlier;
+  int p_outlierChance = 100 :probability of pos outlier;
+  double p_outlier_sigma[3] = {0.1,0.1,0.15} :outlier pos stan dev (ft);
+  char v_outlierEnable = 0 :enable velocity outlier;
+  int v_outlierChance = 100 :probability of velocity outlier;
+  double v_outlier_sigma[3] = {0.03,0.03,0.05} :outlier vel stan dev (ft/s);
+  double h_sigma    = 1      :heading stan dev (deg);
+  double p_bias[3] = {0,0,0} :bias in position (local - ft);
+  double v_bias[3] = {0,0,0} :bias in velocity (ft/s);
+  double h_bias    = 0       :bias in heading (deg);
+  double p_latency = .1 :latency (sec);
+  double v_latency = .2 :latency (sec);
+  double h_latency = .1 :latency (sec);
+  double p_error[3] = {0,0,0} :position error state;
+  generic double p_buffer[3][100] = {{0}} : ;
+  generic double v_buffer[3][100] = {{0}} : ;
+  generic double h_buffer[100]    = {0} : ;
+  double p_b_e_L[3] = {0,0,0} :at ant (ft);
+  double v_b_e_L[3] = {0,0,0} :at ant (ft/s);
+  double heading = 0 :(deg);
+  double p_b_e_L_delayed[3] = {0,0,0} :at ant (ft);
+  double v_b_e_L_delayed[3] = {0,0,0} :at ant (ft/s);
+  double heading_delayed = 0 :(deg);
+  double psend[3] = {0,0,0} :at ant with latency (ft);
+  double vsend[3] = {0,0,0} :at ant with latency (ft/s);
+  double hsend    = 0       :with latency (deg);
+  double posTimeDither = 0 :(sec);
+  double velTimeDither = 0 :(sec);
+  int gpsWeek = 0 : ;
+  int weekRollover = 0 : ;
+  long gpsMow = 0 : ;
+  long gpsMowStart = 0 : ;
+  int leapSeconds = 18 : UTC leap seconds since gps epoch;
+} gpsModel;
+
+%Dir gpsSatInitialConditions_ref {
+    double a[24] = {26559800, 26559800, 26559800, 26559800, 26559800, 26559800,
+                    26559800, 26559800, 26559800, 26559800, 26559800, 26559800,
+                    26559800, 26559800, 26559800, 26559800, 26559800, 26559800,
+                    26559800, 26559800, 26559800, 26559800, 26559800, 26559800} : Satellite orbit semi-major axis (m);
+    double e[24] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0} : Satellite orbit eccentricity;
+    double i[24] = {0.96, 0.96, 0.96, 0.96, 0.96, 0.96, 0.96, 0.96, 0.96, 0.96, 0.96, 0.96,
+                    0.96, 0.96, 0.96, 0.96, 0.96, 0.96, 0.96, 0.96, 0.96, 0.96, 0.96, 0.96} : Satellite orbit inclination (rad);
+    double w[24] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0} : Satellite orbit argument of prigee;
+    double Omega[24] = {4.76, 4.76, 4.76, 4.76, 5.81, 5.81, 5.81, 5.81, 0.57, 0.57, 0.57, 0.57,
+                        1.62, 1.62, 1.62, 1.62, 2.67, 2.67, 2.67, 2.67, 3.715, 3.715, 3.715, 3.715} : Satellite orbit LAN (rad);
+    double u0[24] = {0.204, 0.73, 2.824, 4.68, 1.413, 3.025, 3.57, 5.41, 1.95, 4.22, 5.93, 0.206,
+                     2.36, 2.92, 4.63, 0.614, 3.44, 5.28, 5.82, 1.15, 4.17, 6.025, 1.84, 2.36} : Satellite orbit initial argument of latitude (rad);
+    double clockBias[24] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0} : Satellite clock bias (sec);
+} gpsSatInitialConditions;
+
+%Dir gpsSatModelSet_ref {
+    int numSats = 24 :Number of GPS satellites in orbit;
+    dir gpsSatInitialConditions_ref IC = gpsSatInitialConditions :;
+    double trajOffset = 0.0 : time offset for calculating satellite positions (sec);
+    double mu = 3.986005e14 : earth gravitation (m^3/sec^2);
+    double c = 299792458 : speed of light (m/s);
+    double minElevation = 0.0873 : minimum elevation for satellite to be in view (rad);
+    double convergeTol = 1e-6 : Iteration convergence tolerance;
+    double prSigma = 0.0 : pseudorange standard deviation (m);
+    int initSatTB = 1 : initialize satellite clock bias;
+    double maxSatClkBias = 8.3e-4 : maximum satellite clock bias (sec);
+    int sendEphem = 1 : should send ephemeris data ;
+} gpsSatModelSet;
+
+%Dir gpsSatModelWork_ref {
+    double trajTime = 0.0 : time for calculating satellite position (sec);
+    double pos_L[24][3] = {{0.0,0.0,0.0},{0.0,0.0,0.0},{0.0,0.0,0.0},{0.0,0.0,0.0},{0.0,0.0,0.0},{0.0,0.0,0.0},
+                           {0.0,0.0,0.0},{0.0,0.0,0.0},{0.0,0.0,0.0},{0.0,0.0,0.0},{0.0,0.0,0.0},{0.0,0.0,0.0},
+                           {0.0,0.0,0.0},{0.0,0.0,0.0},{0.0,0.0,0.0},{0.0,0.0,0.0},{0.0,0.0,0.0},{0.0,0.0,0.0},
+                           {0.0,0.0,0.0},{0.0,0.0,0.0},{0.0,0.0,0.0},{0.0,0.0,0.0},{0.0,0.0,0.0},{0.0,0.0,0.0}} : Current satellite positions in local frame (m);
+    double posECEF[24][3] = {{0.0,0.0,0.0},{0.0,0.0,0.0},{0.0,0.0,0.0},{0.0,0.0,0.0},{0.0,0.0,0.0},{0.0,0.0,0.0},
+                             {0.0,0.0,0.0},{0.0,0.0,0.0},{0.0,0.0,0.0},{0.0,0.0,0.0},{0.0,0.0,0.0},{0.0,0.0,0.0},
+                             {0.0,0.0,0.0},{0.0,0.0,0.0},{0.0,0.0,0.0},{0.0,0.0,0.0},{0.0,0.0,0.0},{0.0,0.0,0.0},
+                             {0.0,0.0,0.0},{0.0,0.0,0.0},{0.0,0.0,0.0},{0.0,0.0,0.0},{0.0,0.0,0.0},{0.0,0.0,0.0}} : Current satellite positions in Earth-fixed frame (m);
+    double posPF[24][2] = {{0.0,0.0},{0.0,0.0},{0.0,0.0},{0.0,0.0},{0.0,0.0},{0.0,0.0},{0.0,0.0},{0.0,0.0},
+                           {0.0,0.0},{0.0,0.0},{0.0,0.0},{0.0,0.0},{0.0,0.0},{0.0,0.0},{0.0,0.0},{0.0,0.0},
+                           {0.0,0.0},{0.0,0.0},{0.0,0.0},{0.0,0.0},{0.0,0.0},{0.0,0.0},{0.0,0.0},{0.0,0.0}} : Current satellite positions in Earth-fixed frame (m);
+    double eccntAnom[24] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0} : Current satellite eccentric anomaly (rad) ;
+    double nu[24] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0} : Current satellite true anomaly (rad) ;
+    double radius[24] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                         0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0} : Current satellite radius (m) ;
+    double elevation[24] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0} : satellite elevation angle (rad) ;
+    double azimuth[24] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                          0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0} : satellite azimuth angle (rad) ;
+    double satInView[24] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0} : is satellite in view (rad) ;
+    double p_b_e_L[3] = {0.0, 0.0, 0.0} : GPS receiver in local coordinates (ft) ;
+    double pr[24] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0} : pseudorange to satellite (m) ;
+
+} gpsSatModelWork;
+
+%Dir gpsSatModel_ref {
+    int running = 0 : ;
+    dir gpsSatModelSet_ref  set  = gpsSatModelSet : ;
+    dir gpsSatModelWork_ref work = gpsSatModelWork : ;
+    double lastUpdate = 0.0 : ;
+    double lastPRMeasurement = 0.0 :last time a PR was taken;
+    double PRMeasurmentDt = 0.1 : ;
+    double updateDt = 0.05 : ;
+    double latency = 0.02 : ;
+    int    newPR = 0 : ;
+} gpsSatModel;
+
+%include "gps.dbh"
+
+%Dir gps_header_ref {
+} sigps_header,siGpsWaterTarget_header;
+
+%Dir gps_bestposb_ref {
+  uchar numberOfL1 = 10 : ;
+} sigps_bestposb;
+
+%Dir gps_bestposb_ref {
+  uchar numberOfL1 = 10 : ;
+} siGpsWaterTarget_bestposb;
+
+%Dir gps_bestvelb_ref {
+} sigps_bestvelb,siGpsWaterTarget_bestvelb;
+
+%Dir gps_headingb_ref {
+} sigps_headingb,siGpsWaterTarget_headingb;
+
+%Dir gps_heading2b_ref {
+} sigps_heading2b,siGpsWaterTarget_heading2b;
+
+%Dir gps_gpsephem_ref {
+} sigps_gpsephem;
+
+%Dir gps_range_ref {
+} sigps_range,siGpsWaterTarget_range;
+
+%Dir gps_satxyz_ref {
+} sigps_satxyz;
+
+%Dir gpsUblox_posllh_ref {
+} sigpsUblox_posllh;
+
+%Dir gpsUblox_velned_ref {
+} sigpsUblox_velned;
+
+%Dir gpsUblox_status_ref {
+} sigpsUblox_status;
+
+%Dir gpsUblox_navsol_ref {
+} sigpsUblox_navsol;
+
+
+%Dir magnetMessage_ref {
+  short values[3] = {0,0,0} :field strengths;
+  uchar cr = 0x0D :end of message;
+} magnetMessage;
+
+%include "wmm.dbh"
+%Dir magnetModel_ref {
+  dir serialPort_ref p = siPortMagnet :serial port;
+  dir magnetMessage_ref m = magnetMessage :raw data;
+  double lastUpdate = 0.0 :time of last update;
+  double updateDt = 0.05 :update time step;
+  double g10 = WMM_G10 :World Magnetic Model;
+  double g11 = WMM_G11 :World Magnetic Model;
+  double h11 = WMM_H11 :World Magnetic Model;
+  double field_sigma = 200/10 :stan dev of field components;
+  double field_mag   = 0.015 :scale magnitude of field;
+  double err_B[3] = {0,0,0} :inject raw error;
+  double psi_e =   0 : additional rotation about body z axis;
+  double field_L[3] = {567,-48,823} :field in local;
+  double field_B[3] = {0,0,0} :field in body;
+  double field_S[3] = {0,0,0} :field in sensor frame;
+  double dcm_sb[3][3] = {{-1,0,0},{0,1,0},{0,0,-1}} : ;
+  double dcm_bs[3][3] = {{0,0,0},{0,0,0},{0,0,0}} : ;
+} magnetModel,waterTargetMagnetModel;
+
+%define SI_SONAR_RMAX 0
+%define SI_SONAR_QUAD 1
+%define SI_SONAR_TERRA 2
+
+%Dir sonarMessage_ref {
+  uchar data[5] = {0,0,0,0} :ascii data;
+} sonarMessage;
+
+%Dir sonarModel_ref {
+  dir serialPort_ref p      = siPortSonar               :serial port;
+  dir sonarMessage_ref m    = sonarMessage              :raw data;
+  double lastUpdate         = 0.0                       :time of last update;
+  double updateDt           = 0.1                       :update time step;
+  double r[3]               = {0,0,0.1} :position of sonar (ft);
+  double alt_sigma          = 0.0                       :stan dev (nd);
+  double alt_bias           = 0.0                       :bias error (ft);
+  double alt_min            = 0.1                       :(ft) min altitude;
+  double alt_max            = 20                        :(ft) max altitude;
+  int    pointsX            = 0							:flag to make it point in body x direction (airplanes);
+  double fov                = 7.5*2                     :(deg) field of view cone;
+  double incidence_max      = 90.0                      :(deg);
+  double alt_error          = 0.0                       :error (ft);
+
+  char outlierEnable        = 0                         : flag for enable outlier measurement ;
+  int chance                = 15                        : 1/chance = probability of outlier to occur;
+  int chanceRecover         = 1                         : 1/chance = probability of outlier to go away;
+  double outlierInProgress  = 0.0                       :(ft);
+
+  double altitude           = 0.0                       :calculated alt above terr (ft);
+
+  double bias               = 0                         :0h 237.33w bias at zero reading;
+  double sf                 = 0.00244                   :0.00244oh 0.00448nh 0.00567w scale factor;
+  int error                 = 0xff00                    :if nonzero, set to this if out of range;
+  int raw                   = 0                         :raw counts;
+  char encodeMode           = SI_SONAR_RMAX             :0 = rmax's sonar  , 1 = quadrotor's sonar (maxSonar EZ1);
+  int waterTargetFlag       = 0                         :0 = normal operation, 1 = get range to waterTarget;
+} sonarModel;
+
+%include "datalink.dbh"
+
+%Dir datalinkMessageTruth_ref {
+} siDatalinkMessageTruth;
+
+%include "rmax.dbh"
+
+%Dir rmaxCommandMessage_ref {
+} siRmaxCommandMessage;
+
+%Dir rmaxServoMapping_ref {
+} siRmaxServoMapping;
+
+%Dir rmaxYCSraw_ref {
+} siYCSraw;
+
+%Dir rmaxCommandMessage_ref {
+} siYRDraw;
+
+%Dir pwmServoMapping_ref {
+} siPWMServoMapping;
+
+%Dir pwmServoMapping_ref {
+} siPWMInServoMapping;
+
+%Dir pwmServoMixing_ref {
+} siPWMServoMixing;
+
+%Dir pwmMTRServoMixing_ref {
+} siPWMMTRServoMixing;
+
+%include "datalink.dbh"
+
+%Dir datalinkMessagePWM_ref {
+} siDatalinkMessagePWMFromSI, siDatalinkMessagePWMToSI;
+
+%define MAX_ACT_LATENCY 50
+
+%Dir actSVI_ref {
+  uchar overall_status = 1 : ;
+  double rpmCmdWow    = 100 : ;
+  double rpmCmdFlight = 615 : ;
+} actSVI;
+
+%Dir actuatorModel_ref {
+  dir serialPort_ref         pPWM   = siPortPWM            :serial port;
+  dir rmaxCommandMessage_ref m      = siRmaxCommandMessage :raw data from autopilot;
+  dir rmaxServoMapping_ref   rmaxMap = siRmaxServoMapping   :servo mapping data;
+  dir rmaxYCSraw_ref         ycsRaw = siYCSraw             :raw YCS message;
+  dir rmaxCommandMessage_ref yrdRaw = siYRDraw             :raw YCS data;
+  dir datalinkMessagePWM_ref pwmFromSI = siDatalinkMessagePWMFromSI : ;
+  dir datalinkMessagePWM_ref pwmToSI   = siDatalinkMessagePWMToSI   : ;
+  dir actSVI_ref             svi       = actSVI : ;
+
+  dir pwmServoMapping_ref    pwmMap    = siPWMServoMapping : ;
+  dir pwmServoMixing_ref     pwmMix    = siPWMServoMixing : ;
+  dir pwmMTRServoMixing_ref  mtrMix    = siPWMMTRServoMixing : ;
+  dir pwmServoMapping_ref    pwmInMap   = siPWMInServoMapping : ;
+  double latency = 0.16      :actuator latency (sec);
+  double lastUpdateYCS = 0.0 :time of last update;
+  double lastUpdateYAS = 0.0 :time of last update;
+  double lastUpdateYRD = 0.0 :time of last update;
+  double lastUpdatePWM = 0.0 :time of last update;
+  double lastUpdateSVI2AP = 0.0 :time of last update;
+  double lastUpdateModel = 0.0 :time of last update;
+  double updateDtYCS = 0.1   :update time step (need to verify these);
+  double updateDtYAS = 0.005 :update time step (sec);
+  double updateDtYRD = 0.025 :update time step;
+  double updateDtPWM = 0.02  :update time step;
+  double updateDtSVI2AP = 0.02  :update time step;
+  double updateDtCmds = 0.02 :update time step for incoming commands (used for latency and rate limit);
+  double rateLimitDelm[3] = {0.5,0.5,0.5} :actuator rate limit (0 to full scale in (sec));
+  double rateLimitDelf[1] = {0.25}        :actuator rate limit (0 to full scale in (sec));
+  double rateLimitDelt[1] = {0.25}        :actuator rate limit (0 to full scale in (sec));
+  double accLimitDelm[3] = {0.02,0.02,0.02} :actuator rate limit (0 to full scale in (sec^2));
+  double accLimitDelf[1] = {0.02}     :actuator rate limit (0 to full scale in (sec^2));
+  double accLimitDelt[1] = {0.02}     :actuator rate limit (0 to full scale in (sec^2));
+  double hysteresisDelm[3] = {0.0,0.0,0.0} :actuator hystersis;
+  double hysteresisDelf[1] = {0.0}     :actuator hystersis;
+  double hysteresisDelt[1] = {0.0}     :actuator hystersis;
+  double voltage = 14.0 :onboard battery voltage;
+  int i_a_latency[5] = {0,0,0,0,0} : ;
+  double a_buffer[5][50] = {{0}} : ;
+  uchar sendPWM        = 0 : 0-off, 1-DATALINK_MESSAGE_PWM through pwm port, 2-QUAD_ARDU_MESSAGE_PWM_GET through quadArdu port;
+} actuatorModel;
+
+%Dir ptzModel_ref {
+  double panCmd  = 0.0  :(deg);
+  double tiltCmd = 0.0  :(deg);
+  double rollCmd = 0.0  :(deg);
+  double zoomCmd = 1.0  :1-9999;
+  double timeOfCmd = 0 : sim time command was made;
+  double pan  = 0.0  :(deg);
+  double tilt = 0.0  :(deg);
+  double roll = 0.0  :(deg);
+  double zoom = 1.0  :1-9999;
+  double angleRate = 30.0 :(deg/sec);
+  double zoomRate  = 2000 :(zoom/sec);
+  double maxTilt = 90   :15(deg)  need to check;
+  double minTilt = -90  :-90(deg)  need to check;
+  double maxPan  = 180  :160(deg)  need to check;
+  double minPan  = -180 :-160(deg)  need to check;
+  double maxRoll = 100  :160(deg)  need to check;
+  double minRoll = -100 :-160(deg)  need to check;
+  double cmdDelay = 0 : response time from cmd to movement (sec) ;
+  double lastUpdate = 0 :last update time(sec);
+  double panFreq = 14 : (Hz);
+  double tiltFreq = 14 : (Hz);
+  double panAmp = 0 : (deg peak to peak);
+  double tiltAmp = 0 : (deg peak to peak);
+} ptzModel, ptzModel2, ptzModel3, ptzModel4;
+
+%rem include "navigation_ref.h"
+%rem include "onboard_ref.h"
+%rem include "sensors_ref.h"
+
+%Dir playback_ref {
+  int    on = 0   :enable playback;
+  int    init = 0 :restart file;
+  int    first = 0 :flag for fist data point in file;
+  double updateDt = 0.01 :update rate(sec);
+  double lastUpdate = 0 :last update time(sec);
+  long   itime = 0 :file itime;
+  long   extra = 0 :space (why?);
+  int    valid = 0 :valid file?;
+  string fileName = "logs/f020329e1_alltest.bin  " :file to playback;
+  double lastImu = 0.0 : ;
+  double lastGpsPos = 0.0 :last gps position;
+  double lastGpsVel = 0.0 :last gps position;
+  double lastMagnet = 0.0 :last gps position;
+  double lastSonar = 0.0  :last gps position;
+  double phi = 0 : ;
+  double theta = 10 : ;
+  double psi = 175 : ;
+  double q[4] = {0.0738,-9.6326e-004,-0.0357,-0.9966} : ;
+  double ab[3] = {0.2342,-1.1406,-0.0328} : ;
+  double wb[3] = {-9.3229e-004,0.0039,6.2090e-004} : ;
+} playback;
+
+%Dir videoModel_ref {
+  double updateDt = 1.0/30.0 :update time step;
+  double nextUpdate = 0.0 :last update time(sec);
+  long i_lastUpdate =0: last i_time that the system got a picture;
+  int i_dt =4: update rate in 100*seconds ;
+  int count = 1 :frame count;
+  int newFrame = 0 :flag for new image;
+} videoModel;
+
+%Dir vehicleOutputsMessage_ref {
+  uchar sync1 = 0xa4 : different than datalink header (intentionally);
+  uchar sync2 = 0xb5 : ;
+  uchar sync3 = 0xc6 : ;
+  uchar spare = 0 : ;
+  int messageID = 0 :id #;
+  int messageSize = 0 :including header;
+  uint hcsum = 0 : ;
+  uint csum = 0 : ;
+  uchar needStaticStandData = 0: flag to request stationary targets' position;
+ generic char data[1100] = {0} : more than size of vehicleOutputs; 
+} vehicleOutputsMessageOut,vehicleOutputsMessageIn;
+
+%Dir vehicleMotionModel_ref {
+  dir serialPort_ref   p = siPortVehicleMotionModel  :serial port;
+  dir datalinkMessageTruth_ref truth = siDatalinkMessageTruth  : truth message;
+  double dt       = 0.01 :(s);
+  double lastTime = -1 :;
+  char  enable    = 0 :;
+} vehicleMotionModel;
+
+%Dir si_ref {
+  dir imuModel_ref          imu         = imuModel          :IMU model data;
+  dir gpsModel_ref          gps         = gpsModel          :NovAtel GPS model data;
+  dir magnetModel_ref       magnet      = magnetModel       :magnetometer model data;
+  dir sonarModel_ref        sonar       = sonarModel        :sonar model;
+  dir actuatorModel_ref     act         = actuatorModel     :rmax interface and actuator models;
+  dir vehicleMotionModel_ref vmm        = vehicleMotionModel :send vehicle motion model as truth instead of sensors;
+
+  dir playback_ref  play = playback :playback data recording;
+
+  int run = 1 : ;
+  double lastUpdate = 0.0 : ;
+  double dt         = 0.0 : ;
+} si;
+
+

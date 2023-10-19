@@ -1,0 +1,36 @@
+%Dir controlWork_ref {
+   char thClosedLoop = 0  :1 = close throttle loop;
+   char inControl = 0  :0=RX, 1=AUTO, 2=EXT;
+   char autopilot = 0        :panel light status;
+   char integrate = 0        :determine if internal integrations occur;
+   char mode      = 0  :derived mode;
+   char init      = 0   :initializing flag;
+   char latmethod_init = 0 :Latency Compensation Method 0=None 1=Pade 2=All Smith 3=Smith/Pade Combo 4=Smith on Heading only ;
+   char type = 0 :0=heli, 1=fwing;
+   double time = 0.0    :current time;
+   ulong iLastUpdate = 0 :index of last update;
+   ulong iLastUpdateCC = 0 :index of last update for cc;
+   double lastUp0 = 0   :time of last up0 message rx;
+   double lastRPM = 0   :time of last rpm message rx;
+   double dtDes = 0.02  :time step desired per update;
+   double dtMax = 0.04  :max time step to ever use (protect integration scheme);
+   double dtFull = 0.02 :actual time step;
+   double dt = 0.02     :used in controller time step;
+   double latency = 0   :computed latency;
+   Double ilVad[3] = {0,0,0} :inner loop NN minus integral control;
+   Double olVad[3] = {0,0,0} :outer loop NN minus integral control;
+   double tlVad[1] = {0}     :throttle loop NN minus integral control;
+   double dtCC = 0.02     :actual time step for cc;
+   double addPower = 0 :power to add for control;
+
+   
+
+} controlWork;
+
+%Dir onboardControl_ref {
+   uchar dummy = 42 : ;
+   dir controlWork_ref       work   = controlWork       :work area (timing, flags, etc.);
+
+   int sidewinderCount = 4 :number of AIM-9 missiles on the drone;
+
+} onboardControl;

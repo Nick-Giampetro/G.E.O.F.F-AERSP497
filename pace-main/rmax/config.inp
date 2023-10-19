@@ -1,0 +1,32 @@
+scene0.winw = 400
+scene0.winh = 300
+@configEsim
+scene 0
+brwin 0
+cd root
+
+cnsl.nbuttons=18
+cnslButton12.textSwitch=TEXT_LABEL
+cnslButton12.textIcon=ON
+cnslButton12.label=joystick
+cnslButton12.command=confirm comment Joystick? gcs0Ci.mode=0
+cnslButton13.textSwitch=TEXT_LABEL
+cnslButton13.textIcon=OFF
+cnslButton13.label=joystick
+cnslButton13.command=confirm comment VirtualStick? gcs0Ci.mode=1
+cnslButton14.textSwitch=TEXT_LABEL
+cnslButton14.textIcon=ON
+cnslButton14.label=arm
+cnslButton14.command=confirm comment Arm? armDgcs0.output=1
+cnslButton15.textSwitch=TEXT_LABEL
+cnslButton15.textIcon=OFF
+cnslButton15.label=arm
+cnslButton15.command=confirm comment Unarm? armDgcs0.output=0
+cnslButton16.textSwitch=TEXT_LABEL
+cnslButton16.textIcon=ON
+cnslButton16.label=auto
+cnslButton16.command=confirm comment Auto? manOverrideDgcs0.output=1
+cnslButton17.textSwitch=TEXT_LABEL
+cnslButton17.textIcon=OFF
+cnslButton17.label=auto
+cnslButton17.command=confirm comment Manual? manOverrideDgcs0.output=0

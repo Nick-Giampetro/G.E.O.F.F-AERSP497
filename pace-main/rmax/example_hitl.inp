@@ -1,0 +1,63 @@
+//////////////////////////////////////////////////////////////////////
+//                                                                  //
+// Below is the example setting for hardware in the loop simulation //
+//                                                                  //
+//////////////////////////////////////////////////////////////////////
+
+onboard.run = 0   # do not run the onboard code in the sim
+onboard.init = 0  # do start the onboard code in the sim
+vehicle.run = 1   # run the simulated vehicle dynamics
+si.run = 1				# run the emulated sensors
+
+gcs0PortDatalink1.dataSource = 0 # turn off datalink 1 (Serial)
+
+gcs0PortDatalink2.dataSource = 1 # turn on datalink 2 (WiFi/Ethernet)
+gcs0PortDatalink2.setHostnameManually = 1
+gcs0PortDatalink2.isServer = 99
+gcs0PortDatalink2.myname = 192.168.0.20# GCS ip address
+gcs0PortDatalink2.connectTo = 192.168.0.10# Arduino ip address
+gcs0PortDatalink2.portNum = 10000 # GCS port
+gcs0PortDatalink2.port = 10001 # Arduino port
+
+siPortIMU.dataSource = 1 # turn on siPortIMU (WiFi/Ethernet)
+siPortIMU.setHostnameManually = 1
+siPortIMU.useSerial = 0
+siPortIMU.useSock = 1
+siPortIMU.isServer = 99
+siPortIMU.myname = 192.168.0.20# GCS ip address
+siPortIMU.connectTo = 192.168.0.10# Arduino ip address
+siPortIMU.portNum = 8001 # GCS port
+siPortIMU.port = 9001 # Arduino port
+
+siPortMagnet.dataSource = 1 # turn on siPortMagnet (WiFi/Ethernet)
+siPortMagnet.setHostnameManually = 1
+siPortMagnet.useSerial = 0
+siPortMagnet.useSock = 1
+siPortMagnet.isServer = 99
+siPortMagnet.myname = 192.168.0.20# GCS ip address
+siPortMagnet.connectTo = 192.168.0.10# Arduino ip address
+siPortMagnet.portNum = 8003 # GCS port
+siPortMagnet.port = 9003 # Arduino port
+
+vehicleMotionModel.enable = 1
+siPortVehicleMotionModel.dataSource = 1 # turn on siPortVehicleMotionModel (WiFi/Ethernet)
+siPortVehicleMotionModel.setHostnameManually = 1
+siPortVehicleMotionModel.useSerial = 0
+siPortVehicleMotionModel.useSock = 1
+siPortVehicleMotionModel.isServer = 99
+siPortVehicleMotionModel.myname = 192.168.0.20# GCS ip address
+siPortVehicleMotionModel.connectTo = 192.168.0.10# Arduino ip address
+siPortVehicleMotionModel.portNum = 8006 # GCS port
+siPortVehicleMotionModel.port = 9006 # Arduino port
+
+siPortPWM.dataSource = 1 # turn on siPortPWM (WiFi/Ethernet)
+siPortPWM.setHostnameManually = 1
+siPortPWM.useSerial = 0
+siPortPWM.useSock = 1
+siPortPWM.isServer = 99
+siPortPWM.myname = 192.168.0.20# GCS ip address
+siPortPWM.connectTo = 192.168.0.10# Arduino ip address
+siPortPWM.portNum = 8005 # GCS port
+siPortPWM.port = 9005 # Arduino port
+
+/// End of setting for hardware in the loop simulation ///

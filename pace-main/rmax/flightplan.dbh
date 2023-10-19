@@ -1,0 +1,157 @@
+%ifndef FLIGHTPLAN_DBH_PROTECT
+%define FLIGHTPLAN_DBH_PROTECT 1
+
+%define STATUS_INITIAL 0
+%define STATUS_CRUISE  1
+%define STATUS_FINAL   2
+%define STATUS_WAITING 3
+
+%Dir trajectory_ref {
+   char safemode          = 1              :hover at current position/heading, pause trajectory clock;
+   char qTrajOn           = 0              :attitude trajectory specified;
+   short manIndex         = 0              :index of current point;
+   char status            = STATUS_INITIAL :0=initial,1=cruise,2=final,3=wait;
+   schar currentTransType = TRANS_UNKNOWN  :0=turn, 1=accel;
+   char nextTransType     = TRANS_UNKNOWN  :0=turn, 1=accel;
+   char clearOfGround     = 1              : ;
+   char augmentOnSafemode = 0              :use augmentation in safemode;
+   char geofence          = 0              :activated;
+   char stationKeep       = 0              :station keeping activated;
+   char formationLanding  = 0              :formation landing activated;
+   Char align[4]          = {0,0,0,0}      : ;
+   double time            = 0              :command time (sec);
+   double psi             = 0              :heading (safe mode) (rad);
+   double x[3]            = {0,0,-10}      :command position (ft);
+   double v[3]            = {0,0,0}        :command velocity (ft/s);
+   double a[3]            = {0,0,0}        :command accel (ft/s2);
+   double j[3]            = {0,0,0}        :command jerk (ft/s3);
+   double q[4]            = {1,0,0,0}      :command attitude;
+   double w[3]            = {0,0,0}        :command angular rate;
+   double seq             = 0.0            :maneuver specific sequence state;
+   double timer           = 0              :timer for misc uses;
+   double t0              = 0              :time 0 for misc uses;
+   double counter         = 0              :counter for misc uses;
+   double vxDes           =   0            :rate limited commanded speed;
+   double vyDes           =   0            :rate limited commanded speed;
+   double takeoffHeight   = 0              :(ft);
+   double altitudeHold    = 100.0          :(ft) fwing;
+   double holdPos[2]      = {0,0}          :fwing;
+   double vsg             = 0.0            :(ft/s) fwing guidance;
+   double stopTime        = 0              :(s) how long have been waiting;
+};
+
+%Dir trajectoryInputs_ref {
+   double time           = 0                             :nav;
+   Double p_b_e_L[3]     = {0,0,0}                       :nav;
+   Double v_b_e_L[3]     = {0,0,0}                       :nav;
+   Double a_b_e_L[3]     = {0,0,0}                       :nav;
+   Double fil_a_b_e_L[3] = {0,0,0}                       :nav;
+   Double v_a_e_L[3]     = {0,0,0}                       :nav;
+   Double q[4]           = {1,0,0,0}                     :nav;
+   double terrainH       = 0                             :nav;
+   double altitudeAGL    = 0                             :nav;
+   char wow              = 1                             : ;
+   char controlType      = 0                             : ;
+   Char align[14]        = {0,0,0,0,0,0,0,0,0,0,0,0,0,0} : ;
+   Double pointPos[3]    = {300,0,0}                     :point at location (ft);
+   double vscale         = 1.0                           :speed scaling;
+   double densityr       = 1.0                           : ;
+};
+
+%define SAFETY_PILOT_AUTO          0
+%define SAFETY_PILOT_AUGMENTED     1
+%define SAFETY_PILOT_RATE_FEEDBACK 2
+%define SAFETY_PILOT_EXTRASTICKS   3
+
+%Dir joyControl_ref {
+   float throttleLever        = 0                 : ;
+   float rollStick            = 0                 : ;
+   float pitchStick           = 0                 : ;
+   float rudderPedal          = 0                 : ;
+   int   goFastButton         = 0                 : ;
+   uchar allowSPOverride      = 0                 :allows the safety pilot radio to flip the spMode value - uses the gain and 1/3range per mode for PWMs;
+   uchar spHasUpdated         = 0                 :Since the datalink/gamepad updates run more often, this flag ensures that the SP has control before disabling the gamepad updates;
+   short spMode               = SAFETY_PILOT_AUTO :Safety pilot mode (0 = full auto, 1 = augmented mode, 2 = helo (rate feedback) mode);
+   double SPdeadbandAugf[1]   = {0.4}             :SP only - augmented mode;
+   double SPdeadbandRateFf[1] = {0.0}             :SP only - helo (SAS) mode;
+   double SPdeadbandAugm[3]   = {0.2,0.2,0.2}     :SP only - augmented mode;
+   double SPdeadbandRateFm[3] = {0.0,0.0,0.0}     :SP only - helo (SAS) mode;
+};
+
+%define MAN_CUTCORNER       0
+%define MAN_FLYTHROUGH      1
+%define MAN_STOPAT          2
+%define MAN_ETURN           3
+%define MAN_LANDING         4
+%define MAN_PIROUETTE       5
+%define MAN_EXT             6
+%define MAN_REPLAY          7
+%define MAN_TRACK           8
+%define MAN_CHASE           9
+%define MAN_FORMATION       10
+%rem define MAN_AUGMENT     13
+%define MAN_TRACK2          14
+%define MAN_REPEAT          15
+%define MAN_SLOWROLL        16
+%define MAN_TAKEOFF         17
+%define MAN_TRACK3          18
+%define MAN_SLUNGFORMATION  19
+%define MAN_SLAM            20
+%define MAN_CLIMB           21
+%define MAN_TRACK4	        22
+%define MAN_HELIFLIP        23
+%define MAN_FWD_TUMBLE      24
+%define MAN_INTERCEPT       25
+%define MAN_TRACK5	        26
+%define MAN_TRACK6          27
+%define MAN_STOPANDWAIT     28
+%define MAN_M1              29
+%define MAN_MIN_SNAP        30
+%define MAN_ASTAR           31
+%define MAN_DIP             32
+%define MAN_EXT_SEQ         33
+%define MAN_HELISYSID       34
+%define MAN_TAG             35
+
+%define HDG_CONST      0
+%define HDG_VELOCITY   1
+%define HDG_POINTPOINT 2
+%define HDG_STICK      3
+
+%define ALT_ABS 0
+%define ALT_AGL 1
+
+%define TRANS_TURN  0
+%define TRANS_ACCEL 1
+%define TRANS_ETURN 2
+%define TRANS_UNKNOWN -1
+
+%define MAN_NMANS 100
+
+%Dir maneuver_ref {
+   char type    = MAN_CUTCORNER :0=cut,1=thrgh,2=stop,3=eturn,4=land,5=pir,6=ext,8=trk,9=chase,10=form,21=climb,28=stop/wait;
+   char hdgMode = HDG_VELOCITY  :0=hdg specified,1=beta,2=at point, 3=stick;
+   char altMode = ALT_ABS       :0=datum,1=terrain;
+   char derived = 0             :;
+   int align2   = 0             :;
+   Double x[3]  = {0,0,-30}     :;
+   double psi   = 0             :;
+   double vnom  = 10            :;
+   double anom  = 5             :;
+   double extra = 0             :;
+
+   Double vt[3] = {0,0,0}   :;
+   double vtmag = 0         :;
+   Double w[3]  = {0,0,0}   :;
+};
+
+%Dir flightPlan_ref {
+  int lastIndex             = 0             :index of last maneuver;
+  dir maneuver_ref man[100] = maneuver[100] : ;
+  int lockIn                = 0             :once this is 1, this is a real flight plan - keep locations at same lat/long;
+  double datumLat           =  33.659653    :datum latitude (deg-N);
+  double datumLon           = -84.663333    :datum longitude (deg-E);
+  double datumAlt           = 745.00        :datum altitude (ft);
+};
+
+%endif

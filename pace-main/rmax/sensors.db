@@ -1,0 +1,656 @@
+%include "serial.dbh"
+
+%Dir serialPort_ref {
+  int dataSource = PORT_SITL :0=off,1=on,2=SITL;
+  int port=1 : ;
+  int si_port = SI_IMU :SITL port;
+  int baud = 115200 : ;
+  int portNum   = SI_IMU: ;
+} onboardPortIMU;
+
+%Dir serialPort_ref {
+  int dataSource = PORT_SITL :0=off,1=on,2=SITL;
+  int port=2 : ;
+  int si_port = SI_GPS :SITL port;
+  int baud = 38400 :38400 is nominal ;
+  int portNum   = SI_GPS: ;
+  string connectTo = "hunter\0                     ": generally used in conjunction with fakegps command;
+} onboardPortGPS1;
+
+%Dir serialPort_ref {
+  int dataSource = PORT_SITL :0=off,1=on,2=SITL;
+  int port=5 : ;
+  int si_port = SI_MAGNET :SITL port;
+  int baud = 9600 : ;
+  int portNum   = SI_MAGNET: ;
+} onboardPortMagnet;
+
+%Dir serialPort_ref {
+  int dataSource = PORT_SITL :0=off,1=on,2=SITL;
+  int port=6 : ;
+  int si_port = SI_SONAR :SITL port;
+  int baud = 19200 : ;
+  int portNum   = SI_SONAR: ;
+} onboardPortSonar0;
+
+%Dir serialPort_ref {
+  int dataSource = PORT_SITL :0=off,1=on,2=SITL;
+  int port=3 : ;
+  int si_port = SI_PWM :SITL port;
+  int baud = 115200 : ;
+  int portNum   = SI_PWM: ;
+} onboardPortPWM;
+
+%Dir serialPort_ref {
+  int dataSource = PORT_OFF :0=off,1=on,2=SITL;
+  int port       = 1 : ;
+  int baud       = 115200 : ;
+} onboardPortPozyx;
+
+%Dir imuRaw_ref {
+  uchar header = 0 :header;
+  uchar status = 0 :factory use;
+  short rate[3] = {0,0,0} :gyro;
+  short accel[3] = {0,0,0} :spec force;
+  uchar count = 0 :counter;
+  uchar csum = 0 :check sum;
+} imuRaw;
+
+%define IMU_SYNC0 0xa3
+%define IMU_SYNC1 0xb2
+%define IMU_SYNC2 0xc1
+
+%Dir imuFloatRaw_ref {
+  uchar sync[3] = {IMU_SYNC0,IMU_SYNC1,IMU_SYNC2} :sync bytes - only use for swap space, not datalinks since no checksum;
+  uchar hasMag  = 0                :whether it includes the mag forces;
+  float rate[3] = {0.0,0.0,0.0}    :gyro;
+  float accel[3] = {0.0,0.0,0.0}   :spec force;
+  float mag[3]   = {0.0,0.0,0.0}   :magnetic force;
+} imuFloatRaw;
+
+%Dir imuOut_ref {
+  double w_b_e_B[3] = {0,0,0} :(rad/sec) angular rate of body wrt Earth expressed in body;
+  double s_b_e_B[3] = {0,0,0} :(ft/s2) spec force of body wrt Earth expressed in body;
+  int itime = 0 :data counter;
+  uchar count = 0 :counter;
+  char newIMUData = 0 :flag for new data;
+  uchar packets = 0 : ;
+  uchar wasntEmpty = 0 : ;
+  uchar checkCount = 0 :verify count;
+  uchar droppedPacket = 0 : ;
+  uchar status = 0 : ;
+  generic char align[5] = {0,0,0,0,0} : ;
+  double lastUpdateTime = 0 :using sim clock;
+} imuOut;
+
+%Dir senImu_ref {
+  dir serialPort_ref p = onboardPortIMU :serial port;
+  dir imuRaw_ref raw=imuRaw :raw IMU data;
+  dir imuFloatRaw_ref floatRaw = imuFloatRaw :optional float-based raw data;
+  dir imuOut_ref out=imuOut :output;
+  double sfr = (150.0/30000*3.1416/180.0) :scale factor for gyro;
+  double sfa = (10.0*32.174/30000) :for accels;
+  double dcm_sb[3][3] = {{1,0,0},{0,-1,0},{0,0,-1}} :sensor orientation wrt body;
+  double timeOut = 1.0 :(sec) timeout;
+  uchar ourcsum = 0 :our calculated check sum;
+  uchar input   = 0 :0=standard input, 1=float input;
+} senImu;
+
+%include "gps.dbh"
+
+%Dir gps_cmdResponse_ref {
+} gps_response1, gps_response2;
+%Dir gps_log_ref {
+} gps_log1, gps_log2;
+%Dir gps_unlogall_ref {
+} gps_unlogall1, gps_unlogall2;
+%Dir gps_unlockSystem_ref {
+} gps_unlockSys1, gps_unlockSys2;
+%Dir gps_clkadjst_ref {
+} gps_clkadjst1, gps_clkadjst2;
+%Dir gps_rtkdyn_ref {
+} gps_rtkdyn1, gps_rtkdyn2;
+%Dir gps_rtkPortMode_ref {
+} gps_rtkPortMode1, gps_rtkPortMode2;
+%Dir gps_interfaceMode_ref {
+} gps_interfaceMd1, gps_interfaceMd2;
+%Dir gps_header_ref {
+} gps_header1, gps_header2;
+%Dir gps_bestposb_ref {
+} gps_bestposb1, gps_masterposb1, gps_roverposb1, gps_psrposb1,
+  gps_bestposb2, gps_masterposb2, gps_roverposb2, gps_psrposb2;
+%Dir gps_bestvelb_ref {
+} gps_bestvelb1, gps_psrvelb1, gps_bestvelb2, gps_psrvelb2;
+%Dir gps_headingb_ref {
+} gps_headingb1, gps_headingb2;
+%Dir gps_heading2b_ref {
+} gps_heading2b1, gps_heading2b2;
+%Dir gps_bslnxyzb_ref {
+} gps_bslnxyzb1, gps_bslnxyzb2;
+%Dir gps_alignbslnenub_ref {
+} gps_alignbslnenub1, gps_alignbslnenub2;
+%Dir gps_rtcaMsg_ref {
+} gps_rtcaMsg1, gps_rtcaMsg2;
+%Dir gps_ionutc_ref {
+} gps_ionutc1, gps_ionutc2;
+%Dir gps_satVis_ref {
+} gps_satvis1, gps_satvis2;
+%Dir gps_range_ref {
+} gps_range1, gps_range2;
+%Dir gps_time_ref {
+} gps_time1, gps_time2;
+%Dir gps_satxyz_ref {
+} gps_satxyz1, gps_satxyz2;
+%Dir gps_psrXYZ_ref {
+} gps_psrxyz1, gps_psrxyz2;
+%Dir gps_psrTime_ref {
+} gps_psrtime1, gps_psrtime2;
+%Dir gps_trackstat_ref {
+} gps_trackstat1, gps_trackstat2;
+
+%define GPS_OFF     0
+%define GPS_NOLOCK  1
+%define GPS_SINGLE  2
+%define GPS_DIFF    3
+%define GPS_RTK     4
+%define GPS_TC      5
+%define GPS_ALIGN   6
+%define GPS_SINGLE_ALIGN_AVAILABLE 7
+
+%define GPS_R_SINGLE 0
+%define GPS_R_DIFF 1
+%define GPS_R_RTK 2
+
+%define GPS_NOVATEL       0
+%define GPS_UBLOX         1
+%define GPS_NMEA          2
+%define GPS_ERB           3
+%define GPS_ARDU          4
+%define GPS_DJI           5
+%define GPS_NOVATEL2      6
+%define GPS_UBLOX2        7
+%define GPS_FCS20         8
+
+%Dir gpsSet_ref {
+  uchar gpsType          = 0   :0-novatel1,1-ublox1-binary,2-nmea (must enable navIntegrity->autoBaro if using RMC messages),3-erb (emlid reach binary),4=ardu,5=DJI,6-novatel2,7-ublox2-binary,8-fcs20;
+  schar backupGpsType    = -1  :-1 means no backup, rest of options same as gpsType.  Note - cannot use the same number as gpsType;
+  char registerOutliers  = 1   :register outliers for nav;
+  char autoGpsR          = 0   : automatically change antenna location to the appropriate GPS that nav is using (turn it off for backward compatability);
+  uchar align[4]         = {0,0,0,0} :8-byte alignment;
+  double timeOut         = 1.0 :(sec) for status indication;
+} gpsSet;
+
+%Dir gpsNovatelSet_ref {
+  uchar configure        = 0   : flag to start GPS configuration;
+  uchar useNovatelMsg    = 1   : 0-use RTCA messages, 1-use novatel messages;
+  uchar resetSats        = 0   : ;
+  uchar sendBestPos      = 1   : send novatel position message;
+  uchar sendBestVel      = 1   : send novatel velocity messgae;
+  uchar sendRange        = 0   : send novatel GPS range message;
+  uchar sendIonUtc       = 0   : send novatel GPS ION/UTC corrections;
+  uchar sendSatPos       = 0   : send novatel GPS Sat Positions;
+  uchar sendPsrTime      = 0   : send novatel GPS PSR time;
+  uchar sendTime         = 0   : send novatel GPS time 1-Time 2-psrTime;
+  uchar clockAdjust      = 1   : enable/disable GPS clock steering;
+  uchar sendTrackStat    = 0   : send novatel Track Status;
+  uchar msgFlag          = 0   : 0-send msg, 1-msg sent, 2-msg received;
+  uchar oem              = 7   : whether to use oem 7 or legacy commands: ;
+  uchar sendHeadingExt2  = 0   : ;
+  uchar sendBslnEnu      = 0   : ;
+  float bestPosPeriod    = 0.2f  : valid- 0.05,0.1,0.2,0.25,0.5 and integer(sec);
+  float bestVelPeriod    = 0.2f  : valid- 0.05,0.1,0.2,0.25,0.5 and integer(sec);
+  float rangePeriod      = 0.2f  : valid- 0.05,0.1,0.2,0.25,0.5 and integer(sec);
+  float satPosPeriod     = 0.2f  : valid- 0.05,0.1,0.2,0.25,0.5 and integer(sec);
+  float timePeriod       = 0.2f  : valid- 0.05,0.1,0.2,0.25,0.5 and integer(sec);
+  float trackStatPeriod  = 0.2f  :trackStat period(sec);
+  float pLatency         = 0.1f  :Position latency for this GPS;
+  float vLatency         = 0.2f  :Velocity latency for this GPS;
+  double time            = 0.0   :(sec) this is really a state;
+  double roverposbTimeOut = 1.0  :(sec) switch to bestposb if roverposb lost for this long;
+  double headingOffset   = 0     :(rad);
+  char roverStnID[4] = {'n','2','8','T'} :rover ID (heading2);
+  char selfStnID[4]  = {'R','R','R','R'} :self ID (position);
+  char useBestposb   = 1 :use format in nav flag;
+  char useMasterposb = 1 :use format in nav flag;
+  char useRoverposb  = 1 :use format in nav flag;
+  char usePsrposb    = 1 :use format in nav flag;
+  char useBestvelb   = 1 :use format in nav flag;
+  char usePsrvelb    = 1 :use format in nav flag;
+  char useHeadingb   = 1 :use format in nav flag;
+  char useHeading2b  = 1 :use format in nav flag;
+  char filterByTime  = 0 :throw away posb older that last received (based on reported time);
+  char setRtk        = 1 :1-RTK, 2-ALIGN, 0 otherwise;
+  char enableGlonass = 0 :Whether to unlock the GLONASS reception;
+  char enableQzss    = 0 :Whether to unlock the QZSS reception;
+  char enableGalileo = 0 :Whether to unlock the Galileo reception;
+  char align2[2]     = {0,0} : ;
+  double gpsR[3]     = {-29.0/12,3.5/12,(25.0-31)/12} : antenna location;
+} gpsNovatelSet1;
+
+%Dir gpsOut_ref {
+  double p_b_e_L[3] = {0,0,0} :(ft) gps position of ant wrt Earth expressed in local frame;
+  double v_b_e_L[3] = {0,0,0} :(ft/s) gps velocity of ant wrt Earth expressed in local frame;
+  double heading = 0 :(rad);
+  double lastUpdate = 0.0 :(sec);
+  double lastUpdateRoverposb = 0.0 :(sec);
+  double lastUpdateRoverposbUsed = 0.0 :(sec);
+  double averageSnr = 0.0 :Averaged SNR values - may not be available for all GPS types;
+  char gpsStatus = GPS_OFF :status of gps;
+  uchar gpsAccuracy = GPS_R_SINGLE :accuracy assumed for gps measurement noise;
+  char numberOfObsTr = 0 : ;
+  uchar timeStatus = 160 : ;
+  int newItimePos = 0 :new data counter - only used for individual GPS sensor data;
+  int newItimeVel = 0 :new data counter - only used for individual GPS sensor data;
+  int newItimeHdg = 0 :new data counter - only used for individual GPS sensor data;
+  int align1      = 0 :8-byte alignment;
+  int itimePos = 0 :data counter;
+  int itimeVel = 0 :data counter;
+  int itimeHdg = 0 :data counter;
+  int milliseconds = 0 :of last message;
+  uchar outlier = 0 :tell nav to treat as outlier;
+  uchar alignAvailable = 0 :align available flag;
+  ushort week = 0 :of last message;
+  uchar outlierVel = 0 :tell nav to treat as outlier;
+  uchar usingBackup = 0 :Whether primary or backup GPS is the current contributor;
+  Uchar align[2] = {0,0} : ;
+  uint hacc = 0 :Horizontal accuracy;
+  uint sacc = 0 :Speed accuracy;
+  uint pdop = 0 :Position dilution of precision;
+  float pLatency = 0.0f :Position latency for this GPS;
+  float vLatency = 0.0f :Velocity latency for this GPS;
+} gpsOut, gpsNovatelOut1;
+
+%define MAX_SAT_TRACK 24
+%define NUM_GPS_SATS 36
+%Dir gps_ephem_ref {
+  double toe = 0.0     : reference time for ephemeris (sec);
+  double A = 0.0       : semi-major axis (m);
+  double deltaN = 0.0  : mean motion difference (rad/sec);
+  double M0 = 0.0      : mean anomaly of reference time (rad);
+  double ecc = 0.0     : eccentricity ;
+  double w = 0.0       : argument of perigee (rad) ;
+  double cuc = 0.0     : argument of latitude (amplitude of cosine) (rad) ;
+  double cus = 0.0     : argument of latitude (amplitude of sine) (rad) ;
+  double crc = 0.0     : orbit radius (amplitude of cosine) (m);
+  double crs = 0.0     : orbit radius (amplitude of sine) (m);
+  double cic = 0.0     : inclination (amplitude of cosine) (rad);
+  double cis = 0.0     : inclination (amplitude of sine) (rad);
+  double I0 = 0.0      : inclination angle at reference time (rad);
+  double Idot =  0.0   : rate of inclination angle (rad/sec);
+  double w0 = 0.0      : right ascension (rad);
+  double wdot = 0.0    : rate of right ascension (rad/sec);
+  ulong  IODC = 0      : issue of data clock;
+  double toc = 0.0     : SV clock correction term (sec);
+  double tgd = 0.0     : estimated group delay difference (sec);
+  double af0 = 0.0     : clock aging parameter (sec);
+  double af1 = 0.0     : clock aging parameter (sec/sec);
+  double af2 = 0.0     : clock aging parameter (sec/sec^2);
+  ulong  AS = 0        : anti-spoofing on. 0-false 1-true;
+  double N = 0.0       : corrected mean motion (rad/sec);
+  double URA = 0       : user range accuracy variance (m^2) (see command ref. pp 178);
+};
+
+%Dir gpsSat_ref {
+  double toe = 0.0     : reference time for ephemeris (sec);
+  double A = 0.0       : semi-major axis (m);
+  double deltaN = 0.0  : mean motion difference (rad/sec);
+  double M0 = 0.0      : mean anomaly of reference time (rad);
+  double ecc = 0.0     : eccentricity ;
+  double w = 0.0       : argument of perigee (rad) ;
+  double cuc = 0.0     : argument of latitude (amplitude of cosine) (rad) ;
+  double cus = 0.0     : argument of latitude (amplitude of sine) (rad) ;
+  double crc = 0.0     : orbit radius (amplitude of cosine) (m);
+  double crs = 0.0     : orbit radius (amplitude of sine) (m);
+  double cic = 0.0     : inclination (amplitude of cosine) (rad);
+  double cis = 0.0     : inclination (amplitude of sine) (rad);
+  double I0 = 0.0      : inclination angle at reference time (rad);
+  double Idot =  0.0   : rate of inclination angle (rad/sec);
+  double w0 = 0.0      : right ascension (rad);
+  double wdot = 0.0    : rate of right ascension (rad/sec);
+  ulong  IODC = 0      : issue of data clock;
+  double toc = 0.0     : SV clock correction term (sec);
+  double tgd = 0.0     : estimated group delay difference (sec);
+  double af0 = 0.0     : clock aging parameter (sec);
+  double af1 = 0.0     : clock aging parameter (sec/sec);
+  double af2 = 0.0     : clock aging parameter (sec/sec^2);
+  ulong  AS = 0        : anti-spoofing on. 0-false 1-true;
+  double N = 0         : corrected mean motion (rad/sec);
+  double URA = 0       : user range accuracy variance (m^2) (see command ref. pp 178);
+
+  double sqrt_1me2 = 0  : sqare root of 1-e^2 (dls);
+  double azimuth = 0    : satellite azimuth (rad);
+  double elevation = 0  : satellite elevation (rad);
+  double satPosEPHEM[3] = {0.0, 0.0, 0.0} : satellite position as calculated from ephem(before earth rotation correction)(m);
+  double satPosECEF[3] = {0.0, 0.0, 0.0} : satellite position in ECEF frame (m);
+  double deltaTsv = 0    : satellite clock offset from GPS time (sec);
+  double ionCor = 0.0    : ionospheric correction (m);
+  double tropCor = 0.0   : tropospheric correction (m);
+  double satClock = 0.0  : satellite clock time (sec. from start of GPS week);
+  double pseudorange = 0 : pseudorange to satellite (m);
+  double Rsat     = 9999 : R value for satellite measurement (m^2);
+  float  C2No = 0        : Signal to noise density ratio;
+  float  psrRes = 0       : Pseudorange residual from filter (m);
+  float  weight = 0       : pseudorange filter weighting;
+  int    reject = 0      : reject code (table 102, pp 566);
+  float  lastUpdate = 0  : ;
+  char   ephemRecieved = 0 : ;
+} gps_sat1[36];
+
+
+%define MAX_GPS_TRACKS 24
+%Dir gpsSatOut_ref {
+  int itimeTC        = 0 : data counter;
+  int itimeRange     = 0 : data counter;
+  int itimeTrackStat = 0 : data counter;
+  int itimeIonUtc    = 0 : data counter;
+
+  dir gpsSat_ref  sats[36] = gps_sat1[36] : satellite data;
+
+  int numObs = 0 : number of observations in range message;
+  char obsPrns[24]    = {-1} : new measurements PRNs (MAX_GPS_TRACKS);
+  double lastRangeTime   = 0 :time of last range message received;
+  double lastTimeTime    = 0 :time of last time message received;
+  double lastPsrTimeTime = 0 :time of last psrTime message received;
+  double lastPsrXYZTime  = 0 :time of last prsXYZ message received;
+  double lastSatVisTime  = 0 :time of last satVis message received;
+  double lastSatXYZTime  = 0 :time of last satXYZ message received;
+  double lastTrStatTime  = 0 :time of last trackStat message received;
+  char   newPsrs         = 0 :a new complete measurement is available;
+  char   useNvtlCorr     = 0 : Use novatel atmospheric corrections;
+  char   useNvtlSatPos   = 0 : Use novatel satellite positions;
+  char   useNvtlPsrVar   = 0 : Use novatel pseudorange measurement noise;
+  char   useTrackStatPsr = 0 : Use pseudorange from trackStat message;
+  char   align[3]        = {0,0,0} : ;
+  double recieverTime    = 0 :seconds since begining of GPS week;
+  double trackUpdateDt   = 0 : ;
+
+  double ionAlpha[4] = {0,0,0,0} : ionosphric correction alpha terms;
+  double ionBeta[4] = {0,0,0,0} : ionosphric correction beta terms;
+  double undulation = 0 : difference between geoid and WGS84 ellipsoid (m);
+  double avgC2No    = 0 : Average signal to noise density ratio;
+} gpsSatOut1;
+
+%Dir senNovatelGps_ref {
+  dir gpsNovatelSet_ref   set       = gpsNovatelSet1  :settings;
+  dir gpsOut_ref          out       = gpsNovatelOut1  :output;
+  dir serialPort_ref      p         = onboardPortGPS1 :serial port;
+  dir gps_bestposb_ref    bestposb  = gps_bestposb1   :raw GPS data;
+  dir gps_bestposb_ref   masterposb = gps_masterposb1 :raw GPS data;
+  dir gps_bestposb_ref    roverposb = gps_roverposb1  :raw GPS data;
+  dir gps_bestposb_ref    psrposb   = gps_psrposb1    :raw GPS data;
+  dir gps_bestvelb_ref    bestvelb  = gps_bestvelb1   :raw GPS data;
+  dir gps_bestvelb_ref    psrvelb   = gps_psrvelb1    :raw GPS data;
+  dir gps_headingb_ref    headingb  = gps_headingb1   :raw GPS data;
+  dir gps_heading2b_ref   heading2b = gps_heading2b1  :raw GPS data;
+  dir gps_bslnxyzb_ref    bslnxyzb  = gps_bslnxyzb1   :raw GPS data;
+  dir gps_alignbslnenub_ref alignbslnenub = gps_alignbslnenub1 :raw GPS data;
+  dir gps_rtcaMsg_ref     rtcaMsg   = gps_rtcaMsg1    :raw GPS data;
+  dir gps_ionutc_ref      ionutc    = gps_ionutc1     :raw GPS data;
+  dir gps_range_ref       range     = gps_range1      :raw GPS data;
+  dir gps_satxyz_ref      satpos    = gps_satxyz1     :raw GPS data;
+  dir gps_satVis_ref      satvis    = gps_satvis1     :raw GPS data;
+  dir gps_time_ref        time      = gps_time1       :raw GPS data;
+  dir gps_psrXYZ_ref      psrxyz    = gps_psrxyz1     :raw GPS data;
+  dir gps_psrTime_ref     psrtime   = gps_psrtime1    :raw GPS data;
+  dir gps_trackstat_ref   trstat    = gps_trackstat1  :raw GPS date;
+  dir gps_header_ref      header    = gps_header1     :raw GPS data;
+  dir gps_cmdResponse_ref response  = gps_response1   :raw GPS data;
+  dir gps_log_ref         log       = gps_log1        :raw GPS data;
+  dir gps_unlogall_ref    unlogall  = gps_unlogall1   :raw GPS data;
+  dir gps_clkadjst_ref    clkadjst  = gps_clkadjst1   :raw GPS data;
+  dir gps_rtkdyn_ref      rtkdyn    = gps_rtkdyn1     :raw GPS data;
+  dir gps_rtkPortMode_ref rtkPortMode = gps_rtkPortMode1 : ; 
+  dir gps_unlockSystem_ref unlock   = gps_unlockSys1  :raw GPS data;
+  dir gps_interfaceMode_ref interfacemd = gps_interfaceMd1 :raw GPS data;
+
+  dir gpsSatOut_ref       satOut    = gpsSatOut1      :output;
+
+  uint badPackets = 0 : ;
+} senNovatelGps1;
+
+%Dir senGps_ref {
+  dir gpsSet_ref          set       = gpsSet         :settings;
+  dir gpsOut_ref          out       = gpsOut         :output;
+  dir senNovatelGps_ref   novatel1  = senNovatelGps1 :Novatel GPS data;
+} senGps;
+
+%Dir magnetRaw_ref {
+  short values[3] = {0,0,0} :field strengths;
+} magnetRaw;
+
+%Dir magnetFloatRaw_ref {
+  float values[3] = {0.0,0.0,0.0} :field strengths;
+  int newValue    = 0             :Index when new values are received, zero when processed;
+} magnetFloatRaw;
+
+%define MAGTYPE_RMAX     0
+%define MAGTYPE_HMR3400  1
+%define MAGTYPE_RAWFLOAT 2
+%define MAGTYPE_ARDU     3
+%define MAG_MAX_RESPONSE_LENGTH 50
+
+%Dir magnetSet_ref {
+  char magnetType     = 0       :0-rmax,1-HMR3400,2-Raw Float;
+  char config         = 0       :send configText to device;
+  char enableTestCode = 0       :enable test magnet code;
+  char align[5]       = {0,0,0,0,0}     : ;
+  short bias[3]       = {0,0,0} : ;
+  short align2        = 0       : ;
+  double dcm_sb[3][3] = {{-1,0,0},{0,1,0},{0,0,-1}} :sensor orientation wrt body;
+  double minStrength  = 350.0   :consider data bad if strength less than this;
+  double timeOut      = 2.5     :(sec) for status indication;
+  double dcm_bb[3][3] = {{1,0,0},{0,1,0},{0,0,1}} : ;
+  string configText   = "012345678901234567890123456789" :*C to calibrate hmr3400 (will say OFF, *C again to get out);
+} magnetSet;
+
+
+%define MAGNET_OFF 0
+%define MAGNET_ON 1
+%define MAGNET_CALIBRATE 2
+
+%Dir magnetOut_ref {
+  char magnetStatus  = MAGNET_OFF :status of magnetometer;
+  char calibMode     = 0          :1 indicates calibration mode detected;
+  char align[2]      = {0,0}      : ;
+  int  itime         = 0          :data counter;
+  double field_B[3]  = {0,0,0}    :field direction;
+  double rawFloat[3] = {0,0,0}    : ;
+  double lastUpdate  = 0.0        : ;
+} magnetOut;
+
+%Dir senMagnet_ref {
+  dir serialPort_ref p   = onboardPortMagnet :serial port;
+  dir magnetRaw_ref  raw = magnetRaw         :raw data;
+  dir magnetFloatRaw_ref rawFloat = magnetFloatRaw :raw float data;
+  dir magnetSet_ref  set = magnetSet         :settings;
+  dir magnetOut_ref  out = magnetOut         :output;
+} senMagnet;
+
+%rem LASER / Latitude above-ground level sensor
+%define MSG_LASER_READING  0x00
+
+%Dir senLatitudeDataFlagBits_ref {
+  uchar badData        = 1 :the data is bad, else good;
+  uchar res1           = 1 :;
+  uchar highResolution = 1 :data is high resolution, else low resolution;
+  uchar nearest        = 1 :reading is the nearest target;
+  uchar farthest       = 1 :reading is the farthest target;
+  uchar res2           = 3 :;
+} senLatitudeDataFlagBits;
+
+%Dir senLatitudeData_ref {
+  dir senLatitudeDataFlagBits_ref flags = senLatitudeDataFlagBits :latitude flags;
+  uint range = 0 :range to target in millimeters;
+} senLatitudeData;
+
+%define MSG_LASER_MODE     (unsigned char)(0x01)
+%Dir senLatitudeModeFlagBits_ref {
+  uchar continuous = 1 :set for continuous readings;
+  uchar nearest    = 1 :set to read nearest target;
+  uchar farthest   = 1 :set to read farthest target;
+  uchar res        = 5 : ;
+} senLatitudeModeFlagBits;
+
+%Dir senLatitudeMode_ref {
+  dir senLatitudeModeFlagBits_ref flags = senLatitudeModeFlagBits :laser mode flags;
+  uchar period = 0 :measurement period in Period*50ms;
+} senLatitudeMode;
+
+%define AGL_OFF 0
+%define AGL_OUTOFRANGE 1
+%define AGL_GOOD 2
+%define AGL_OUTLIER_INCONSISTENT 3
+%define AGL_OUTLIER_CONSISTENT 4
+%define AGL_OUTLIER_DATALINK 3
+
+%Dir aglOut_ref {
+  char status  = AGL_OFF :status;
+  char align = 0 :this is actually used;
+  char source = 0 :Which sensor source contributed this output;
+  char align2 = 0 : ;
+  int itime = 0 :data counter;
+  double altitude = 0.0  :altitude reading (ft);
+  double alt_min  = 0.1 :(ft);
+  double alt_max  = 20    :(ft);
+  double timeOut    = 1.0     :(sec) for status indication;
+  double lastUpdate = 0.0     : ;
+  double RaglMin = 0.3    :AGL sensor cov min (ft2);
+  double RaglMax = 100.0  :AGL sensor cov max (ft2);
+  double RaglOOR = 50.0*50.0  :AGL sensor out of range (ft2), database error;
+  double sqrtRaglMult= 0.03 :sonar s.d. per alt;
+  double aglR[3] = {-29.0/12,0,(25.0-19)/12} :position of AGL sensor (ft);
+} aglOut, aglTemp0, aglTemp1, aglTemp2;
+
+%define MAX_TERRA_COMMANDS   2
+%define TERRA_PRECISE_MODE  'P'
+%define TERRA_FAST_MODE     'F'
+%define TERRA_OUTDOOR_MODE  'O'
+%define TERRA_BINARY_MODE   'B'
+%define TERRA_TEXT_MODE     'T'
+
+%Dir senSonarData_ref {
+  int raw = 0 :raw data;
+  int terra_init = 0 :init flag used for setting terra;
+  int terra_avg  = 6 :num of samples to use;
+  int terra_raw  = 0 :raw for averaging;
+  double bias = 0 :0h, 237.33w, bias at zero reading;
+  double sf = 0.00244 :0.00448nh, 0.00244oh, 0.00567w, scale factor;
+  double RsonMin = 0.3    :sonar cov min (ft2);
+  double RsonMax = 100.0  :sonar cov max (ft2);
+  double RsonOOR = 50.0*50.0  :sonar out of range (ft2), database error;
+  double sqrtRsonMult= 0.03 :sonar s.d. per alt;
+  double sonR[3] = {0,0,0.1} :position of sonar (ft);
+  int rawDuoIR = 0 :debug;
+  int rawDuoSonar = 0 :debug;
+  char terraCommands[2] = {TERRA_BINARY_MODE, '\0'} : The commands sent when terra_init is = one of these indices;
+  char sonDuoFromOther = 0 :If the other sonar supplies 2 measurements (like a terraranger duo), then this flag allows the second to be used as this sonar;
+  int otherSonarLastItime = 0 :If pulling the second value from the other dual sonar, use this to determine if a new measurement is available;
+  char align = 0 :8-byte alignment;
+} senSonarData0;
+
+%Dir sonarMode_ref {
+ int terra_mode_out = 0 :;
+ int terra_array[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0} :;
+} sonarMode0;
+
+%Dir sonarOut_ref {
+  char status  = AGL_OFF :status;
+  char align = 0 :this is actually used;
+  char align2[2] = {0,0} : ;
+  int itime = 0 :data counter;
+  double altitude = 0.0  :altitude reading (ft);
+  double alt_min  = 0.1 :(ft);
+  double alt_max  = 20.0    :(ft);
+  double timeOut    = 1.0     :(sec) for status indication;
+  double lastUpdate = 0.0     : ;
+} sonarOut0;
+
+%define SONAR_RMAX 0
+%define SONAR_QUAD 1
+%define SONAR_TERRA 2
+%define SONAR_TERRA_DUO 3
+%define SONAR_TERRA_MODE 4
+
+%Dir senSonar_ref {
+  dir serialPort_ref   p    = onboardPortSonar0 :serial port;
+  dir senSonarData_ref data = senSonarData0     :computed data;
+  dir sonarMode_ref    mode = sonarMode0        :terra mode;
+  dir sonarOut_ref     out  = sonarOut0         :sensor outputs;
+  int decodeMode   = SONAR_RMAX :0=rmax/polaroid, 1=quadrotor/maxbotix, 2=terra, 3=terra-duo,4=terra-mode;
+  int sonarSize    = SONAR_RMAX :0=rmax/polaroid,quadrotor/maxbotix(all other mb70xx-models), 1=quadrotor/maxbotix(mb7066),-1=terra,3=terra-duo;
+} senSonar0;
+
+%Dir senPWM_ref {
+  dir serialPort_ref          p         = onboardPortPWM           :servo;
+  dir datalinkMessagePWM_ref  pwmToUs   = obDatalinkMessagePWMToUs :servo pwm commands;
+} senPWM;
+
+%Dir senPozyxSetting_ref {
+  uchar                                      getPosition       = 0                               :xyz position;
+  uchar                                      getOrientation    = 1                               :gyro, euler, quaternion;
+} senPozyxSetting;
+
+%Dir senPozyxMessage_ref {
+  uchar whoami    = 0       :the constant value of 0x43 (67);
+  int pos[3]      = {0,0,0} :position of pozyx sensor board in mm;
+  double gyr[3]   = {0,0,0} :gyroscope data of pozyx sensor board in deg/s;
+  double euler[3] = {0,0,0} :roll, pitch, yaw of pozyx sensor board in deg;
+  double quat[4]  = {0,0,0} :quaternion of pozyx sensor board;
+} senPozyxMessage;
+
+%Dir senPozyx_ref {
+  dir serialPort_ref                         p                 = onboardPortPozyx               :port;
+  dir senPozyxSetting_ref                    set               = senPozyxSetting                :setting;
+  dir senPozyxMessage_ref                    msg               = senPozyxMessage                :message;
+  uchar                                      enablePozyx       = 0                              :enable Pozyx ;
+} senPozyx;
+
+%define AGL_SOURCE_NONE     0
+%define AGL_SOURCE_ANY      1
+%define AGL_SOURCE_SONAR_1  2
+%define AGL_SOURCE_SONAR_2  3
+%define AGL_SOURCE_RADAR    4
+%define AGL_SOURCE_LRF_1    5
+%define AGL_SOURCE_LRF_2    6
+%define AGL_SOURCE_MAX      7
+
+%define AGL_SOURCE_SEL_METHOD_PRIORITY 0
+%define AGL_SOURCE_SEL_METHOD_RANGE    1
+
+%define MAX_AGL_SOURCES 3
+%Dir aglSet_ref {
+  uchar sources[3] = {AGL_SOURCE_ANY, AGL_SOURCE_NONE, AGL_SOURCE_NONE} :The input sources for the AGL sensors - ANY source means all sources go to this for backwards compatibility;
+  uchar priority[5] = {AGL_SOURCE_SONAR_1, AGL_SOURCE_SONAR_2, AGL_SOURCE_RADAR, AGL_SOURCE_LRF_1, AGL_SOURCE_LRF_2} :High to low priority, if selected.  Don't set NONE or ANY in this ordering;
+  uchar sourceSelMethod = AGL_SOURCE_SEL_METHOD_PRIORITY :If down to 2 sources, then either select based on the defined priority order (0) or choose the shortest or longest valid range (1);
+  uchar sourceSelectRange  = 1  :0=shortest valid range, 1=median valid range (or shortest if only 2 valid ranges), 2=median valid range (or shortest if only 2 valid ranges), 3=longest valid range;
+  uchar receivesToUpdate = 1    :After one receive of each sensor, will do the update.  This doesn't, in general, enable the error checking of multiple sensors;
+  uchar useTrustSettings = 0    :Whether to use the trusted sensor calculations;
+  uchar align[4]   = {0,0,0,0}  :8-byte alignment;
+} aglSet;
+
+%Dir aglWork_ref {
+  long  aglUpdate[3]  = {0,0,0} :Which update has been processed;
+  uchar aglStatus[3]  = {0,0,0} :Initially set from the normal status when a new measurement is received, can take the value of 3=outlier and consistent or 4=outlier and inconsistent;
+  uchar aglTrusted[3] = {1,1,1} :Whether the AGL source is currently trusted.  If a source is slower than others, it might cause the others to be untrusted until it is available again to re-evaluate;
+  uchar doUpdate      = 0       :Whether to do the update in the nav/filtering and final selection;
+  uchar align         = 0       :8-byte alignment;
+} aglWork;
+
+%Dir senAGL_ref {
+  dir senSonar_ref          sonar0       = senSonar0         :sonar data;
+  dir aglSet_ref            set          = aglSet            :AGL sensor settings;
+  dir aglWork_ref           work         = aglWork           :Work directory for AGL sensing;
+  dir aglOut_ref            temp0        = aglTemp0          :Temporary outputs for AGL sensing;
+  dir aglOut_ref            temp1        = aglTemp1          :Temporary outputs for AGL sensing;
+  dir aglOut_ref            temp2        = aglTemp2          :Temporary outputs for AGL sensing;
+  dir aglOut_ref            out          = aglOut            :height above terrain output;
+} senAGL;
+
+%Dir sensors_ref {
+  dir senImu_ref            imu         = senImu            :IMU data;
+  dir senGps_ref            gps         = senGps            :GPS data;
+  dir senMagnet_ref         magnet      = senMagnet         :magnetometer data;
+  dir senAGL_ref            agl         = senAGL            :height above terrain;
+  dir senPWM_ref            pwm         = senPWM            :Pulse Wide Modulated data;
+  dir senPozyx_ref          pozyx       = senPozyx          :Pozyx data;
+} sensors;

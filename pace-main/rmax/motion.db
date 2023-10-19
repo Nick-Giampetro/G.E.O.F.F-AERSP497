@@ -1,0 +1,612 @@
+%define MODEL_MULTIROTOR 21
+
+%define M2FT    3.2808399
+%define M22FT2  10.7639104
+
+%ifndef FLIGHTCODE
+
+
+%Dir vehicleSet_ref {
+  uint model = MODEL_MULTIROTOR :0=rmax,1=helispy,3=r22,4=edge,6=airguard,8=twinstar,9=logo,12=mtr,13=quadrotor,16=blade,17=PSP,21=multirotor,22=freewing,24=coax;
+  double dtRes = 0.01    :time resolution (update rate of non-motion components);
+  double dtMax = 0.0025  :maximum time step allowed for update of motion;
+  int nrepeats = 1 :number of recursive updates to get to sim.dt (calculated);
+
+  double windss[3]      = {0,0,0}  :steady state wind (NED)(ft/s);
+  double turbulence     = 0.0     :0 = off, 1 = light, 2 = moderate, 3 = severe;
+  int    wakemodel_flag = 0      :wake model due to flying in target wake (0=off, 1=on);
+  double refLatitude    = 33.4987    :reference latitude (deg-N);
+  double refLongitude   = -83.8504  :reference longitude (deg-E);
+  double datumAlt       = 790.0-25.0    :datum altitude (ft);
+  double zgear          = 25.0/12          :altitude when sitting on ground (ft);
+
+  double fuel = 1.0  :initial fuel load %;
+  double xNorth = 0.0  :initial position (ft);
+  double xEast  = 0.0  :initial position (ft);
+  double altitude = 0.0  :initial altitude above ground (ft);
+  double phi = 0.0   :initial roll angle (deg);
+  double theta = 0.0 :initial pitch angle (deg);
+  double psi = 0.0   :initial yaw angle (deg);
+  double u = 0.0     :initial velocity (ft/sec) w/rt Earth;
+  double v = 0.0     :initial velocity (ft/sec);
+  double w = 0.0     :initial velocity (ft/sec);
+  double p = 0.0     :initial roll rate (deg/sec);
+  double q = 0.0     :initial roll rate (deg/sec);
+  double r = 0.0     :initial roll rate (deg/sec);
+  double thetaFuse = 0.0 :initial angle of fuselage wrt body(deg);
+  double thetaFusedot = 0.0 :intial rate wrt body(deg/sec);
+  double omega = 60+0*115.2 :initial rotor speed (rad/sec);
+  double omega_p = 200*0 :initial propeller spped (rad/sec) ;
+  double phi_l = 0.0 :initial load angle(deg);
+  double theta_l = 0.0 :initial load angle(Deg);
+  double psi_l = 0.0 :initial load angle(deg);
+  int onShip = 0 : flag to start the sim with the vehicle on waterTarget2. Initial states are redefined as being relative to ship;
+  int enforceDatumWithNav = 1 : make sure the datum is always consistent with navinit directory (may want to turn it off when simulate multiple aircraft);
+} vehicleSet;
+
+
+%Dir motionTurbulence_ref {
+  double span         = 10.0               :(ft);
+  double turbSigma[3] = {0,0,0}   :turbulence intensity;
+  double turbL[3]     = {0,0,0}   :characteristic turbulence length;
+  double gust_x[3]    = {0.0,0.0,0.0} :wind turbulence internal state;
+  double gust_v_G[3]  = {0.0,0.0,0.0} :wind turbulence component (gust frame)(ft/s);
+  double gust_w_G[3]  = {0.0,0.0,0.0} :turbulence angular velocity (gust frame)(rad/s);
+  double gust_v[3]    = {0.0,0.0,0.0} :wind turbulence component (NED)(ft/s);
+  double gust_w[3]    = {0.0,0.0,0.0} :turbulence angular velocity (NED)(rad/s);
+} motionTurbulence;
+
+%Dir motionWake_ref {
+  double eff_len    = 250.0       :effective length of wake from tgt cg (ft);
+  double eff_width  = 100.0        :effective width of wake (ft);
+  double p_b_t_W[3] = {0.0,0.0,0.0} :;
+  double scale      = 0.0       :calculated scale of wake effect;
+  double wake_v[3]  = {0.0,0.0,0.0} :wind wake component (NED)(ft/s);
+  double wake_w[3]  = {0.0,0.0,0.0} :wake angular velocity (NED)(rad/s);
+} motionWake;
+
+
+%define MOTIONINPUT_JOYSTICK 0
+%define MOTIONINPUT_MOUSE 1
+%define MOTIONINPUT_RMAX 2
+%define MOTIONINPUT_NONE 3
+
+%define JOYSTICK_MODE_1 1
+%define JOYSTICK_MODE_2 2
+%define JOYSTICK_MODE_3 3
+%define JOYSTICK_MODE_3_REV 4
+%define JOYSTICK_MODE_2_AIRPLANE 5
+%define JOYSTICK_MODE_FIGHTERSTICK 6
+%define JOYSTICK_MODE_LOGITECHRUMBLE2 7
+%define JOYSTICK_MODE_SAITEKFPS 8
+%define JOYSTICK_MODE_XBOX360 9
+%define JOYSTICK_MODE_2_TWINSTAR 10
+%define JOYSTICK_MODE_ESTERLINE 11
+%define JOYSTICK_MODE_LOGITECH_F310 12
+%define JOYSTICK_MODE_FLYSKY 13
+%define JOYSTICK_MAPPABLE 99
+
+%define AUTOPILOT_OFF 0
+%define AUTOPILOT_ON 1
+%define AUTOPILOT_ON_NO_ACTUATORS 2
+%define AUTOPILOT_OFF_NO_ACTUATORS 3
+
+%Dir motionControls_ref {
+  int autopilot = AUTOPILOT_ON :(0=off)(1=on)(2=on, no actuators) - set from gcs control inputs;
+  int mode      = MOTIONINPUT_JOYSTICK   :(0=joystick)(1=mouse)(2=RMax)(3=none) - set from gcs control inputs;
+  int joystickMode = JOYSTICK_MODE_LOGITECHRUMBLE2 :1=mode1,2=mode2,3=mode3,4=m3rev,5=m2air,6=ftrstck,7=logrmble2,8=saitek,9=xbox,10=twinstar,11=esterline,99=mappable - set from gcs control inputs;
+  char setInputTypes = 0 : Used to set the gcs inputs above from MotionControls so SI doesn't have to access the GCS database everywhere;
+  char tieCollectiveAndThrottle = 1 : With autopilot off, tie collective and throttle together;
+  char useTrueWForSAS = 0 : use true angular velocity for SAS loop intead of filtered angular velocity calculated from nav;
+
+  double rollStick = 0.0       :roll stick FOM;
+  double pitchStick = 0.0      :pitch stick FOM;
+  double rudderPedal = 0.0     :rudderPedal FOM;
+  double collectiveLever = 0.0 :collective (0-1);
+  double throttleLever = 0.0   :throttle (0-1);
+
+  double collectiveTrim = .09 +0*.07+.1047*1.5 :collective trim (rad);
+  double collectiveGain = .1/2 :collective Gain, full throw;
+  double throttleTrim   = .5   :throttle trim %;
+  double throttleGain   = .5/2 :throttle Gain &, full throw;
+  double trTrim         = 0.15 :tail rotor trim;
+  double trGain         = 0.15 :tail rotor gain (rad);
+  double trMixing       = 0.06 :tail rotor mixing from collective (rad);
+  double trFeedback     = 0.06 :tail rotor rate gyro (sec);
+  double pitchCycTrim   = 0.0  :pitch cyclic trim (rad);
+  double pitchCycGain   = 0.12 :pitch cyclic gain (rad);
+  double rollCycTrim    = 0.0  :roll cyclic trim (rad);
+  double rollCycGain    = 0.12 :roll cyclic gain (rad);
+
+  double collective = 0.0 :collective pitch (rad);
+  double throttle = 0.0   :throttle %;
+  double pitchCyc = 0.0 :pitch cyclic (rad);
+  double rollCyc = 0.0 :roll cyclic (rad);
+  double pedal = 0.0 :tail rotor pitch (rad);
+  double collective2 = 0.0 :second rotor collective (some a/c);
+  double noseWheelSteeringGain = 0.4 :(rad/);
+  double noseWheelSteering = 0.0 :(rad);
+  double flaps = 0.0 :(0-1);
+
+  double sasRoll = .1 : ;
+  double sasPitch = .1 : ;
+  double sasYaw = .2 : ;
+
+  double momentPer[3] = {2,2,1} : ;
+
+  double pitchStickRate = 0.0      :pitch stick FOM;
+  double rollStickRate = 0.0       :roll stick FOM;
+  double rudderPedalRate = 0.0     :rudderPedal FOM;
+  double collectiveLeverRate = 0.0 :collective (0-1);
+  double throttleLeverRate = 0.0   :throttle (0-1);
+  double pitchStickHys = 0.0      :pitch stick FOM;
+  double rollStickHys = 0.0       :roll stick FOM;
+  double rudderPedalHys = 0.0     :rudderPedal FOM;
+  double collectiveLeverHys = 0.0 :collective (0-1);
+  double throttleLeverHys = 0.0   :throttle (0-1);
+
+  double slu_f_thr_cmd[3] = {0,0,0} : slung load force control commands ;
+  double slu_m_thr_cmd[3] = {0,0,0} : slung load moment control commands ;
+} motionControls;
+
+%Dir state_ref {
+  double time                        = 0.0 :elapsed time;
+  double e[4]                        = {1.0, 0.0, 0.0, 0.0} :attitude quaternion, body wrt inertial;
+  double w_b_e_B[3]                  = { 0.0, 0.0, 0.0 } :angular rate of body wrt inertial;
+  double p_b_e_L[3]                  = { 0.0, 0.0, 0.0 } :position (ft);
+  double v_b_e_L[3]                  = { 0.0, 0.0, 0.0 } :velocity of body wrt inertial;
+  double throttleFOM                 = 0.0 :engine throttle state (0-1);
+  double fuel                        = 0.0 :gallons of fuel remaining;
+  double omega                       = 0     :angular rate of main rotor (rad/s);
+  double omega2                      = 0     :angular rate of second main rotor (rad/s);
+  double omega_p                     = 0     :angular rate of propeller (rad/s);
+  double a1                          = 0     :rotor disk angle (rad);
+  double b1                          = 0     :rotor disk angle (rad);
+  double a1fb                        = 0     :flybar angle (rad);
+  double b1fb                        = 0     :flybar angle (rad);
+  double tx0                         = 0      :strut deflections (ft);
+  double tx1                         = 0      :strut deflections (ft);
+  double tx2                         = 0      :strut deflections (ft);
+  double tx3                         = 0      :strut deflections (ft);
+  double ty0                         = 0      :strut deflections (ft);
+  double ty1                         = 0      :strut deflections (ft);
+  double ty2                         = 0      :strut deflections (ft);
+  double ty3                         = 0      :strut deflections (ft);
+  double fz0                         = 0      :strut deflections (lbf);
+  double fz1                         = 0      :strut deflections (lbf);
+  double fz2                         = 0      :strut deflections (lbf);
+  double fz3                         = 0      :strut deflections (lbf);
+  double fz4                         = 0      :strut deflections (lbf);
+  double fz5                         = 0      :strut deflections (lbf);
+  double fz6                         = 0      :strut deflections (lbf);
+  double fz7                         = 0      :strut deflections (lbf);
+  double fz8                         = 0      :strut deflections (lbf);
+  double fz9                         = 0      :strut deflections (lbf);
+  double fz10                        = 0      :strut deflections (lbf);
+  double e_l[4]                      = {1.0, 0.0, 0.0, 0.0} :attitude quaternion, load wrt inertial;
+  double w_l_e_B[3]                  = { 0.0, 0.0, 0.0 }  :angular rate of load wrt inertial;
+  double w_l_e_F[3]                  = { 0.0, 0.0, 0.0 }  :angular rate of load wrt inertial in load frame;
+  double p_l_e_L[3]                  = { 0.0, 0.0, -0.1} :position of load (ft);
+  double v_l_e_L[3]                  = { 0.0, 0.0, 0.0 } :velocity of load wrt inertial;
+  double sl_fthr[8]                  = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0} :thruster force;
+  double rpm_err_int                 = 0     :angular rate of engine error integral;
+  double multirotorRotorRpm[12]      = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0} :rotor rpm;
+  double multirotorThrottleState[12] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0} :throttle state;
+  double thetaFuse                   = 0 :fuselage theta for freewing(rad);
+  double thetaFusedot                = 0 :fuselage theta ang rate(rad/s);
+} state, state1, stateDot;
+
+%rem define NSTATES 41+13+8+1+24+2
+%define NSTATES (sizeof(struct state_ref)/sizeof(double))
+
+%Dir mass_ref {
+  double mass = 157.0/32.174      :current mass (slugs);
+  double Ixx  = 2.394     :(slugs-ft2);
+  double Iyy  = 8.2818    :(slugs-ft2);
+  double Izz  = 7.2692    :(slugs-ft2);
+  double Ixz  = 0.0    :(slugs-ft2);
+} mass;
+
+%Dir motionXforms_ref {
+  Double v_b_e_B[3]= {0,0,0} :velocity of body wrt Earth expressed in body;
+  Double v_b_a_B[3]= {0,0,0} :velocity of body wrt air expressed in body;
+  Double w_b_e_L[3]= {0,0,0} :angular rate of body wrt Earth expressed in LG;
+  Double w_b_a_B[3]= {0,0,0} :angular rate of body wrt air expressed in body;
+  Double dcm_bl[3][3] = {{1,0,0},{0,1,0},{0,0,1}} :DCM body to inertial;
+  Double dcm_lb[3][3] = {{1,0,0},{0,1,0},{0,0,1}} :DCM inertial to body;
+  Double dcm_wb[3][3] = {{1,0,0},{0,1,0},{0,0,1}} :DCM wind to body;
+  Double sl_dcm_bl[3][3] = {{1,0,0},{0,1,0},{0,0,1}} :DCM body to inertial;
+  Double sl_dcm_lb[3][3] = {{1,0,0},{0,1,0},{0,0,1}} :DCM inertial to body;
+  Double dcm_wl[3][3] = {{1,0,0},{0,1,0},{0,0,1}} :DCM wind to local;
+  Double dcm_lw[3][3] = {{1,0,0},{0,1,0},{0,0,1}} :DCM local to wind;
+} motionXforms;
+
+%Dir env_ref {
+  dir motionTurbulence_ref    turbulence = motionTurbulence      :Variables for the Dryden Turbulence Model;
+  dir motionWake_ref    wake = motionWake      :Variables for the Wake Model;
+  double terrainAlt = 0.0         :terrain altitude (ft);
+  double windv[3] = {0.0,0.0,0.0} :wind component from south,west,up (ft/sec);
+  double windw[3] = {0.0,0.0,0.0} :wind component twist (rad/sec);
+  double rho = 0.002377 :air density (slug/ft3);
+  double densityRatio = 1.0 :density ratio (rho/rho0);
+  double temperature = 518.16 :air temperature (deg Rankine);
+  double tempRatio = 1.0    :temperature ratio (T/T0);
+  double pressure  = 14.695 :(psi) local P infinity;
+  double pressureRatio = 1.0 :Pressure ratio (P/P0);
+  double gravity  = 32.174 :local apparent accel of gravity (ft/sec2);
+
+  double gravity0  = 32.174    :gravitational constant of Earth (ft/s2);
+  double rho0      = 0.002377      :sea level air density (slug/ft3);
+  double T0        = 518.69        :sea level air temperature (deg Rankine);
+  double p0        = 14.695        :sea level air pressure (psi);
+  double lapseRate = -0.00357 :lapse rate (degR/ft);
+} env;
+
+%Dir motionImpulse_ref {
+  int    on = 0 :apply impulse;
+  double impulse[3] = {-5,0,0} :total impulse (lb-sec);
+  double r[3] = {0,0,0} :location of applied impulse;
+  double f[3] = {0,0,0} :computed force;
+  double m[3] = {0,0,0} :computed moment;
+} motionImpulse;
+
+%Dir motionLinearizePerturbations_ref {
+  double phi             = 0.01 :(rad);
+  double theta           = 0.01 :(rad);
+  double psi             = 0.01 :(rad);
+  double w_b_e_B[3]      = { 0.01, 0.01, 0.01 } :angular rate of body wrt inertial;
+  double p_b_e_L[3]      = { 0.1, 0.1, 0.1 } :position (ft);
+  double v_b_e_B[3]      = { 0.1, 0.1, 0.1 } :velocity of body wrt inertial;
+  double omega           = 0.1     :angular rate of main rotor (rad/s);
+  double a1              = 0.01     :rotor disk angle (rad);
+  double b1              = 0.01     :rotor disk angle (rad);
+  double a1fb            = 0.01     :flybar angle (rad);
+  double b1fb            = 0.01     :flybar angle (rad);
+  double thetaFuse       = 0.01 :fuselage theta for freewing(rad);
+  double thetaFusedot    = 0.01 :fuselage theta ang rate(rad/s);
+  double rollStick       = 0.01       :roll stick FOM;
+  double pitchStick      = 0.01      :pitch stick FOM;
+  double rudderPedal     = 0.01     :rudderPedal FOM;
+  double collectiveLever = 0.01 :collective (0-1);
+  double throttleLever   = 0.01   :throttle (0-1);
+} motionLinearizePerturbations;
+
+%Dir motionLinearize_ref {
+  dir motionLinearizePerturbations_ref perturbations = motionLinearizePerturbations :how much perturb;
+  double phi = 0   :(rad);
+  double theta = 0 :(rad);
+  double psi = 0   :(rad);
+  double phiDot = 0   :(rad/sec);
+  double thetaDot = 0 :(rad/sec);
+  double psiDot = 0   :(rad/sec);
+  Double v_b_e_B[3] = {0,0,0} :(fps);
+  Double vd_b_e_B[3] = {0,0,0} :(fps2);
+  double rollStick = 0.01       :roll stick FOM;
+  double pitchStick = 0.01      :pitch stick FOM;
+  double rudderPedal = 0.01     :rudderPedal FOM;
+  double collectiveLever = 0.01 :collective (0-1);
+  double throttleLever = 0.01   :throttle (0-1);
+  string saveFmt  = "%.12g\0                       " : ;
+} motionLinearize;
+
+%Dir vehicleMotion_ref {
+  dir env_ref    env              = env      :local environment;
+  dir motionControls_ref controls = motionControls :motion model control data;
+  dir state_ref  state            = state    :motion state data;
+  dir state_ref  stateDot         = stateDot :motion state derivative data;
+  dir state_ref  state1           = state1   :state memory for integration scheme;
+  dir mass_ref   mass             = mass :mass properties;
+  dir params_gear_ref     gear    = params_gear   :landing gear/skids;
+
+  dir motionImpulse_ref impulse     = motionImpulse :impulse data;
+  dir motionXforms_ref xforms       = motionXforms :transform matricies;
+  dir motionLinearize_ref linearize = motionLinearize :generate linear models;
+
+  double roundearthflag = 0 : (1 = include earth rotation terms);
+  double earthRotRate   = 0.0000727 : average rotation of the earth (rad/s);
+  double earthRadius    = 20925524.9 : average radius of the earth (ft) (google);
+
+  double linaccflag = 1: (0 = sets linear accl to 0);
+  double angaccflag = 1: (0 = sets linear accl to 0);
+
+  double phi             = 0.0 :bank angle (rad);
+  double theta           = 0.0 :pitch angle (rad);
+  double psi             = 0.0 :yaw angle (rad );
+  double sal             = 0.0 :sine of alpha;
+  double cal             = 0.0 :cosine of alpha;
+  double sbe             = 0.0 :sine of beta;
+  double cbe             = 0.0 :cosine of beta;
+  double sphi            = 0.0 :sine of phi;
+  double cphi            = 0.0 :cosine of phi;
+  double stheta          = 0.0 :sine of theta;
+  double ctheta          = 0.0 :cosine of theta;
+  double vtot            = 0.0 :total velocity (ft/sec);
+  double vmin            = 1.0 :minimum total velocity (ft/sec);
+  double tas             = 0.0 :true airspeed (ft/sec);
+  double taseff          = 25.0 :clamped true airspeed (ft/sec);
+  double alpha           = 0.0 :angle of attack (rad);
+  double beta            = 0.0 :angle of side slip (rad);
+  double alphadot        = 0.0 : ;
+  int    wow             = 1        :weight on wheels flag;
+  double latitude        = 0.0 :(rad-N);
+  double longitude       = 0.0 :(rad-E);
+  double sl_latitude     = 0.0 :(rad-N);
+  double sl_longitude    = 0.0 :(rad-E);
+  double altitudeAGL     = 100.0 :altitude (ft) above ground height;
+  double sl_altitudeAGL  = 100.0 :altitude (ft) above ground height;
+  double altitudeMSL     = 0.0   :altitude (ft) above MSL;
+  double sl_altitudeMSL  = 0.0   :altitude (ft) above MSL;
+  double cas             = 0.0      :callibrated airspeed (ft/sec);
+  double vs              = 0.0       :vertical speed (ft/sec);
+  double gs              = 0.0       :ground speed (ft/sec);
+  double gamma           = 0.0    :flight path angle (rad);
+  double track           = 0.0    :track angle (rad);
+  double multiplier      = 1.0 :multiplier on time;
+  Double fe_B[3]         = {0.0,0.0,0.0} :extra force (lbf);
+  Double me_B[3]         = {0.0,0.0,0.0} :extra moment (ft-lbf);
+  Double f[3]            = {0.0,0.0,0.0} :total force (lbf);
+  Double m[3]            = {0.0,0.0,0.0} :total moment (ft-lbf);
+  Double g_B[3]          = {0,0,0} : gravity vector expressed in body axes (lbf);
+  Double g_Bf[3]         = {0,0,0} : gravity vector of fuse in fuse axes (lbf);
+  double Mad             = 0.0 :moment per alphaDot;
+  double Zad             = 0.0 :force per alphaDot;
+  Double a[3]            = {0.0,0.0,0.0} :specific force (fp/s2);
+  Double f_l[3]          = {0.0,0.0,0.0} :total force on slungload (lbf);
+  Double m_l[3]          = {0.0,0.0,0.0} :total moment on slungload (ft-lbf);
+  double phiFuse         = 0 :roll of fuse;
+  double thetaFuse       = 0 : pitch of fuse;
+  double yawFuse         = 0 :yaw of fuse;
+  char   isFreewing      = 0:using freewing model;
+  double a_b_e_B[3]      = {0.0,0.0,0.0} :acceleration in body frame (fp/s2) (for plotting);
+  double s_b_e_L[3]      = {0.0,0.0,0.0} :specific acceleration in local frame (fp/s2);
+  double n_b_e_B[3]      = {0,0,1} : specific acceleration as load factor in body frame s_b_e_B/g;
+  double n_b_e_V[3]      = {0,0,1} : specific acceleration as load factor in velocity frame;
+  double n_lf_abs        = 1 : absolute load factor, magnitude of spec accel vector / g;
+  double n_lf_Thrust_abs = 1 : absolute load factor for MR thrust contribution only;
+} vehicleMotion;
+
+%Dir vehicleOutputs_ref {
+  int    model       = 0 :takes from vehicleSet;
+  int    uniqueID    = 0 :unique ID;
+  double time        = 0.0 :(sec);
+  double pos[3]      = {0,0,0} :(ft);
+  double latitude    = 0.0 :(deg-N);
+  double longitude   = 0.0 :(deg-E);
+  double altitudeAGL = 0.0 :(ft) above terrain;
+  double altitudeMSL = 0.0 :(ft) MSL;
+  double terrainAlt  = 0.0 :(ft) terrain alt;
+  double zgear       = 0.0 :altitude when sitting on ground (ft);
+  double vs          = 0.0    :vertical speeed (ft/min);
+  double gs          = 0.0 :(kt);
+  double gamma       = 0.0 :flight path angle (deg);
+  double track       = 0.0 :(deg);
+  double G           = 1.0 :total load factor (G);
+  double rpm         = 0.0 :rpm;
+  double phi         = 0.0 :output roll angle (deg);
+  double theta       = 0.0 :output theta angle (deg);
+  double psi         = 0.0 :output yaw angle (deg);
+  double phi90       = 0.0 :output roll angle (deg);
+  double theta90     = 0.0 :output theta angle (deg);
+  double psi90       = 0.0 :output yaw angle (deg);
+  double thetaFuse   = 0.0 : fuse angle;
+  double phiw        = 0.0 :output roll angle wind axes (deg);
+  double thetaw      = 0.0 :output theta angle wind axes (deg);
+  double psiw        = 0.0 :output yaw angle wind axes (deg);
+  double phiw90      = 0.0 :output roll angle wind axes (deg);
+  double thetaw90    = 0.0 :output theta angle wind axes (deg);
+  double psiw90      = 0.0 :output yaw angle wind axes (deg);
+  double alpha       = 0.0 :(deg);
+  double beta        = 0.0 :(deg);
+  double tas         = 0.0 :(kt);
+  double cas         = 0.0 :(kt);
+  int    wow         = 0 :weight on wheels flag;
+
+  int    sl_active      = 0 :slung load there;
+  double sl_latitude    = 0.0 :(deg-N);
+  double sl_longitude   = 0.0 :(deg-E);
+  double sl_altitudeAGL = 0.0 :(ft) above terrain;
+  double sl_altitudeMSL = 0.0 :(ft) MSL;
+  double sl_terrainAlt  = 0.0 :(ft) terrain alt;
+
+  double slref_latitude    = 0.0 :(deg-N);
+  double slref_longitude   = 0.0 :(deg-E);
+  double slref_altitudeAGL = 0.0 :(ft) above terrain;
+  double slref_altitudeMSL = 0.0 :(ft) MSL;
+  double slref_terrainAlt  = 0.0 :(ft) terrain alt;
+
+  int slwow = 0 :slung load weight on wheels flag;
+  int attached = 0 :slung load attached flag;
+
+  double velocity[3] = { 0.0, 0.0, 0.0 } :velocity (ft/sec);
+  double wind[3]     = {0.0,0.0,0.0} :(ft/s) vel of air;
+  double fuel        = 1.0 :fuel percentage;
+  double delm[3]     = {0.0, 0.0 ,0.0} :actuators;
+  double delf[1]     = {0.0} : ;
+  double delt[1]     = {0.0} : ;
+  double a0          = 0.0 : ;
+  double a1          = 0.0 : ;
+  double b1          = 0.0 : ;
+  double bodyTilt    = 0.0 : ;
+  double pan         = 0.0 :(deg);
+  double tilt        = 0.0 :(deg);
+  double roll        = 0.0 :(deg);
+  double fovy        = 0.0 :(deg);
+  double pan2        = 0.0 :(deg);
+  double tilt2       = 0.0 :(deg);
+  double roll2       = 0.0 :(deg);
+  double fovy2       = 0.0 :(deg);
+  double pan3        = 0.0 :(deg);
+  double tilt3       = 0.0 :(deg);
+  double roll3       = 0.0 :(deg);
+  double fovy3       = 0.0 :(deg);
+  double pan4        = 0.0 :(deg);
+  double tilt4       = 0.0 :(deg);
+  double roll4       = 0.0 :(deg);
+  double fovy4       = 0.0 :(deg);
+
+  double datumLat = 33.4987 :runway latitude (deg-N);
+  double datumLon = -83.8504 :runday longitude (deg-E);
+  double datumAlt = 0.0 :runway alt above reference (ft);
+
+  float float_dcm_bl[4][4] = {{1,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1}} :DCM body to local;
+  float float_dcm_lb[4][4] = {{1,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1}} :DCM local to body;
+  float float_dcm_wl[4][4] = {{1,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1}} :DCM wind to local;
+  float float_dcm_lw[4][4] = {{1,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1}} :DCM local to wind;
+
+  float sl_float_dcm_lb[4][4] = {{1,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1}} :DCM local to body;
+  float sl_float_dcm_bl[4][4] = {{1,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1}} :DCM body to local;
+  
+  double w_b_e_B[3] = {0.0,0.0,0.0} : ;
+
+  char fwingLaunchState = 0 :Used by the GCS to avoid changing data in messages themselves;
+  generic char align[7]      = {0} : this directory is also used onboard and as datalink message. You better align it! ;
+
+} vehicleOutputs, gcs0Outputs;
+
+%Dir aeroMultirotor_ref {
+ double xuu_fus = -2       :coefficients, cd*area (ft2);
+ double yvv_fus = -2       :coefficients, cd*area (ft2);
+ double zww_fus = -10      :coefficients, cd*area (ft2);
+ double xf_fus  = 0           :forces from fuse (lb);
+ double yf_fus  = 0           :forces from fuse (lb);
+ double zf_fus  = 0           :forces from fuse (lb);
+
+ double aerox = 0 : ;
+ double aeroy = 0 : ;
+ double aeroz = 0 : ;
+ double aerol = 0 : ;
+ double aerom = 0 : ;
+ double aeron = 0 : ;
+} aeroMultirotor;
+
+%Define MAX_ROTORS 12
+
+%Dir rotorMultirotor_ref {
+  int    b             = 2                 :number of blades per prop;
+  int    solve_steps   = 30                :maximum number of iterations for induced velocity solver;
+  int    max_rpm       = 12000             :max RPM of individual rotors;
+  int    numRotors     = 8                 :The number of rotors;
+  int    motorsArmed   = 0                 :The motors don't arm until a 0 or 1 PWM signal is set - the PWMs default to 500 which causes a sim issue unless arming is checked;
+  uchar  twistOff      = 0                 :use twist offset - rotates each motor a little based on twist_offset;
+  uchar  tmp           = 0                 :used in new twist offset;
+
+  double r             = 0.33             :blade radius (ft);
+  double a             = 5.73              :lift curve slope (lbf/rad);
+  double c             = 0.09	           :blade chord (ft);
+
+  double armRadius     = 0.541339             :Radius from the center of the vehicle to each rotor hub (ft);
+  double dihedral      = 0                 :(rad) dihedral of motor mounts;
+  double motorTwist    = 0                 :(rad) twist of motor mounts (not blade twist);
+  double armz          = 0                 :(ft) arm root vertical location;
+  double propz         = 0.18              :(ft) distance from arm to prop (shaft length);
+
+  double cd0              = 0.01              :zero lift drag coefficient;
+  double i_r              = 0.00003           :inertia of outrunner motor + prop (slug-ft2);
+  double omegadLimit      = 999999            :(rad/s2) rate limit;
+  double twist            = 0.2618            :(rad) twist of blades;
+  double torqueMax        = 0.2               :(ft-lb) per motor;
+  double pwmRateLimitUp   = 1000           :(1/sec) one over time from 0 to full;
+  double pwmRateLimitDown = 1000           :(1/sec) one over time from full to 0;
+  double pwmBreakout      = 0.1               :(nd) breakout throttle to get any rpm;
+
+  double solve_gain    = 0.1               :induced velocity solver gain;
+  double solve_tol     = 0.001             :induced velocity solver tolerance (ft/s);
+  double twist_offset  = 1                 :deg of offset to be used(with randne);
+
+  double x[12]          = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0} :rotor x position relative to CG;
+  double y[12]          = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0} :rotor y position relative to CG;
+  double z[12]          = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0} :rotor z position relative to CG;
+  double phase[12]      = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0} :(rad);
+  double twistPer[12]   = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0} :(rad);
+
+  double pwm[12]        = {0,0,0,0,0,0,0,0,0,0,0,0}         :pwm commanded;
+  double throttle[12]   = {0,0,0,0,0,0,0,0,0,0,0,0}         :throttle commanded;
+
+  double omega[12]      = {0,0,0,0,0,0,0,0,0,0,0,0}	        :rotors angular velocities (rad/s);
+  double omegad[12]     = {0,0,0,0,0,0,0,0,0,0,0,0}         :rotors angular acceleration (rad/s^2);
+  double thrust[12]     = {0,0,0,0,0,0,0,0,0,0,0,0}         :thrust from each rotors (lbf);
+  double vi[12]         = {0,0,0,0,0,0,0,0,0,0,0,0}         :induced velocity from each rotor (ft/s);
+  double new_vi[12]     = {0,0,0,0,0,0,0,0,0,0,0,0}         :new induced velocity (ft/s);
+  double vprime[12]     = {0,0,0,0,0,0,0,0,0,0,0,0}         :total velocity through rotor (ft/s);
+  double torqueR[12]    = {0,0,0,0,0,0,0,0,0,0,0,0}         :hub torque from each rotor;
+  double torqueE[12]    = {0,0,0,0,0,0,0,0,0,0,0,0}         :hub torque from each motor;
+  double wb[12]         = {0,0,0,0,0,0,0,0,0,0,0,0}         :aggregate blade velocity (ft/s);
+  double power[12]      = {0,0,0,0,0,0,0,0,0,0,0,0}         :power (ft-lb/s);
+  double totalPower     = 0 :total power;
+  double hubForceX[12]  = {0,0,0,0,0,0,0,0,0,0,0,0}         :hub force in x direction on each blade (horizontal force) ;
+  double hubForceY[12]  = {0,0,0,0,0,0,0,0,0,0,0,0}         :hub force in y direction on each blade (side force) ;
+  double rollMoment[12] = {0,0,0,0,0,0,0,0,0,0,0,0}         :roll moment due to forward flight (quadrotor has no hinge) ;
+  double propDamage[12] = {1,1,1,1,1,1,1,1,1,1,1,1}         :(0-1) scale thrust produced by individual props ;
+
+  double rotorx        = 0                 :all force from rotor in x direction;
+  double rotory        = 0                 :all force from rotor in y direction;
+  double rotorz        = 0                 :all force from rotor in z direction;
+  double rotorl        = 0                 :all roll moments from rotor;
+  double rotorm        = 0                 :all pitch moments from rotor;
+  double rotorn        = 0                 :all yaw moments from rotor;
+
+  double angMomentum[3] = {0,0,0}          :angular moment of rotors;
+  double gyroMoment[3]  = {0,0,0}          :gyroscopic moment due to spinning rotors;
+  double h[12]          = {0,0,0,0,0,0,0,0,0,0,0,0}         :altitude;
+  double fr             = 0.0               :friction term;
+  double ground_effect  = 0.0               :ground effect parameter;
+  double ge_factor[12]  = {0,0,0,0,0,0,0,0,0,0,0,0}         :ground effect induced velocity factor;
+  int    solve_used[12] = {0,0,0,0,0,0,0,0,0,0,0,0}         :iterations to get induced velocity;
+  double correction[12] = {0,0,0,0,0,0,0,0,0,0,0,0}         :induced velocity correction (ft/s);
+
+  double dcm_rb[12][3][3] = {{{0,0,0},{0,0,0},{0,0,0}},{{0,0,0},{0,0,0},{0,0,0}},{{0,0,0},{0,0,0},{0,0,0}},{{0,0,0},{0,0,0},{0,0,0}},
+  {{0,0,0},{0,0,0},{0,0,0}},{{0,0,0},{0,0,0},{0,0,0}},{{0,0,0},{0,0,0},{0,0,0}},{{0,0,0},{0,0,0},{0,0,0}},{{0,0,0},{0,0,0},{0,0,0}},
+  {{0,0,0},{0,0,0},{0,0,0}},{{0,0,0},{0,0,0},{0,0,0}},{{0,0,0},{0,0,0},{0,0,0}},} : ;
+} rotorMultirotor;
+
+%Dir multirotor_ref {
+  dir rotorMultirotor_ref ro    = rotorMultirotor   :rotors of multirotor ;
+  dir aeroMultirotor_ref  aero  = aeroMultirotor    :aerodynamics of multirotor ;
+} multirotor;
+
+%Dir vehicle_ref {
+  int run = 1 :flag to run vehicle model and sim interface;
+  dir vehicleSet_ref      set       = vehicleSet       :major vehicle settings;
+  dir vehicleMotion_ref   motion    = vehicleMotion    :vehicle motion calcs;
+  dir vehicleOutputs_ref  outputs   = vehicleOutputs   :vehicle model outputs;
+  dir multirotor_ref      multirotor = multirotor      :generic multirotor;
+} vehicle;
+
+%Dir controller403_ref {
+  char autopilot = 1 : ;
+  double pxCmd = 0 : ;
+  double pyCmd = 0 : ;
+  double vCmdMax = 5 : ;
+  double phiCmd = 0 : ;
+  double thetaCmd = 0 : ;
+  double psiCmd = 0 : ;
+  double altitudeCmd = 5 : ;
+  double vxCmd = 0 : ;
+  double vyCmd = 0 : ;
+  double vsMax = 3 : ;
+  double Kpos = 0.5 : ;
+  double Kphi   = 0.0013 : ;
+  double Ktheta = 0.0013 : ;
+  double Kpsi   = 0.0002 : ;
+  double Kh    = 1.0  : ;
+  double Kv    = 0.5  : ;
+  double Kvi   = 0.05 : ;
+  double Khdot = 0.02 : ;
+  double Khi   = 0.01 : ;
+  double thrustBias = 0.26 : ;
+  double Kp = 0.2 : ;
+  double Kq = 0.2 : ;
+  double Kr = 5.0 : ;
+  double thrust = 0 : ;
+  double roll   = 0 : ;
+  double pitch  = 0 : ;
+  double yaw    = 0 : ;
+
+  double vsCmd = 0 : ;
+  double integral_he = 0 : ;
+  double integral_theta = 0 : ;
+  double integral_phi = 0 : ;
+} controller403;
+
+
+%endif

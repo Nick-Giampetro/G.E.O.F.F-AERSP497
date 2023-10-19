@@ -1,0 +1,804 @@
+
+%define GCS_VISION_NAVIP 0
+%define GCS_VISION_VISIONNAV 1
+
+%Dir yjgcsSet_ref {
+  int channel12V1   = 1     :A2D channel of 12V1;
+  int channel12V2   = 2     :A2D channel of 12V2;
+  int channel28V1   = 3     :A2D channel of 28V1;
+  int channel28V2   = 4     :A2D channel of 28V2;
+  int channel28VBus = 5     :A2D channel of 28V Bus;
+  int channel28VExt = 6     :A2D channel of 28V Ext;
+
+  uint bus12VLow    = 11500 :12V bus voltage low (mV);
+  uint bus12VHigh   = 12500 :12V bus voltage high (mV);
+  uint bus12VDead   = 10000 :12V bus voltage failure (mV);
+  uint bus28VLow    = 25000 :28V bus voltage low (mV);
+  uint bus28VHigh   = 30000 :28V bus voltage high (mV);
+  uint bus28VDead   = 22000 :28V bus voltage failure (mV);
+} yjgcsSet;
+
+%Dir gcsSet_ref {
+  char showTimeText = 1 :show flight timer;
+  char showAirspeedText = 1 :show airspeed as extra text;
+  char showGroundSpeedText = 0 :show ground speed as extra text;
+  char showVerticalSpeedText = 0 :show speed as extra text;
+  char showMSLtext  = 1 :show MSL data as extra text;
+  char showADLtext  = 0 :show ADL data as extra text;
+  char showAGLtext  = 2 :show AGL data as extra text;
+  char showGPS        = 1  :show GPS data;
+  char showGPStextMin = 8  :show GPS data as extra text if less than this number of sats;
+  char showGPSSNRMin  = 36 :show GPS data as extra text if SNR less than this;
+  char showRPMtext  = 0 :show RPM data as extra text;
+  char showHeading  = 0 :show heading as extra text;
+  char showThrottle = 0 :show throttle as extra text;
+  char showThrust   = 0 :show thrust as extra text;
+  char showThrustPlusMinus = 0 :show thrust as extra text;
+  char showBatt     = 0 :show battery voltage as extra text;
+  char showCurrent  = 0 :show current after battery voltage text (needs showBatt to be on);
+  char showAmpHours = 0 :show energy drain after battery voltage text (needs showBatt to be on);
+  char showBattTime = 0 :show battery remaining time estimate as extra text;
+  char showVoltage2 = 0 :show voltage2;
+  char showTemperature = 0 :temperature;
+  char showFuelLevel = 0 :show fuel level;
+  char showRangeBearing = 0 :show range and bearing from datum;
+  char showWaitTime = 1 :show wait time as text (if applicable);
+  char showWind = 1 :if non-zero, show wind information;
+  char showDepth = 0 :show echo sonar depth measurement;
+  char showPlan = 1 :show plan (also can be disabled in scene per window);
+  %if defined(HAVE_VN100)
+  char showVN100 = 0 :show vn-100 pitch data;
+  %endif
+  char waitForNav   = 0 :no rotor spin or trajGo until nav is ready;
+  char useVisionForOther = 0 :use vision for other aircraft state/outputs;
+  char showLogOverrunMsg = 1 : ;
+
+  dir gcsScene_ref scene0   = gcs0Scene0  : ;
+  dir gcsScene_ref scene1   = gcs0Scene1  : ;
+  dir gcsScene_ref scene2   = gcs0Scene2  : ;
+  dir gcsScene_ref scenePIP = gcs0ScenePIP  : ;
+  dir view_ref cockpit = gcs0view_cockpit :cockpit view data;
+  dir view_ref nav     = gcs0view_nav     :nav display view data;
+  dir view_ref chase   = gcs0view_chase   :chase view data;
+  dir view_ref ground  = gcs0view_ground  :ground view data;
+  dir view_ref hover   = gcs0view_hover   :hover view data;
+  dir view_ref camera  = gcs0view_camera  :camera view data;
+  dir view_ref camera2 = gcs0view_camera2 :camera #2 view data;
+  dir view_ref camera3 = gcs0view_camera3 :camera #3 view data;
+  dir view_ref camera4 = gcs0view_camera4 :camera #4 view data;
+
+  float velMenuValue[5] = {5,10,20,50,80} : ;
+  float velMenuNudge = 5.0f :(ft/s or kts);
+  float velMenuNudgeMin = 0.0 : ;
+  float velMenuNudgeMax = 999.0f : ;
+  float velMenuAccNudge = 1.0f :(ft/s2);
+  float velMenuAccNudgeMin = 1.0 :(ft/s2);
+  float velMenuAccNudgeMax = 64.0 :(ft/s2);
+  float velMenuWaitNudge = 5.0f :(s);
+  float velMenuWaitNudgeDefault = 0.0f :(s);
+  float velMenuWaitNudgeMin = 0.0f :(s);
+  float velMenuWaitNudgeMax = 3600.0f :(s);
+  float altMenuValue[7] = {10,50,100,150,200,300,400} : ;
+  float altMenuNudge = 5.0 :(ft);
+  float battMinutesPerVolt = 10.0 :(min/V) for time remaining calc;
+  float battMinimumVoltage = 10.6f :(V) for time remaining calc;
+  float waypointR = 5 :(ft) radius of waypoint (scales markers in scene);
+  float angle3D = 45.0 :(deg);
+  char controlType = 0 :0=heli,1=airplane,3=boat;
+  char rotate90    = 0 :rotate some things 90 degrees in scene (typically for airplanes);
+  string showMSLFmt = "%.0f MSL\0     " :format for MSL text;
+  string showADLFmt = "%.0f ADL\0     " :format for ADL text;
+  string showAGLFmt = "%.0f AGL\0     " :format for AGL text;
+
+  double datumLat =  33.659653   :datum latitude (deg-N);
+  double datumLon = -84.66333    :datum longitude (deg-E);
+  double datumAlt = 745.00       :datum altitude (ft);
+  double zgear    = 25.0/12   :altitude when sitting on ground (ft);
+  double phi   = 0.0 :initial Euler angles for nav (deg);
+  double theta = 0.0 :initial Euler angles for nav (deg);
+  double psi   = 0.0 :initial Euler angles for nav (deg);
+  double x0[3] = {0,0,-25.0/12}   :initial position in L for nav (ft);
+  double navinitTime = 5.0  :navinit time;
+  int relayP1 = 1 :relay data over datalink1;
+  int relayP2 = 1 :relay data over datalink2;
+  int minSendSize = 1 :minimum number of relay bytes to send;
+  int visionType = 0 :type fo vision navigation we are doing 0=navip 1=visionNav;
+  int modeHURT = 0   :0=stop HURT, 1=send HURT, 2=send and receive;
+  int allowHURTcamera = 1 :enable HURT external control of camera;
+  int enableGCSRelay = 0 :relay all downlink to anotherGCS,1=on,2=allowUp;
+  int maxRPM = 3000 :(rpm) to declare bad and not display;
+  int controlPTR = 0            :control the camera;
+  char gpsrefLink1 = 1 :send differential correction over link 1;
+  char gpsrefLink2 = 1 :send differential correction over link 2;
+  char enableGpsrefRelay = 0 :send differential correction over relay;
+  char mobileGpsref = 0 :consider GPS reference station to be mobile, and send pos info to aircraft;
+  string datPath = "dat\0                                           " :location of dat files;
+} gcs0Set;
+
+%include "serial.dbh"
+
+%Dir serialPort_ref {
+  int dataSource = PORT_SITL :0=off,1=on,2=SITL;
+  int port=1 : ;
+  int si_port = SI_DATALINK1 :SITL port;
+  int baud = 38400 : ;
+  int isServer  = 0: ;
+  int portNum   = SI_DATALINK1: ;
+  int saveToFile = 1 : Save data to file;
+  string saveFile = "dataSer_%s.bin" : file name to save;
+} gcs0PortDatalink1;
+
+%Dir serialPort_ref {
+  int dataSource = PORT_SITL :0=off,1=on,2=SITL;
+  int port=14 : ;
+  int si_port = SI_DATALINK2 :SITL port;
+  int baud = 9600 : ;
+  int useSerial = 0: ;
+  int useSock   = 1: ;
+  int isServer  = 0: ;
+  string connectTo = "javelin\0                    ": host name of machine to connect to;
+  int portNum   = SI_DATALINK2: ;
+  int saveToFile = 1 : Save data to file;
+  string saveFile = "dataEth_%s.bin" : file name to save;
+} gcs0PortDatalink2;
+
+%include "datalink.dbh"
+
+%Dir datalinkHeader_ref {
+} gcs0DatalinkHeader, gcsDatalinkMessageHeartbeat;
+
+%Dir datalinkMessage0_ref {
+} gcs0DatalinkMessage0;
+
+%Dir datalinkMessage1_ref {
+} gcs0DatalinkMessage1;
+
+%Dir datalinkMessageRmtCmd_ref {
+} gcsDatalinkMessageRmtCmd;
+
+%Dir datalinkMessageRmtCnsl_ref {
+} gcsDatalinkMessageRmtCnsl;
+
+%Dir datalinkMessageGetdir_ref {
+} gcsDatalinkMessageGetdir;
+
+%Dir datalinkMessageSenddir_ref {
+} gcsDatalinkMessageSenddir;
+
+%Dir datalinkMessageTrajectory_ref {
+} gcsDatalinkMessageTrajectory;
+
+%Dir datalinkMessageUp0_ref {
+} gcs0DatalinkMessageUp0;
+
+%Dir datalinkMessageTrajPreview_ref {
+} gcsDatalinkMessageTrajPreview;
+
+%Dir datalinkMessageAutopilotDels_ref {
+} gcs0DatalinkMessageAutopilotDels;
+
+%define DATALINK_OFF 0
+%define DATALINK_ON 1
+
+%define CONFIGFILESTACK 10
+
+%Dir gcsDatalink_ref {
+  dir serialPort_ref p1         = gcs0PortDatalink1  :serial;
+  dir serialPort_ref p2         = gcs0PortDatalink2  :ethernet;
+
+  dir datalinkHeader_ref                     header              = gcs0DatalinkHeader                      :raw message header;
+  dir datalinkMessage0_ref                   m0                  = gcs0DatalinkMessage0                    :raw message received;
+  dir datalinkMessage1_ref                   m1                  = gcs0DatalinkMessage1                    :raw message received;
+  dir datalinkHeader_ref                     heartbeat           = gcsDatalinkMessageHeartbeat             :raw message sent;
+  dir datalinkMessageRmtCmd_ref              rmtCmd              = gcsDatalinkMessageRmtCmd                :raw message sent;
+  dir datalinkMessageRmtCnsl_ref             rmtCnsl             = gcsDatalinkMessageRmtCnsl               :raw message received;
+  dir datalinkMessageGetdir_ref              getdir              = gcsDatalinkMessageGetdir                :raw message sent;
+  dir datalinkMessageSenddir_ref             senddir             = gcsDatalinkMessageSenddir               :raw message sent/received;
+  dir datalinkMessageTrajectory_ref          trajectory          = gcsDatalinkMessageTrajectory            :raw message sent;
+  dir datalinkMessageUp0_ref                 up0                 = gcs0DatalinkMessageUp0                  :raw message sent;
+  dir datalinkMessageAutopilotDels_ref       autopilotDels       = gcs0DatalinkMessageAutopilotDels        :raw message received;
+  dir datalinkMessageTrajPreview_ref         trajPreview         = gcsDatalinkMessageTrajPreview           :trajectory preview ;
+
+  char enable0         = 1 :enable up0 message;
+  char enable1         = 0 :enable up1 message;
+  char enableHeartbeat = 1 :enable heartbeat to check uplink;
+  char enableSim       = 0 :enable sim output messages;
+  char enableFcs20     = 0 :enable fcs20 uplink message;
+  char following       = 1 :GCS instance this vehicle is following (listening to) in terms of squitter messages (-1 = none);
+  char squitUp1        = 1 :relay squitter on datalink1;
+  char squitUp2        = 1 :relay squitter on datalink2;
+  char wantRawLog1     = 0 :relay squitter on datalink1;
+  char wantRawLog2     = 0 :relay squitter on datalink2;
+  char navipUp1        = 1 :relay navip on datalink1;
+  char navipUp2        = 1 :relay navip on datalink2;
+  char allowConfigDownload = 1 :a way to turn it off (debug);
+  char useOldRmtCmd    = 0 :use old version of RmtCmd (for backward compatibility when needed);
+  char sendPerson      = 3 :1=link1,2=link2,3=both;
+  char revertNvtlMsg   = 0 :1=revert to old fixed size rtca messages;
+  char useAttRawDataLog = 1 : whether to copy atttiude from raw data log message;
+
+  long itime = 0 :number of messages received;
+  char datalinkStatus1          = DATALINK_OFF :status of datalink;
+  char datalinkStatus2          = DATALINK_OFF :status of datalink;
+  char datalinkStatusAnotherGCS = DATALINK_OFF :status of datalink;
+  char datalinkStatusOnboard2   = DATALINK_OFF :status of datalink;
+  char navStatus = 0 :status of nav system;
+  char gpsStatus = 0 :status of gps;
+  char aglStatus = 0 :status of agl sensor;
+  char magnetStatus = 0 :status of magnetometer;
+  char autopilot = 0 :status of autopilot;
+  uchar overrun = 0 :number of frame overruns;
+  uchar gpsrefStatus = 0 :flag for panel;
+  double time = 0.0 :(sec) onboard time;
+
+  double playbackRate         = 1.0 :1=real time;
+  double lastPlaybackRate     = 1.0 :1=real time;
+  double lastPlaybackTime     = 0.0 :(sec);
+  double lastPlaybackWallTime = 0.0 :(sec);
+
+  double timeBias = 0.0 :(sec) time bias, amount onboard ahead of GCS;
+  double timeBiasFilterGain = 0.1 :filter gain (0-1);
+  double lastUplink      = 0 : ;
+  double lastUpdate0     = 0     : ;
+  double lastUpdate1     = 0     : ;
+  double lastUpdateSim   = 0     : ;
+  double lastConfigFileUpload = 0 : ;
+  double updateDt0       = 0.2   :update rate of up0;
+  double updateDt1       = 0.1   :update rate of up1;
+  double updateDtHeartbeat = 2.5 :(sec) update rate of heartbeat;
+  double lastUpdateOther0 = -1 : ;
+  double otherTimeout = 1 :(sec) timeout to still blend two sets of joystick inputs (up0);
+  float lastThrottleLeverOther = 0 : ;
+  float lastRollStickOther     = 0 : ;
+  float lastPitchStickOther    = 0 : ;
+  float lastRudderPedalOther   = 0 : ;
+  uchar lastButton10Other      = 0 : ;
+  uchar lastButton15Other      = 0 : ;
+  double updateDtSim     = 0.1 :(sec) update rate of sim output;
+  double updateDtLoadRun = 0.5 :(sec) retry rate of load/run;
+  double uploadConfigFileDt = 0.05 :(sec) update rate of config file upload ;
+  double uploadConfigFileRetryDt = 0.05 :(sec) update rate of config file upload ;
+  char skGcsDrOn    = 0     : ;
+
+  char uploadingPlan = 0 :trajUpload in progress;
+  char doTrajGo = 0 : ;
+  char setManIndexToZero = 0 : ;
+  int startIndexToSend = 0 : ;
+  int lastReceivedStartIndex = 0 : ;
+  double lastUploadingPlanTime = 0 : ;
+  double uploadingPlanDt = 0.5 :(sec);
+  int uploadingPlanRetries = 0 : ;
+  int uploadingPlanMaxRetries = 4 : ;
+
+  double maxExtrap = 5.0 :(sec) maximum extrapilation time;
+  double q[4] = {0,0,0,0} :vehicle quat;
+  double other_q[4] = {0,0,0,0} :vehicle quat;
+  double alpha = 0 :angle of attack;
+  double beta  = 0 :angle of sideslip;
+  double terrainH = 0 :terrain height (ft);
+  ushort senddirID   = 999 :unique ID for last sendir message;
+  int    relayID     = 999 :unique ID for last relay message;
+  ushort lastRmtCnsl = 999 :unique ID for last rmtcnsl message;
+  ushort lastRmtCnsl2 = 999 :unique ID for last rmtcnsl2 message;
+  ushort lastRmtCnsl3 = 999 :unique ID for last rmtcnsl3 message;
+  uchar  lastDiagnostics = 200 :unique ID for last diagnostic message;
+  double tiltHold = 0 :(rad);
+  double dcm_bl[3][3] = {{1,0,0},{0,1,0},{0,0,1}} :DCM body to local;
+  double dcm_lb[3][3] = {{1,0,0},{0,1,0},{0,0,1}} :DCM local to body;
+  double dcm_wl[3][3] = {{1,0,0},{0,1,0},{0,0,1}} :DCM wind to local;
+  double dcm_lw[3][3] = {{1,0,0},{0,1,0},{0,0,1}} :DCM local to wind;
+  double other_dcm_bl[3][3] = {{1,0,0},{0,1,0},{0,0,1}} :DCM body to local;
+  double other_dcm_lb[3][3] = {{1,0,0},{0,1,0},{0,0,1}} :DCM local to body;
+  double other_dcm_wl[3][3] = {{1,0,0},{0,1,0},{0,0,1}} :DCM wind to local;
+  double other_dcm_lw[3][3] = {{1,0,0},{0,1,0},{0,0,1}} :DCM local to wind;
+  double trackingRight = 0 :(ft);
+  double trackingAbove = 0 :(ft);
+  ushort lastNvtlMsg = GPSREF_ROLL+1 :uniqueID of last Novatel message (from onboard);
+  int lastWowDown = 0 : ;
+  int lastWowUp = 0 : ;
+  int lastSafeOff = 0 : ;
+  int lastTogglePlanButton = 0 : ;
+  double lastLoadRun = 0 : ;
+  char uploadConfigFile = 0 :initiate upload of config file;
+  char uploadConfigFileState = 0 :0 not busy;
+  char configfileStack = 0 :how deep in input file stack;
+  voidptr configfileFD[10] = {0,0,0,0,0,0,0,0,0,0} : ;
+  voidptr configfiledFD = 0 : ;
+  int configFileExpectedLineNum = 0 : ;
+  voidptr rcfileFD[10] = {0,0,0,0,0,0,0,0,0,0} : ;
+  double uploadRemoteCommandInputFileDt = 0 : ;
+  double uploadRemoteCommandInputFileRetryDt = 0.1 : ;
+  int remoteCommandInputFileStack = 0 : ;
+  int remoteCommandInputFileRetries = 0 : ;
+  int remoteCommandInputFileRetriesMax = 100 : ;
+  double lastRemoteCommandInputFileUpload = -1 : ;
+  char uploadRemoteCommandInputFile = 0 :1=do it;
+  char remoteCommandInputFileState = 0 :0=off,1=sending;
+  char remoteCommandInputFileSuccess = 0 :0=no,1=yes;
+  char doDatUpload    = 0 :1=do it;
+  char datUploadState = 0 :0=off,1=sending;
+  char stdinEOLMode = 1 : 0-nothing, 1-add LF, 2-add CR, 3-add CR and LF ;
+  double datUploadDt = 0 : ;
+  double datUploadRetryDt = 0.2 : ;
+  char datUploadPort1 = 1 :do datUpload over link1;
+  char datUploadPort2 = 1 :do datUpload over link2;
+  double lastDatUploadTime = -1 : ;
+  voidptr datUploadFD = 0 :file descriptor;
+  int datUploadRetries = 0 : ;
+  int datUploadRetriesMax = 50 : ;
+  uint datUploadMemoryLocation = 0 :memory location to put dat file;
+  uint datUploadTotalSize      = 0 :how much memory in dat file;
+  uint datUploadChunksSent     = 0 :how many 4-byte chunks sent;
+  uint datUploadMaxSize        = 16*1024*1024 :maximum allowed dat file size (bytes);
+  uint datUploadMaxOffset      = 32*1024*1024 :maximum allowed memory offset (bytes);
+  float autopilotDelsTimeout = 3.0f :(sec);
+  char makeCSV = 0 :make CSV file flag;
+  voidptr makeCSVFD_0  = 0 :file descriptors;
+  voidptr makeCSVFD_1  = 0 :file descriptors;
+  voidptr makeCSVFD_1b = 0 :file descriptors;
+  string configFileName        = "none\0                                                                          " :command input file name;
+  string configDownFileNameFmt = "downloaded_%s_%02d%02d%02d_%02d%02d%02d.inp\0                                   " :command input file name format;
+  string configDownFileName    = "downloaded.inp\0                                                                " :command input file name;
+  string remoteCommandInputFileName = "none\0                                                                          " :command input file name;
+  string datUploadFileName     = "none\0                                                                           " :dat file name;
+  string makeCSVFileNameFmt    = "recorded_%s_%s_%02d%02d%02d_%02d%02d%02d.csv\0                                   " :csv file name format;
+} gcs0Datalink;
+
+%Dir serialPort_ref {
+  int dataSource = PORT_OFF :0=off,1=on,2=SITL;
+  int port=3 : ;
+  int si_port = SI_GPSREF :SITL port;
+  int baud = 9600 : ;
+  int useSerial = 1: ;
+  int useSock   = 0: ;
+  int isServer  = 0: ;
+  int portNum   = SI_GPSREF: ;
+} gcsPortGPSRef;
+
+%Dir serialPort_ref {
+  int dataSource = PORT_OFF :0=off,1=on,2=SITL;
+  int port= 6 : ;
+  int si_port = 0 :SITL port;
+  int baud = 9600 : ;
+  int useSerial = 1: ;
+  int useSock   = 0: ;
+  int isServer  = 0: ;
+  int portNum   = 0: ;
+} gcsPortGPSRefRTCM;
+
+%include "gps.dbh"
+
+%Dir gps_header_ref {
+} gpsRef_header;
+%Dir gps_bestposb_ref {
+} gpsRef_bestposb, gpsRef_masterposb, gpsRef_roverposb, gpsRef_psrposb;
+%Dir gps_bestvelb_ref {
+} gpsRef_bestvelb, gpsRef_psrvelb;
+%Dir gps_headingb_ref {
+} gpsRef_headingb;
+%Dir gps_heading2b_ref {
+} gpsRef_heading2b;
+%Dir gps_bslnxyzb_ref {
+} gpsRef_bslnxyzb;
+%Dir gps_alignbslnenub_ref {
+} gpsRef_alignbslnenub;
+%Dir gps_rtcaMsg_ref {
+} gpsRef_rtcaMsg;
+%Dir gps_unlogall_ref {
+} gpsRef_unlogall;
+%Dir gps_interfaceMode_ref {
+} gpsRef_intrfaceMd;
+%Dir gps_fix_ref {
+} gpsRef_fix;
+%Dir gps_movingbasestation_ref {
+} gps_movingbasestation;
+%Dir gps_log_ref {
+} gpsRef_log;
+%Dir gps_cmdResponse_ref {
+} gpsRef_response;
+%Dir gps_novatelxHeader_ref {
+} gpsRef_novatelxHeader;
+%Dir gps_novatelxMsg_ref {
+} gps_novatelxMsg;
+
+%Dir gpsRef_ref {
+  dir serialPort_ref p             = gcsPortGPSRef :serial port;
+  dir serialPort_ref prtcm         = gcsPortGPSRefRTCM : serial port for RTCM data;
+  double gpsrefLat                 =  33.66077119 :gps ref latitude (deg-N);
+  double gpsrefLon                 = -84.6638368  :gps ref longitude (deg-E);
+  double gpsrefAlt                 = 228.38       :gps ref altitude (m), 229;
+  long samples                     = 0 :number of samples of gps reference;
+  long minNumSamples               = -1 :The minimum number of samples before the checklist item pops up to go to gpsrefCalibrate - set to -1 to not use;
+  long desiredSamples              = 500 :number of samples, if more then panel will say READY (ready to configure);
+  char addedChecklistItem          = 0 :Whether the checklist item has already been added;
+  long novatelxSent                = 0 :counter;
+  long rtcaSent                    = 0 :counter;
+  long rtcmSent                    = 0 :counter;
+  double lastUpdateRtcm            = 0 :update counter;
+  double dtRtcm                    = 2 :rtcm update interval (sec);
+  double updateDtMobile            = 0.5 :(sec) update dt for mobile gcs;
+  int  configState                 = 0 :configuration mode;
+  int  calibrate                   = 0 :callibration mode;
+  int  useNovatelMsg               = 1 :0-uses default RTCA messages for differential, 1-uses Novatel messages;
+  int  mobile                      = 0 :mobile reference mode, 1-without ALIGN, 2-with ALIGN;
+  int  msgFlag                     = 0 :0-send msg, 1-msg sent, 2-msg recieved;
+  char useForSelfAiding            = 0 :use GPS data for aiding onboard code running in this executable;
+  uchar oem                        = 7 : whether to use oem 7 or legacy correction message;
+  double time                      = 0.0 :used for receiver configuration;
+  double timeout                   = 1.0 :used for receiver configuration;
+  double novatelxobsFixedBasePeriod  = 1.0 : ;
+  double novatelxobsMovingBasePeriod = 0.2 : ;
+  double novatelxrefMovingBasePeriod = 0.2 : novatelxref is only required for moving base ;
+  double rtcarefPeriod             = 10.0 : ;
+  double rtcaobsPeriod             = 1.0  : ;
+  double rtca1Period               = 10.0 : ;
+  double rtca1Offset               = 1.0  : ;
+  double rtcaephemPeriod           = 10.0 : ;
+  double rtcaephemOffset           = 7.0  : ;
+  double updateDtCalibrate         = 1.0  : ;
+  dir gps_header_ref    header     = gpsRef_header   :raw GPS data;
+  dir gps_bestposb_ref  bestposb   = gpsRef_bestposb :raw GPS data;
+  dir gps_bestposb_ref  masterposb = gpsRef_masterposb :raw GPS data;
+  dir gps_bestposb_ref  roverposb  = gpsRef_roverposb :raw GPS data;
+  dir gps_bestposb_ref  psrposb    = gpsRef_psrposb  :raw GPS data;
+  dir gps_bestvelb_ref  bestvelb   = gpsRef_bestvelb :raw GPS data;
+  dir gps_bestvelb_ref  psrvelb    = gpsRef_psrvelb  :raw GPS data;
+  dir gps_headingb_ref  headingb   = gpsRef_headingb :raw GPS data;
+  dir gps_heading2b_ref heading2b  = gpsRef_heading2b :raw GPS data;
+  dir gps_bslnxyzb_ref  bslnxyzb   = gpsRef_bslnxyzb :raw GPS data;
+  dir gps_alignbslnenub_ref alignbslnenub = gpsRef_alignbslnenub :raw GPS data;
+  dir gps_rtcaMsg_ref   rtcaMsg    = gpsRef_rtcaMsg  :raw GPS data;
+  dir gps_unlogall_ref  unlogall   = gpsRef_unlogall :raw GPS data;
+  dir gps_fix_ref       fix        = gpsRef_fix      :raw GPS data;
+  dir gps_movingbasestation_ref movbase     = gps_movingbasestation : ; 
+  dir gps_log_ref               log         = gpsRef_log            :raw GPS data;
+  dir gps_cmdResponse_ref       response    = gpsRef_response       :raw GPS data;
+  dir gps_interfaceMode_ref     intrfacemd  = gpsRef_intrfaceMd     :raw GPS data;
+  dir gps_novatelxHeader_ref    NXheader    = gpsRef_novatelxHeader : ;
+  dir gps_novatelxMsg_ref       novatelxMsg = gps_novatelxMsg       : ;
+} gpsRef;
+
+%define NUMPANELBOXES 48
+%define MAXSTATUS     16
+
+%define BOX_DATALINK 0
+%define BOX_NAV 1
+%define BOX_GPS 2
+%define BOX_AGL 3
+%define BOX_WOW 4
+
+%define BOX_AUTO 5
+%define BOX_FRAME 6
+%define BOX_RPM 7
+%define BOX_MAGNET 8
+%define BOX_DATARECORD 9
+
+%define BOX_YCS 10
+%define BOX_YRD 11
+%define BOX_TX 12
+%define BOX_BATTERY 13
+%define BOX_FUEL 14
+
+%define BOX_UPLOAD 15
+%define BOX_TRAJECTORY 16
+%define BOX_VISION 17
+%define BOX_HISTORY 18
+%define BOX_TRANSPONDER 19
+
+%define BOX_SLUNGNAV 20
+%define BOX_SLUNGMODE 21
+%define BOX_OTHER 22
+%define BOX_LIMITCHECK 23
+%define BOX_MISSION 24
+
+%define BOX_MISSIONGCS 25
+%define BOX_EPM 26
+
+%rem define BOX_YJ_12V  25
+%rem define BOX_YJ_28Vi 26
+%define BOX_YJ_28Ve 27
+%define BOX_YJ_RELAY1 28
+%define BOX_YJ_RELAY2 29
+%define BOX_YJ_RELAY3 30
+%define BOX_YJ_RELAY4 31
+
+%define BOX_VICON 32
+%define BOX_LASER 33
+%define BOX_SLAMGUIDE 34
+
+%define BOX_PSPNAV 35
+%define BOX_IMU 36
+%define BOX_FAN 37
+%define BOX_TEMPERATURE 38
+%define BOX_GENERATOR 39
+
+%define BOX_CAMERA_STATUS 40
+%define BOX_PAYLOAD_STATUS 41
+
+%define BOX_ARDUPILOT 42
+%define BOX_RANGEFINDER 43
+%define BOX_FLAP 44
+%define BOX_GPSREF 45
+%define BOX_DECK 46
+
+#define BOX_BOOM 47
+
+%rem retired numbers
+%rem define BOX_YAS 13
+%rem define BOX_HURT 19
+%rem define BOX_RANGEFINDER 22
+%rem define BOX_PFTARGETTRACK  24
+
+%enum boxColor {BOX_RED=0,BOX_YELLOW=1,BOX_GREEN=2,BOX_DARKGREEN=3,BOX_DARK=4,BOX_ORANGE=5,BOX_REDBLINK=6,BOX_RED_NO_WARNING=7};
+
+%Dir panelBox_ref {
+  char on       = 1 :button enabled;
+  string label = "0123456789012" :label of box;
+  string slabel = "0123456" :short label of box;
+  string status0 = "012345678" :status label;
+  string status1 = "012345678" :status label;
+  string status2 = "012345678" :status label;
+  string status3 = "012345678" :status label;
+  string status4 = "012345678" :status label;
+  string status5 = "012345678" :status label;
+  string status6 = "012345678" :status label;
+  string status7 = "012345678" :status label;
+  string status8 = "012345678" :status label;
+  string status9 = "012345678" :status label;
+  string status10 = "012345678" :status label;
+  string status11 = "012345678" :status label;
+  string status12 = "012345678" :status label;
+  string status13 = "012345678" :status label;
+  string status14 = "012345678" :status label;
+  string status15 = "012345678" :status label;
+  double timeOut = -1.0 :timeout for status set to zero (<0 means no check made)(sec);
+  char color[16] = {BOX_DARK,BOX_DARK,BOX_DARK,BOX_DARK,BOX_DARK,BOX_DARK,BOX_DARK,BOX_DARK,BOX_DARK,BOX_DARK,BOX_DARK,BOX_DARK,BOX_DARK,BOX_DARK,BOX_DARK} :(boxColor) color choice per state;
+  double lastUpdate = -1.0 :time state was non-zero;
+  char state  = 0 :state of box;
+  char rstate = 0 :state of box, timeout function;
+  char olds   = 0 :last drawn state of box;
+  char rstate_sound = 0 :remember state for sound;
+  char inopFlag = 1 :fail if comm down;
+} gcs0PanelBox[48];
+
+%Dir panel_ref {
+  dir panelBox_ref box[48] = gcs0PanelBox[48] :box data;
+  dir limitCheck_ref check = gcs0LimitCheck :limit check data;
+
+  string name = "Panel 0" :name of window;
+
+  int status = 0 :0=normal, 1=caution, 2=warning;
+  int redraw = 1 :initialize window;
+  int forceDraw = 1 :force constant redrawing;
+
+  int fullScreen = 0    :fullscreen mode flag;
+  int playSounds = 0    :play sound effects;
+
+  int open = 0   :open flag;
+  int visibility = 0 :visibility flag;
+  int winw = 400 :width of window;
+  int winh = 160 :height of window;
+  int oldw = 400 :width of window prior to fullscreen;
+  int oldh = 160 :height of window prior to fullscreen;
+  int x = 412  :initial location of window;
+  int y = 0    :initial location of window;
+  int win = 0  :window id #;
+
+  Float bkgdColor[4]   = { 0.75f, 0.75f, 0.75f, 1.0f } : ;
+  Float borderColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f } : ;
+  Float boxColor[8][4]  = {{ 0.7f, 0.1f, 0.0f, 1.0f },{ 1.0f, 1.0f, 0.0f, 1.0f },
+  { 0.0f, 1.0f, 0.0f, 1.0f },{ 0.0f, 0.4f, 0.0f, 0.05f },{ 0.0f, 0.0f, 0.0f, 1.0f },
+  { 1.0f, 0.67f, 0.0f, 1.0f },{ 1.0f, 0.2f, 0.0f, 1.0f },{ 0.7f, 0.1f, 0.0f, 1.0f }} : ;
+  Float textColor[8][4]  = {{ 0.3f, 0.0f, 0.0f, 1.0f },{ 0.3f, 0.3f, 0.0f, 1.0f },
+  { 0.0f, 0.3f, 0.0f, 1.0f },{ 0.0f, 0.8f, 0.0f, 0.5f },{ 0.3f, 0.3f, 0.3f, 1.0f },
+  { 0.3f, 0.2f, 0.0f, 1.0f },{ 0.3f, 0.0f, 0.0f, 1.0f },{ 0.3f, 0.0f, 0.0f, 1.0f }} : ;
+
+  int boxw = 80 :width of each box;
+  int boxh = 32 :height of each box;
+  int wboxw = 80 :width of each box;
+  int wboxh = 32 :height of each box;
+  int sboxw = 60 :width of each box;
+  int sboxh = 12 :height of each box;
+  char sfont  = 6 :2=9x15, 3=8x13, 4=T10, 5=T24, 6=H10, 7=H12, 8=H18;
+  int sfontH = 11 :location of top font;
+  int bfontH = 27 :lcoation of bottom font;
+  int dfontH = 10 :lcoation of subdraw font;
+  int shiftVert = 0 :shift vertical;
+
+  int nboxes = 0 :number of boxes (calculated);
+  int perRow = 1 :number of boxes per row (calculated);
+  float shift = 0 :shift to right in pixels;
+  char redXwhenPaused = 1 :x out selected items if paused;
+  char inop = 1 :comm inop flag;
+
+  char datalink1state = 0 :state of datalink;
+  char datalink2state = 0 :state of datalink;
+  double lastUpdate1 = 0 :last update time;
+  double lastUpdate2 = 0 :last update time;
+  double timeOut1 = 0.5 :timeout on datalink;
+  double timeOut2 = 0.5 :timeout on datalink;
+  double blinkRate = 0.5 :(sec);
+
+  double cycleRate = 2.0 :(sec) for the payload status since multiple issues are not mutually exclusive;
+  double lastTimeCycled = 0.0 :(sec) for cycling payload status;
+} gcs0Panel;
+
+%define LIMITCHECK_MAXCHECKS 2
+
+%Dir limitCheck_ref {
+  varptr var0 = "<none>"      :var pointer 0;
+  varptr var1 = "<none>"      :var pointer 1;
+  int init = 1 : ;
+  double value[2] = {0,0} : ;
+  double lowerLimit[2] = {0,0} : ;
+  double upperLimit[2] = {100,100} : ;
+  voidptr varp[2] = {0,0} :pointers;
+} gcs0LimitCheck;
+
+%include "flightplan.dbh"
+
+%Dir trajectory_ref {
+} gcs0Trajectory, gcs0LookaheadTrajectory;
+
+%Dir trajectoryInputs_ref {
+} gcs0TrajectoryInputs;
+
+%Dir joyControl_ref {
+} gcs0JoyControl;
+
+%Dir flightPlan_ref {
+  dir maneuver_ref man[100] = maneuver[100] : ;
+} gcsFlightPlan;
+
+%Dir flightPlan_ref {
+  dir maneuver_ref man[100] = maneuver0DL[100] : ;
+} gcs0FlightPlanDL;
+
+%Dir flightPlan_ref {
+  dir maneuver_ref man[100] = maneuver0A[100] : ;
+} gcs0FlightPlanA;
+
+%Dir flightPlan_ref {
+  dir maneuver_ref man[100] = maneuver0B[100] : ;
+} gcs0FlightPlanB;
+
+%Dir flightPlan_ref {
+  dir maneuver_ref man[100] = maneuver0LC[100] : ;
+} gcs0FlightPlanLC;
+
+%Dir flightPlan_ref {
+  dir maneuver_ref man[100] = maneuver0LCDL[100] : ;
+} gcs0FlightPlanLCDL;
+
+%Dir maneuver_ref {
+} maneuver[100], 
+maneuver0DL[100], maneuver0A[100], maneuver0B[100], maneuver0LC[100], maneuver0LCDL[100], 
+maneuver1DL[100], maneuver1A[100], maneuver1B[100], maneuver1LC[100], maneuver1LCDL[100], 
+maneuver2DL[100], maneuver2A[100], maneuver2B[100], maneuver2LC[100], maneuver2LCDL[100], 
+maneuver3DL[100], maneuver3A[100], maneuver3B[100], maneuver3LC[100], maneuver3LCDL[100];
+
+%Dir gcsTrajMove_ref {
+  double vnom = 5 :move speed (ft/s);
+  double anom = 2 :move accel (ft/s2);
+  double xmax = 500  :max horizontal move (ft);
+  double zmax = 200  :max altitude move (ft);
+} gcs0TrajMove;
+
+%Dir gcsdcas_ref {
+  char init     = 0 : reinit dcas;
+  char run      = 0 :flag to enable dcas;
+  char raMode   = 1 :0=stop, 1=horizontal;
+  char doUpload = 1 :automatically upload trajectory;
+  char nowAvoiding = 0 : (bool), currently headed to avoidance waypoint;
+  char avoidSense = 0 : 1 up, 2 down, 3 lateral; 
+  double puckH = 2100 :(ft) horizontal puck radius for intruder;
+  double puckV = 500  :(ft) vert puck radius for intruder (half height);
+  double hequiv = 4 : (scalar) higher prefers vertical manuevers;
+  double inflatePuck = 1.5  :(gain) inflate puck for clearance calculation;
+  double tBuffer = 5 : (s) extra time buffer for avoidance manuever;
+  double fsubf = 20 : (s) extra time for clearing big puckH;
+  double vnom = 40 :(ft/s) resolution wp speed;
+  double vnomVert = 10 : (ft/s) max resolution wp speed down avoidance;
+  double projectTimeMax = 300 :(sec) how far ahead to check for puck violation;
+  int minWP = -1 : avoidance waypoint;
+  double avoidWPN = 0 : ;
+  double avoidWPE = 0 : ;
+  double avoidWPD = 0 : ;
+  double distTemp = 99999 : temp variable for avoid point selection;
+  double lastTimeChecked = 0  :(sec)last check;
+  double timeSinceChecked = 0  :(sec)elapsed time since last check;
+  double dcasDT = 3 : (sec) time between collision checks;
+  double tCHA = 0 :(sec) time until puck violation;
+  double dxCHA[3] = {0,0,0} :(ft) rel position at closest horizontal approach;
+  double distance = 0 :(ft);
+} gcs0dcas;
+
+%define PLANEDIT_WORKPAD -1
+%define PLANEDIT_A 0
+%define PLANEDIT_B 1
+%define PLANEDIT_LC 2
+%define PLANEDIT_NPLANS 3
+
+%Dir gcsUploadFlag_ref {
+  char upload = 1 :need to upload current plan;
+  char getDirLock = 0 : 0-allow getDir, 1-not allow getDir,2-only block nav directories  ;
+} gcsTrajectoryMain;
+
+%Dir gcsTrajectoryMain_ref {
+  char uploadEach[3] = {1,1,1} :flag to determine if upload needed before trajectory engagement;
+  char edit = PLANEDIT_A :which plan working on now;
+  char lockMotorStart = 0 :flag to lock motor starting;
+  char whichPlanToUpload = PLANEDIT_WORKPAD : which flight plan get upload, typical case is the workpad;
+  dir trajectory_ref traj = gcs0Trajectory : ;
+  dir trajectory_ref la   = gcs0LookaheadTrajectory : ;
+  dir gcsTrajMove_ref move = gcs0TrajMove : ;
+  dir flightPlan_ref  flightPlanA    = gcs0FlightPlanA     :maneuver list;
+  dir flightPlan_ref  flightPlanB    = gcs0FlightPlanB     :maneuver list;
+  dir flightPlan_ref  flightPlanLC   = gcs0FlightPlanLC    :maneuver list;
+  dir flightPlan_ref  flightPlanDL   = gcs0FlightPlanDL    :maneuver list;
+  dir flightPlan_ref  flightPlanLCDL = gcs0FlightPlanLCDL  :maneuver list;
+  dir trajectoryInputs_ref nav = gcs0TrajectoryInputs  : ;
+  dir joyControl_ref       joy = gcs0JoyControl        : ;
+  dir gcsdcas_ref         dcas = gcs0dcas :collision avoidance system;
+} gcs0TrajMain;
+
+%Dir gcsTimer_ref {
+  double time       = 0.0 :flight time of this flight;
+  double startTime  = 0.0 :(onboard time) start of current flight;
+  double prevTime   = 0.0 :previous flights flight time since reset;
+  double flightTime = 0.0 :total flight time since reset;
+  char wow = 0 :local wow switch;
+  double mAh        = 0.0 :(mAh) expended energy;
+  double mAh_time   = 0.0 :(sec) onboard time of previous update of energy;
+  double mAh_dtMax  = 5.0 :(sec) maximum time to just integrate energy use assuming constant;
+} gcs0Timer;
+
+#**************** pfTargetTrack operator interface ***********
+%Dir pfOpInterface_ref {
+  int x1 = -1 : operator selected top left image coord.;
+  int y1 = -1 : operator selected top left image coord.;
+  int x2 = -1 : operator selected bot right image coord.;
+  int y2 = -1 : operator selected bot right image coord.;
+  int firstSelected = 0 : flag to see if top left corner has been selected;
+  int secondSelected = 0 : flag to see if bot left corner has been selected;
+  int histoDone = 0 : flag to see if the reference histogram has been created;
+  int sendDataUp = 0 : flag to send data up;
+  int useManFilter = 0 : flag to use man filter;
+  double fraction = .8 : how far to expand filter;
+  double increaseHBy = -.2 : amount to increase H cuts by;
+  double increaseSBy = -.2 : amount to increase S cuts by;
+  double increaseVBy = -.2 : amount to increase V cuts by;
+  int showParticles = 0 : flag to show particles;
+  int autoResend    = 1 : automatically resend huge init message;
+  double resendDt   = .5 : time between resends;
+  double timeLastSent = 0 : last time init message was sent;
+  double targetN = 0 : target's north coord;
+  double targetE = 0 : target's east coord;
+} pfOpInterface;
+%define GUST_INTERFACE 0
+%define MAVLINK_INTERFACE  1
+
+%Dir gcsInstance_ref {
+  int run = 1  :GCS run flags;
+  int gcsType = GUST_INTERFACE :0=gust, 1=mavlink;
+  dir gcsSet_ref            set          = gcs0Set            :settings;
+  dir gcsDatalink_ref       datalink     = gcs0Datalink       :datalink to onboard;
+  dir panel_ref             panel        = gcs0Panel          :panel data;
+  dir gcsTrajectoryMain_ref traj         = gcs0TrajMain       :trajectory setup;
+  dir vehicleOutputs_ref    outputs      = gcs0Outputs        :outputs for scene;
+  dir gcsTimer_ref          timer        = gcs0Timer          :flight timer;
+  dir controlInput_ref      cntrlInput   = gcs0Ci             :Controls (joystick, etc) input;
+} gcs0Instance;
+
+%Dir gcs_ref {
+  dir gcsInstance_ref       instance0    = gcs0Instance      :GCS0;
+  dir wdb_ref               wdb          = gcswdb            :gcs world database;
+  uchar active = 0 :index number of the active instance;
+} gcs;
+
+
+
+
+
+
+

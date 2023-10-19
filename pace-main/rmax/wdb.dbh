@@ -1,0 +1,62 @@
+%define WDB_MAX_OBJECTS 100
+%define WDB_MAX_FOOTPRINT_POINTS 10
+
+%define WDB_OBJCET_NULL      0
+%define WDB_OBJECT_TREE      1
+%define WDB_OBJECT_CYLINDER  2
+%define WDB_OBJECT_BLDG      3
+%define WDB_OBJECT_HILL      4
+%define WDB_OBJECT_TEX_BLDG  5
+%define WDB_OBJECT_WALL      6
+%define WDB_OBJECT_POLE      7
+%define WDB_OBJECT_TREELINE  8
+%define WDB_OBJECT_WATER     9
+
+%define WDB_COLOR_WHITE      0
+%define WDB_COLOR_RED        1
+%define WDB_COLOR_GREEN      2
+%define WDB_COLOR_BLUE       3
+%define WDB_COLOR_YELLOW     4
+%define WDB_COLOR_PURPLE     5
+%define WDB_COLOR_CYAN       6
+%define WDB_COLOR_BROWN      7
+%define WDB_COLOR_PINK       8
+%define WDB_COLOR_ORANGE     9
+%define WDB_COLOR_GRAY       10
+%define WDB_COLOR_INDIGO     11
+
+%define WDB_HILL_MIN_ALT     10.0
+%define WDB_SCENE_GRID_SIZE  10.0
+
+
+%Dir wdbobj_ref {
+  int    type      = 0              :object type;
+  double latitude  = 32.37053333    :latitude;
+  double longitude = -84.805083333  :longitude;
+  double altitude  = 1              :altitude;
+  double length    = 10.0           :length of bldg (ft);
+  double width     = 20.0           :width of bldg (ft);
+  double radius    = 10.0           :radius(ft);
+  double height    = 3.0            :height of bldg (ft);
+  double heading   = 0              :angle (deg);
+  int    color     = 0              :building color;
+  double a         = 1              :hill x skew;
+  double b         = 1              :hill y skew;
+  double lam       = 10000          :hill width;
+  double fpx[10]   = {0}              :foot print x;
+  double fpy[10]   = {0}              :foot print y;
+  double latitudeend = 32.37053333    :latitudeend;
+  double longitudeend = -84.805083333  :longitude;
+  double flowspeed = 0 :(ft/s);
+};
+
+%Dir wdb_ref {
+  int init                    = 1            :recompute;
+  double datumLat = 32.37053333   :datum latitude ;
+  double datumLon = -84.805083333 :datum longitude;
+  double datumAlt = 765.0         :datum altitude;
+  int numObjects  = 0             : ;
+  int numQuads = 0                         :number of quads;
+  dir wdbobj_ref     objs[100] = {0}            :Building data;
+  generic double quads[600][4][3] = {{{0}}}     :list of quads;
+};
