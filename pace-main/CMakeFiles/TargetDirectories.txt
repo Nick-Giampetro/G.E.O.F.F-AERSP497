@@ -1,0 +1,6 @@
+C:/Users/jfeze/Documents/Documents/8.Fall 2023/AERSP Capstone/Git-The-Man-Overboard-AERSP497/pace-main/CMakeFiles/INSTALL.dir
+C:/Users/jfeze/Documents/Documents/8.Fall 2023/AERSP Capstone/Git-The-Man-Overboard-AERSP497/pace-main/CMakeFiles/ALL_BUILD.dir
+C:/Users/jfeze/Documents/Documents/8.Fall 2023/AERSP Capstone/Git-The-Man-Overboard-AERSP497/pace-main/CMakeFiles/ZERO_CHECK.dir
+C:/Users/jfeze/Documents/Documents/8.Fall 2023/AERSP Capstone/Git-The-Man-Overboard-AERSP497/pace-main/rmax/CMakeFiles/workversion.dir
+C:/Users/jfeze/Documents/Documents/8.Fall 2023/AERSP Capstone/Git-The-Man-Overboard-AERSP497/pace-main/rmax/CMakeFiles/rmax.dir
+C:/Users/jfeze/Documents/Documents/8.Fall 2023/AERSP Capstone/Git-The-Man-Overboard-AERSP497/pace-main/rmax/CMakeFiles/INSTALL.dir

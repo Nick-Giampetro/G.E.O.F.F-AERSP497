@@ -1,0 +1,234 @@
+^C:\USERS\JFEZE\SOURCE\REPOS\PACE-MAIN\PACE-MAIN\RMAX\ROOT.DB
+setlocal
+cd C:\Users\jfeze\source\repos\pace-main\pace-main\rmax
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+C:\Users\jfeze\source\repos\pace-main\pace-main\central\x86-win32-vs2010\bin\dbp.exe -IC:/Users/jfeze/source/repos/pace-main/pace-main -IC:/Users/jfeze/source/repos/pace-main/pace-main/central/x86-win32-vs2010/include C:/Users/jfeze/source/repos/pace-main/pace-main/rmax/root.db
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JFEZE\SOURCE\REPOS\PACE-MAIN\PACE-MAIN\RMAX\JOYINPUTS.DB
+setlocal
+cd C:\Users\jfeze\source\repos\pace-main\pace-main\rmax
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+C:\Users\jfeze\source\repos\pace-main\pace-main\central\x86-win32-vs2010\bin\dbp.exe -IC:/Users/jfeze/source/repos/pace-main/pace-main -IC:/Users/jfeze/source/repos/pace-main/pace-main/central/x86-win32-vs2010/include C:/Users/jfeze/source/repos/pace-main/pace-main/rmax/joyinputs.db
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JFEZE\SOURCE\REPOS\PACE-MAIN\PACE-MAIN\RMAX\GCS.DB
+setlocal
+cd C:\Users\jfeze\source\repos\pace-main\pace-main\rmax
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+C:\Users\jfeze\source\repos\pace-main\pace-main\central\x86-win32-vs2010\bin\dbp.exe -IC:/Users/jfeze/source/repos/pace-main/pace-main -IC:/Users/jfeze/source/repos/pace-main/pace-main/central/x86-win32-vs2010/include C:/Users/jfeze/source/repos/pace-main/pace-main/rmax/gcs.db
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JFEZE\SOURCE\REPOS\PACE-MAIN\PACE-MAIN\RMAX\SCENE.DB
+setlocal
+cd C:\Users\jfeze\source\repos\pace-main\pace-main\rmax
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+C:\Users\jfeze\source\repos\pace-main\pace-main\central\x86-win32-vs2010\bin\dbp.exe -IC:/Users/jfeze/source/repos/pace-main/pace-main -IC:/Users/jfeze/source/repos/pace-main/pace-main/central/x86-win32-vs2010/include C:/Users/jfeze/source/repos/pace-main/pace-main/rmax/scene.db
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JFEZE\SOURCE\REPOS\PACE-MAIN\PACE-MAIN\RMAX\GENERIC.DB
+setlocal
+cd C:\Users\jfeze\source\repos\pace-main\pace-main\rmax
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+C:\Users\jfeze\source\repos\pace-main\pace-main\central\x86-win32-vs2010\bin\dbp.exe -IC:/Users/jfeze/source/repos/pace-main/pace-main -IC:/Users/jfeze/source/repos/pace-main/pace-main/central/x86-win32-vs2010/include C:/Users/jfeze/source/repos/pace-main/pace-main/rmax/generic.db
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JFEZE\SOURCE\REPOS\PACE-MAIN\PACE-MAIN\RMAX\ONBOARD.DB
+setlocal
+cd C:\Users\jfeze\source\repos\pace-main\pace-main\rmax
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+C:\Users\jfeze\source\repos\pace-main\pace-main\central\x86-win32-vs2010\bin\dbp.exe -IC:/Users/jfeze/source/repos/pace-main/pace-main -IC:/Users/jfeze/source/repos/pace-main/pace-main/central/x86-win32-vs2010/include C:/Users/jfeze/source/repos/pace-main/pace-main/rmax/onboard.db
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JFEZE\SOURCE\REPOS\PACE-MAIN\PACE-MAIN\RMAX\SENSORS.DB
+setlocal
+cd C:\Users\jfeze\source\repos\pace-main\pace-main\rmax
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+C:\Users\jfeze\source\repos\pace-main\pace-main\central\x86-win32-vs2010\bin\dbp.exe -IC:/Users/jfeze/source/repos/pace-main/pace-main -IC:/Users/jfeze/source/repos/pace-main/pace-main/central/x86-win32-vs2010/include C:/Users/jfeze/source/repos/pace-main/pace-main/rmax/sensors.db
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JFEZE\SOURCE\REPOS\PACE-MAIN\PACE-MAIN\RMAX\CONTROLLER.DB
+setlocal
+cd C:\Users\jfeze\source\repos\pace-main\pace-main\rmax
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+C:\Users\jfeze\source\repos\pace-main\pace-main\central\x86-win32-vs2010\bin\dbp.exe -IC:/Users/jfeze/source/repos/pace-main/pace-main -IC:/Users/jfeze/source/repos/pace-main/pace-main/central/x86-win32-vs2010/include C:/Users/jfeze/source/repos/pace-main/pace-main/rmax/controller.db
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JFEZE\SOURCE\REPOS\PACE-MAIN\PACE-MAIN\RMAX\REALSCENE.DB
+setlocal
+cd C:\Users\jfeze\source\repos\pace-main\pace-main\rmax
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+C:\Users\jfeze\source\repos\pace-main\pace-main\central\x86-win32-vs2010\bin\dbp.exe -IC:/Users/jfeze/source/repos/pace-main/pace-main -IC:/Users/jfeze/source/repos/pace-main/pace-main/central/x86-win32-vs2010/include C:/Users/jfeze/source/repos/pace-main/pace-main/rmax/realScene.db
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JFEZE\SOURCE\REPOS\PACE-MAIN\PACE-MAIN\RMAX\NAVIGATION.DB
+setlocal
+cd C:\Users\jfeze\source\repos\pace-main\pace-main\rmax
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+C:\Users\jfeze\source\repos\pace-main\pace-main\central\x86-win32-vs2010\bin\dbp.exe -IC:/Users/jfeze/source/repos/pace-main/pace-main -IC:/Users/jfeze/source/repos/pace-main/pace-main/central/x86-win32-vs2010/include C:/Users/jfeze/source/repos/pace-main/pace-main/rmax/navigation.db
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JFEZE\SOURCE\REPOS\PACE-MAIN\PACE-MAIN\RMAX\DTED.DB
+setlocal
+cd C:\Users\jfeze\source\repos\pace-main\pace-main\rmax
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+C:\Users\jfeze\source\repos\pace-main\pace-main\central\x86-win32-vs2010\bin\dbp.exe -IC:/Users/jfeze/source/repos/pace-main/pace-main -IC:/Users/jfeze/source/repos/pace-main/pace-main/central/x86-win32-vs2010/include C:/Users/jfeze/source/repos/pace-main/pace-main/rmax/dted.db
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JFEZE\SOURCE\REPOS\PACE-MAIN\PACE-MAIN\RMAX\SI.DB
+setlocal
+cd C:\Users\jfeze\source\repos\pace-main\pace-main\rmax
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+C:\Users\jfeze\source\repos\pace-main\pace-main\central\x86-win32-vs2010\bin\dbp.exe -IC:/Users/jfeze/source/repos/pace-main/pace-main -IC:/Users/jfeze/source/repos/pace-main/pace-main/central/x86-win32-vs2010/include C:/Users/jfeze/source/repos/pace-main/pace-main/rmax/si.db
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JFEZE\SOURCE\REPOS\PACE-MAIN\PACE-MAIN\RMAX\LOGGER.DB
+setlocal
+cd C:\Users\jfeze\source\repos\pace-main\pace-main\rmax
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+C:\Users\jfeze\source\repos\pace-main\pace-main\central\x86-win32-vs2010\bin\dbp.exe -IC:/Users/jfeze/source/repos/pace-main/pace-main -IC:/Users/jfeze/source/repos/pace-main/pace-main/central/x86-win32-vs2010/include C:/Users/jfeze/source/repos/pace-main/pace-main/rmax/logger.db
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JFEZE\SOURCE\REPOS\PACE-MAIN\PACE-MAIN\RMAX\WDB.DB
+setlocal
+cd C:\Users\jfeze\source\repos\pace-main\pace-main\rmax
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+C:\Users\jfeze\source\repos\pace-main\pace-main\central\x86-win32-vs2010\bin\dbp.exe -IC:/Users/jfeze/source/repos/pace-main/pace-main -IC:/Users/jfeze/source/repos/pace-main/pace-main/central/x86-win32-vs2010/include C:/Users/jfeze/source/repos/pace-main/pace-main/rmax/wdb.db
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JFEZE\SOURCE\REPOS\PACE-MAIN\PACE-MAIN\RMAX\GEAR.DB
+setlocal
+cd C:\Users\jfeze\source\repos\pace-main\pace-main\rmax
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+C:\Users\jfeze\source\repos\pace-main\pace-main\central\x86-win32-vs2010\bin\dbp.exe -IC:/Users/jfeze/source/repos/pace-main/pace-main -IC:/Users/jfeze/source/repos/pace-main/pace-main/central/x86-win32-vs2010/include C:/Users/jfeze/source/repos/pace-main/pace-main/rmax/gear.db
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JFEZE\SOURCE\REPOS\PACE-MAIN\PACE-MAIN\RMAX\MOTION.DB
+setlocal
+cd C:\Users\jfeze\source\repos\pace-main\pace-main\rmax
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+C:\Users\jfeze\source\repos\pace-main\pace-main\central\x86-win32-vs2010\bin\dbp.exe -IC:/Users/jfeze/source/repos/pace-main/pace-main -IC:/Users/jfeze/source/repos/pace-main/pace-main/central/x86-win32-vs2010/include C:/Users/jfeze/source/repos/pace-main/pace-main/rmax/motion.db
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JFEZE\SOURCE\REPOS\PACE-MAIN\PACE-MAIN\RMAX\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/jfeze/source/repos/pace-main/pace-main "-BC:/Users/jfeze/Documents/Documents/8.Fall 2023/AERSP Capstone/Git-The-Man-Overboard-AERSP497/pace-main" --check-stamp-file "C:/Users/jfeze/Documents/Documents/8.Fall 2023/AERSP Capstone/Git-The-Man-Overboard-AERSP497/pace-main/rmax/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

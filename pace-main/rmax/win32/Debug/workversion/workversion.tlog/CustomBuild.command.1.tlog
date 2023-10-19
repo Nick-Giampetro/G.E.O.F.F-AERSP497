@@ -1,0 +1,20 @@
+^C:\USERS\JFEZE\DOCUMENTS\DOCUMENTS\8.FALL 2023\AERSP CAPSTONE\GIT-THE-MAN-OVERBOARD-AERSP497\PACE-MAIN\CMAKEFILES\0CDDF89FD35F725AE5D69A740E94BDD0\WORKVERSION.RULE
+setlocal
+call C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\workversion.bat
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\JFEZE\SOURCE\REPOS\PACE-MAIN\PACE-MAIN\RMAX\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/jfeze/source/repos/pace-main/pace-main "-BC:/Users/jfeze/Documents/Documents/8.Fall 2023/AERSP Capstone/Git-The-Man-Overboard-AERSP497/pace-main" --check-stamp-file "C:/Users/jfeze/Documents/Documents/8.Fall 2023/AERSP Capstone/Git-The-Man-Overboard-AERSP497/pace-main/rmax/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

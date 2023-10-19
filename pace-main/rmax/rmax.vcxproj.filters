@@ -1,0 +1,473 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\main.cpp">
+      <Filter>main</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\joyinputs.c">
+      <Filter>gcs(offboard)</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\gcs.c">
+      <Filter>gcs(offboard)</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\panel.c">
+      <Filter>gcs(offboard)</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\scene.c">
+      <Filter>graphics(3D)</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\scene_multirotor.c">
+      <Filter>graphics(3D)\objects</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\texture.c">
+      <Filter>graphics(3D)</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\commands.cpp">
+      <Filter>onboard</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\onboard.cpp">
+      <Filter>onboard</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\datalink.cpp">
+      <Filter>onboard\comm</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\sensors.cpp">
+      <Filter>onboard\sensors</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\novatel.cpp">
+      <Filter>onboard\sensors\gps</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\aglSensor.cpp">
+      <Filter>onboard\sensors\agl</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\controller.cpp">
+      <Filter>onboard\control</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\navigation.cpp">
+      <Filter>onboard\nav</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\dted.cpp">
+      <Filter>onboard\sensors\agl</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\collisiondetect.cpp">
+      <Filter>sim interface</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\si.c">
+      <Filter>sim interface</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\checksum.c">
+      <Filter>utils\network</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\serial.cpp">
+      <Filter>utils\network</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\logger.cpp">
+      <Filter>utils\logging</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\wdb.cpp">
+      <Filter>utils\world database</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\matrix.cpp">
+      <Filter>utils\math</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\vector.c">
+      <Filter>utils\math</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\gear.c">
+      <Filter>vehicle models</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\motion.c">
+      <Filter>vehicle models</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\xforms.c">
+      <Filter>vehicle models</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\motion_multirotor.c">
+      <Filter>vehicle models\multirotor</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\aeroMultirotor.c">
+      <Filter>vehicle models\multirotor</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\rotorsMultirotor.c">
+      <Filter>vehicle models\multirotor</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\ether.cpp">
+      <Filter>utils\network</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\root_def.c">
+      <Filter>dbcode</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\joyinputs_def.c">
+      <Filter>dbcode</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\gcs_def.c">
+      <Filter>dbcode</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\scene_def.c">
+      <Filter>dbcode</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\generic_def.c">
+      <Filter>dbcode</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\onboard_def.c">
+      <Filter>dbcode</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\sensors_def.c">
+      <Filter>dbcode</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\controller_def.c">
+      <Filter>dbcode</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\realScene_def.c">
+      <Filter>dbcode</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\navigation_def.c">
+      <Filter>dbcode</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\dted_def.c">
+      <Filter>dbcode</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\si_def.c">
+      <Filter>dbcode</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\logger_def.c">
+      <Filter>dbcode</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\wdb_def.c">
+      <Filter>dbcode</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\gear_def.c">
+      <Filter>dbcode</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\motion_def.c">
+      <Filter>dbcode</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\root_db.c">
+      <Filter>dbcode</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\joyinputs_db.c">
+      <Filter>dbcode</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\gcs_db.c">
+      <Filter>dbcode</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\scene_db.c">
+      <Filter>dbcode</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\generic_db.c">
+      <Filter>dbcode</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\onboard_db.c">
+      <Filter>dbcode</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\sensors_db.c">
+      <Filter>dbcode</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\controller_db.c">
+      <Filter>dbcode</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\realScene_db.c">
+      <Filter>dbcode</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\navigation_db.c">
+      <Filter>dbcode</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\dted_db.c">
+      <Filter>dbcode</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\si_db.c">
+      <Filter>dbcode</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\logger_db.c">
+      <Filter>dbcode</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\wdb_db.c">
+      <Filter>dbcode</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\gear_db.c">
+      <Filter>dbcode</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\motion_db.c">
+      <Filter>dbcode</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\main.h">
+      <Filter>main</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\joyinputs.h">
+      <Filter>gcs(offboard)</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\gcs.h">
+      <Filter>gcs(offboard)</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\panel.h">
+      <Filter>gcs(offboard)</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\scene.h">
+      <Filter>graphics(3D)</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\scene_multirotor.h">
+      <Filter>graphics(3D)\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\texture.h">
+      <Filter>graphics(3D)</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\commands.h">
+      <Filter>onboard</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\onboard.h">
+      <Filter>onboard</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\datalink.h">
+      <Filter>onboard\comm</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\sensors.h">
+      <Filter>onboard\sensors</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\novatel.h">
+      <Filter>onboard\sensors\gps</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\aglSensor.h">
+      <Filter>onboard\sensors\agl</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\controller.h">
+      <Filter>onboard\control</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\navigation.h">
+      <Filter>onboard\nav</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\dted.h">
+      <Filter>onboard\sensors\agl</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\collisiondetect.h">
+      <Filter>sim interface</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\si.h">
+      <Filter>sim interface</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\checksum.h">
+      <Filter>utils\network</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\serial.h">
+      <Filter>utils\network</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\logger.h">
+      <Filter>utils\logging</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\wdb.h">
+      <Filter>utils\world database</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\matrix.h">
+      <Filter>utils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\vector.h">
+      <Filter>utils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\gear.h">
+      <Filter>vehicle models</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\motion.h">
+      <Filter>vehicle models</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\xforms.h">
+      <Filter>vehicle models</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\motion_multirotor.h">
+      <Filter>vehicle models\multirotor</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\aeroMultirotor.h">
+      <Filter>vehicle models\multirotor</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\rotorsMultirotor.h">
+      <Filter>vehicle models\multirotor</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\ether.h">
+      <Filter>utils\network</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\root_ref.h">
+      <Filter>dbcode</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\joyinputs_ref.h">
+      <Filter>dbcode</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\gcs_ref.h">
+      <Filter>dbcode</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\scene_ref.h">
+      <Filter>dbcode</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\generic_ref.h">
+      <Filter>dbcode</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\onboard_ref.h">
+      <Filter>dbcode</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\sensors_ref.h">
+      <Filter>dbcode</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\controller_ref.h">
+      <Filter>dbcode</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\realScene_ref.h">
+      <Filter>dbcode</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\navigation_ref.h">
+      <Filter>dbcode</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\dted_ref.h">
+      <Filter>dbcode</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\si_ref.h">
+      <Filter>dbcode</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\logger_ref.h">
+      <Filter>dbcode</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\wdb_ref.h">
+      <Filter>dbcode</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\gear_ref.h">
+      <Filter>dbcode</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\motion_ref.h">
+      <Filter>dbcode</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\root.db">
+      <Filter>main</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\joyinputs.db">
+      <Filter>gcs(offboard)</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\gcs.db">
+      <Filter>gcs(offboard)</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\scene.db">
+      <Filter>graphics(3D)</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\generic.db">
+      <Filter>graphics(3D)\objects</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\onboard.db">
+      <Filter>onboard</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\sensors.db">
+      <Filter>onboard\sensors</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\controller.db">
+      <Filter>onboard\control</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\realScene.db">
+      <Filter>onboard\control</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\navigation.db">
+      <Filter>onboard\nav</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\dted.db">
+      <Filter>onboard\sensors\agl</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\si.db">
+      <Filter>sim interface</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\logger.db">
+      <Filter>utils\logging</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\wdb.db">
+      <Filter>utils\world database</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\gear.db">
+      <Filter>vehicle models</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\motion.db">
+      <Filter>vehicle models</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\rmax.dbh">
+      <Filter>main</Filter>
+    </None>
+    <None Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\flightplan.dbh">
+      <Filter>gcs(offboard)</Filter>
+    </None>
+    <None Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\datalink.dbh">
+      <Filter>onboard\comm</Filter>
+    </None>
+    <None Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\gps.dbh">
+      <Filter>onboard\sensors\gps</Filter>
+    </None>
+    <None Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\serial.dbh">
+      <Filter>utils\network</Filter>
+    </None>
+    <None Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\wdb.dbh">
+      <Filter>utils\world database</Filter>
+    </None>
+    <None Include="C:\Users\jfeze\source\repos\pace-main\pace-main\rmax\wmm.dbh">
+      <Filter>utils\world database</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="dbcode">
+      <UniqueIdentifier>{5BD506B2-EFB0-3DDF-995C-B76E5DB1441F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gcs(offboard)">
+      <UniqueIdentifier>{7C4DFED3-F5C9-3019-8B07-1F1648F4418C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="graphics(3D)">
+      <UniqueIdentifier>{D5BC7DD7-7B02-3B91-BC53-51417CEE55E1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="graphics(3D)\objects">
+      <UniqueIdentifier>{7BFEF901-59EF-3E19-A5D5-8958CAAF3AD1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="main">
+      <UniqueIdentifier>{07249AA2-AA1C-3D49-87FD-4A58F6F0DD7F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="onboard">
+      <UniqueIdentifier>{71550690-173E-3A69-BCE0-6D959C899553}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="onboard\comm">
+      <UniqueIdentifier>{3B43E907-4A9E-36EB-977B-AA364C39389B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="onboard\control">
+      <UniqueIdentifier>{965065D2-1BF7-39DA-90F0-E0468B5636C5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="onboard\nav">
+      <UniqueIdentifier>{0A5FA9A8-A4C0-393B-93F2-2A45697BD44F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="onboard\sensors">
+      <UniqueIdentifier>{059A1398-DB5F-36BC-8007-431BB9C74D39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="onboard\sensors\agl">
+      <UniqueIdentifier>{0E64B644-B544-3C02-9D49-60773D29428B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="onboard\sensors\gps">
+      <UniqueIdentifier>{2B1AA089-DB51-38D1-9B33-D9448C21190E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sim interface">
+      <UniqueIdentifier>{78424466-5DB6-370B-9A70-93593BAEC515}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utils">
+      <UniqueIdentifier>{40E446C0-03B2-3877-81FA-532BDB770AD8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utils\logging">
+      <UniqueIdentifier>{514C0ADC-09FD-3E53-9E40-C1A615A7B2B8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utils\math">
+      <UniqueIdentifier>{AAC4A5EF-F985-3473-87AD-36E5E5487C36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utils\network">
+      <UniqueIdentifier>{AF661D01-15BA-3AB8-B2E5-797BFFC83D22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utils\world database">
+      <UniqueIdentifier>{C1EE4505-3508-3D11-B8E5-F8C7715F5E4D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vehicle models">
+      <UniqueIdentifier>{0614E17F-6AF8-3DA4-BA1F-6208C6F80C7F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vehicle models\multirotor">
+      <UniqueIdentifier>{CE312B25-C876-32F5-8F8E-22E21340D1A2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
