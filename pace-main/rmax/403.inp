@@ -1,7 +1,0 @@
-//gcs0Ci.mode = 0 # use RC stick (default)
-
-gcs0Ci.mode = 1 # use mouse to drag the virtual stick
-
-#@example_datalink
-@example_hitl
-

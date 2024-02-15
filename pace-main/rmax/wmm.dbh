@@ -1,5 +1,0 @@
-%rem  World Magnetic model (2015v2)
-
-%define WMM_G10 (-29438.2 +  7.0*(2019.5 - 2015))
-%define WMM_G11 ( -1493.5 +  9.0*(2019.5 - 2015))
-%define WMM_H11 (  4796.3 - 30.2*(2019.5 - 2015))
