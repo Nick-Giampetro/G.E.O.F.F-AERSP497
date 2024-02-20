@@ -25,9 +25,9 @@
 #include "Arduino.h"
 
 
-/*
-  state = [q0,q1,q2,q3,x,y,z,u,v,w,bax,bay,baz,bwx,bwy,bwz]
-*/
+
+//state = [q0,q1,q2,q3,x,y,z,u,v,w,bax,bay,baz,bwx,bwy,bwz]
+
 
 class Navigation
 {
