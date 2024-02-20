@@ -28,6 +28,7 @@
 #include "sensors.h"
 #include "motors.h"
 #include "rc_pilot.h"
+#include "controller.h"
 #include <Servo.h>
 
 Sensors sens;
@@ -36,6 +37,7 @@ RC_PILOT rc;
 
 Motors motors;
 Servo myservo;
+Controller cntrl;
 int pos = 0;
 uint16_t i, thr, yaw, roll, pitch, kill, servo;
 
@@ -46,6 +48,7 @@ void setup() {
   motors.init();
   rc.init();
   sens.init();
+  cntrl.init();
   myservo.attach(11);
   // motors.calibrate();
   pinMode(LED_BUILTIN, OUTPUT);
@@ -61,6 +64,7 @@ void loop() {
   digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
   rc.update();
   rc.print();
+  cntrl.update();
 
   thr = rc.rc_in.THR;
   yaw = rc.rc_in.YAW;
