@@ -52,8 +52,6 @@ void setup() {
   myservo.attach(11);
   // motors.calibrate();
   pinMode(LED_BUILTIN, OUTPUT);
-  
-  
 
 }
 
@@ -64,7 +62,7 @@ void loop() {
   digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
   rc.update();
   rc.print();
-  cntrl.update();
+  
 
   thr = rc.rc_in.THR;
   yaw = rc.rc_in.YAW;
@@ -73,7 +71,7 @@ void loop() {
   kill = rc.rc_in.AUX;
   servo = rc.rc_in.AUX2;
 
-  uint16_t pwm[4] = {thr,thr,thr,thr};
+  uint16_t pwm[4] = {thr,yaw,roll,pitch};
 
   if (i < 1005 && safe == 1){
     safe = 0;
@@ -92,7 +90,9 @@ void loop() {
   }
   
   if (kill > 1500 && safe == 0){
-    motors.update(pwm);
+    cntrl.update(pwm);
+    //motors.update(pwm);
+    
   }
   else{
     pwm[0] = 1000;
@@ -100,7 +100,8 @@ void loop() {
     pwm[2] = 1000;
     pwm[3] = 1000;
     Serial.println(safe);
-    motors.update(pwm);
+    //motors.update(pwm);
+    cntrl.update(pwm);
     safe = 1;
   }
 

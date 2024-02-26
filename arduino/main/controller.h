@@ -20,8 +20,11 @@
 
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
-
+#define NUM_MOTORS 4
 #include "math_utils.h"
+#include "pwm.h"
+#include "motors.h"
+#include "Arduino.h"
 
 #define P_ROLL_ANGLE 0.9
 #define P_PITCH_ANGLE 0.9
@@ -44,7 +47,7 @@ public:
 	~Controller();
 
 	void init();
-  void update();
+  void update(uint16_t[NUM_MOTORS]);
   void print();
 
 	uint16_t pwm_out[MOTOR_NUM];
@@ -58,7 +61,7 @@ private:
   //void attitude_controller(const sens_t&, const guidance_t&);
   //void altitude_controller(const guidance_t&);
   void mixer();
-
+  PwmOut motor[4] = {PwmOut(3), PwmOut(5), PwmOut(9), PwmOut(10)};
   float last_rate[3];
 };
 

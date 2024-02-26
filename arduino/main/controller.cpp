@@ -22,15 +22,7 @@
 
 Controller::Controller()
 {
-	for ( auto i = 0; i < MOTOR_NUM; i++ )
-	{
-		this->pwm_out[i] = MIN_PWM_OUT;
-	}
 
-  thr_out = 0;
-  roll_out = 0;
-  pitch_out = 0;
-  yaw_out = 0;
 }
 
 Controller::~Controller()
@@ -42,34 +34,33 @@ void Controller::init()
 
 }
 
-void Controller::update()
+void Controller::update(uint16_t pwm[NUM_MOTORS])
 {
-  //this->attitude_controller(sens, cmd);
-  //this->altitude_controller(cmd);
-  this->mixer();
-}
-/*
-void Controller::attitude_controller(const sens_t& sens, const guidance_t& cmd)
-{
-  // attitude and rate control for roll and pitch
-  this->roll_out  = P_ROLL_ANGLE*(FF_ROLL*cmd.ROLL - sens.euler[0]) - P_ROLL_RATE*sens.gyr[0] - D_ROLL_RATE*(sens.gyr[0] - this->last_rate[0]);
-  this->pitch_out = P_PITCH_ANGLE*(FF_PITCH*cmd.PITCH - sens.euler[1]) - P_PITCH_RATE*sens.gyr[1] - D_PITCH_RATE*(sens.gyr[1] - this->last_rate[1]);
-
-  this->yaw_out   = P_YAW_RATE * (cmd.YAW - sens.gyr[2]);
-
-  for(uint8_t i = 0; i < 3; i++)
+  for(uint8_t i=0; i<NUM_MOTORS; i++) 
   {
-    this->last_rate[i] = sens.gyr[i];
+    pwm[i] = constrain(pwm[i], MIN_PWM_OUT, MAX_PWM_OUT);
+    //motor[i].pulseWidth_us(pwm[i]);
   }
+
+ 
+  //this->roll_out = constrain(this->roll_out, -PWM_LIMIT, PWM_LIMIT);
+  //this->pitch_out = constrain(this->pitch_out, -PWM_LIMIT, PWM_LIMIT);
+  //this->yaw_out = constrain(this->yaw_out, -PWM_LIMIT, PWM_LIMIT);
+  //this->thr_out = constrain(this->thr_out, MIN_PWM_OUT, MAX_PWM_OUT);
+
+  //this->pwm_out[FRONT_RIGHT] = this->pwm[0] - this->pwm[2] + this->pwm[3] + this->pwm[1];
+  motor[0].pulseWidth_us(pwm[0] - pwm[2] + pwm[3] + pwm[1]);
+  //this->pwm_out[FRONT_LEFT]  = this->pwm[0] + this->pwm[2] + this->pwm[3] - this->pwm[1];
+  motor[1].pulseWidth_us(pwm[0] + pwm[2] + pwm[3] - pwm[1]);
+  //this->pwm_out[REAR_LEFT]   = this->pwm[0] + this->pwm[2] - this->pwm[3] + this->pwm[1];
+  motor[2].pulseWidth_us(pwm[0] + pwm[2] - pwm[3] + pwm[1]);
+  //this->pwm_out[REAR_RIGHT]  = this->pwm[0] - this->pwm[2] - this->pwm[3] - this->pwm[1];
+  motor[3].pulseWidth_us(pwm[0] - pwm[2] - pwm[3] - pwm[1]);
+
+  //for(uint8_t i=0; i<MOTOR_NUM; i++) this->pwm_out[i] = constrain(this->pwm_out[i], MIN_PWM_OUT, MAX_PWM_OUT);
 }
 
-void Controller::altitude_controller(const guidance_t& cmd)
-{
-  // throttle is passthrough since no altitude control (yet)
-  this->thr_out = cmd.THR;
-}
-*/
-void Controller::mixer()
+/*void Controller::mixer()
 {
   this->roll_out = constrain(this->roll_out, -PWM_LIMIT, PWM_LIMIT);
   this->pitch_out = constrain(this->pitch_out, -PWM_LIMIT, PWM_LIMIT);
@@ -82,7 +73,7 @@ void Controller::mixer()
   this->pwm_out[REAR_RIGHT]  = this->thr_out - this->roll_out - this->pitch_out - this->yaw_out;
 
   for(uint8_t i=0; i<MOTOR_NUM; i++) this->pwm_out[i] = constrain(this->pwm_out[i], MIN_PWM_OUT, MAX_PWM_OUT);
-}
+}*/
 
 void Controller::print()
 {
