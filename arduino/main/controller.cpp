@@ -48,12 +48,15 @@ void Controller::update()
   this->altitude_controller(cmd);
   this->mixer();
 }
-/*
+
 void Controller::attitude_controller(const sens_t& sens, const guidance_t& cmd)
 {
+  double KP[3] = {0.35, 0.35, 0.25} ;
+  double KD[3] = {0.15, 0.15, 0.25} ;
+
   // attitude and rate control for roll and pitch
-  this->roll_out  = P_ROLL_ANGLE*(FF_ROLL*cmd.ROLL - sens.euler[0]) - P_ROLL_RATE*sens.gyr[0] - D_ROLL_RATE*(sens.gyr[0] - this->last_rate[0]);
-  this->pitch_out = P_PITCH_ANGLE*(FF_PITCH*cmd.PITCH - sens.euler[1]) - P_PITCH_RATE*sens.gyr[1] - D_PITCH_RATE*(sens.gyr[1] - this->last_rate[1]);
+  this->roll_out  = KP[0] * (cmd.ROLL - sens.euler[0]) - KD[0] * sens.gyr[0];
+  this->pitch_out = KP[1] * (cmd.PITCH - sens.euler[1]) - KD[1] * sens.gyr[1];
 
   this->yaw_out   = P_YAW_RATE * (cmd.YAW - sens.gyr[2]);
 
@@ -99,4 +102,17 @@ void Controller::print()
   Serial.println(this->pwm_out[REAR_RIGHT]);
 }
 
- 
+
+double Controller::hmodRad(double h) {
+
+	double dh;
+	int i;
+
+	if (h > 0)
+		i = (int)(h / (2 * C_PI) + 0.5);
+	else
+		i = (int)(h / (2 * C_PI) - 0.5);
+	dh = h - C_PI * 2 * i;
+
+	return dh;
+}
