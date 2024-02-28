@@ -20,6 +20,10 @@
 
 #include "controller.h"
 
+#ifndef C_PI
+#define C_PI 3.14159265358979323846264338327950288419716939937511
+#endif
+
 Controller::Controller()
 {
 	for ( auto i = 0; i < MOTOR_NUM; i++ )
@@ -58,7 +62,7 @@ void Controller::attitude_controller(const sens_t& sens, const guidance_t& cmd)
   this->roll_out  = KP[0] * (cmd.ROLL - sens.euler[0]) - KD[0] * sens.gyr[0];
   this->pitch_out = KP[1] * (cmd.PITCH - sens.euler[1]) - KD[1] * sens.gyr[1];
 
-  this->yaw_out   = P_YAW_RATE * (cmd.YAW - sens.gyr[2]);
+  this->yaw_out   = KP[2] * (float)this->hmodRad(cmd.YAW * C_PI / 180  - sens.euler[2]) - KD[2] * sens.gry[2];
 
   for(uint8_t i = 0; i < 3; i++)
   {
