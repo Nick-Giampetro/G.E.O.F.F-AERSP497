@@ -18,48 +18,34 @@
  * EndCopyright
  ***/
 
+#ifndef NAVIGATION_H
+#define NAVIGATION_H
+
 #include "math_utils.h"
-#ifndef AERSP_SENSORS_H
-#define AERSP_SENSORS_H
 
-#define DEG2RAD 0.0174533
-#define RAD2DEG 57.2958
-#define MILLI2BASE 0.001
-
-#define POZYX_GYR_SCALE 0.0625
-#define POZYX_MAG_SCALE 0.0625
-#define POZYX_EULER_SCALE 0.0625
-#define POZYX_QUAT_SCALE 1.0/16384.0
-
-#define GRAVITY 9.81
-
-#define NUM_CALIBRATION 500
-#define LOWPASS_WEIGHT 0.9
 /*
-struct sens_t
-{
-  float gyr[3];
-  float acc[3];
-  float mag[3];
-  float euler[3];
-  float quat[4];
-};
+  state = [q0,q1,q2,q3,x,y,z,u,v,w,bax,bay,baz,bwx,bwy,bwz]
 */
-class Sensors
+
+class Navigation
 {
 public:
-  Sensors();
-  ~Sensors();
+  Navigation();
+  ~Navigation();
 
   void init();
-  void update();
+  void update(const sens_t&, const float&);
+
   void print();
 
-  sens_t data;
+  state_t s; // x^hat+
+  state_t s_dot; // x^hat_dot
+  state_t s_predicted; // x^hat-
+  
+  euler_t angles;
 
 private:
-  sens_t bias;
-  bool calibration_flag;
+  void process_model(const sens_t&, const state_t&, state_t&);
 };
 
 #endif

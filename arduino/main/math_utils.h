@@ -50,7 +50,7 @@ using vec_t = Matrix<3, 1>;
 using mat3x3_t = Matrix<3, 3>;
 using mat4x4_t = Matrix<4, 4>;
 using euler_t = Matrix<3, 1>;
-/*
+
 struct sens_t
 {
   float gyr[3];
@@ -98,7 +98,7 @@ struct guidance_t
   float PITCH;
   float YAW;
 };
-*/
+
 enum motor 
 {
   FRONT_RIGHT,
@@ -106,7 +106,7 @@ enum motor
   REAR_LEFT,
   REAR_RIGHT
 };
-/*
+
 enum rc 
 {
   ROLL,
@@ -116,7 +116,7 @@ enum rc
   AUX,
   AUX2
 };
-*/
+
 mat3x3_t rotation_from_quaternion(const quat_t&);
 void normalize_quaternion(quat_t&);
 void quat2euler( const quat_t& q, float& phi, float& theta, float& psi );

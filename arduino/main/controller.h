@@ -47,10 +47,10 @@ public:
 	~Controller();
 
 	void init();
-  void update(uint16_t[NUM_MOTORS]);
+  void update(const sens_t&, const state_t&, const guidance_t&);
   void print();
 
-	uint16_t pwm_out[MOTOR_NUM];
+	int16_t pwm_out[MOTOR_NUM];
 
   float thr_out;
   float roll_out;
@@ -58,10 +58,11 @@ public:
   float yaw_out;
 
 private:
-  //void attitude_controller(const sens_t&, const guidance_t&);
-  //void altitude_controller(const guidance_t&);
+  
+  void attitude_controller(const sens_t&, const guidance_t&);
+  void altitude_controller(const guidance_t&);
   void mixer();
-  PwmOut motor[4] = {PwmOut(3), PwmOut(5), PwmOut(9), PwmOut(10)};
+
   float last_rate[3];
 };
 
