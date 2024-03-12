@@ -24,6 +24,8 @@
 #define C_PI 3.14159265358979323846264338327950288419716939937511
 #endif
 
+#define LIMIT(x,xl,xu) ((x)>=(xu)?(xu):((x)<(xl)?(xl):(x)))
+
 Controller::Controller()
 {
 	for ( auto i = 0; i < MOTOR_NUM; i++ )
@@ -74,6 +76,14 @@ void Controller::altitude_controller(const guidance_t& cmd)
 {
   // throttle is passthrough since no altitude control (yet)
   this->thr_out = cmd.THR;
+
+  // working on the controller but need nav
+  
+  // this->Altitude_integral += (float)cntrl->work->dt * (- posDes_z - nav_p_z);
+  // this->Altitude_integral = LIMIT(this->Altitude_integral, -1000, 1000);
+  // this->thr_out = - P_ALTITUDE_POS * ( - posDes_z - nav_p_z)
+	//                 - P_ALTITUDE_VEL * (-nav_v_z)
+	//                 - P_ALTITUDE_INT * this->Altitude_integral ;
 }
 
 void Controller::mixer()

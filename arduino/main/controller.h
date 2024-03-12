@@ -34,6 +34,16 @@
 #define P_PITCH_RATE 0.15
 #define P_YAW_RATE 0.25
 
+#define P_X_POS 0.03
+#define P_Y_POS 0.03
+#define P_ALTITUDE_POS 0.1
+
+#define P_X_VEL 0.08
+#define P_Y_VEL 0.08
+#define P_ALTITUDE_VEL 0.08
+
+#define P_ALTITUDE_INT 0.01
+
 #define D_ROLL_RATE 1.0
 #define D_PITCH_RATE 1.0
 
@@ -66,6 +76,7 @@ private:
   double hmodRad(double);
 
   float last_rate[3];
+  float Altitude_integral = 0;
 };
 
 #endif
