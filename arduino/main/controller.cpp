@@ -46,10 +46,10 @@ void Controller::init()
 
 }
 
-void Controller::update()
+void Controller::update(const sens_t& sens, const state_t& state, const guidance_t& cmd)
 {
   this->attitude_controller(sens, cmd);
-  //this->altitude_controller(cmd);
+  this->altitude_controller(cmd);
   this->mixer();
 }
 
