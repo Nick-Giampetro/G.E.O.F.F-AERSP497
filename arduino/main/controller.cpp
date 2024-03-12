@@ -76,7 +76,7 @@ void Controller::altitude_controller(const guidance_t& cmd)
   // throttle is passthrough since no altitude control (yet)
   this->thr_out = cmd.THR;
 }
-*/
+
 void Controller::mixer()
 {
   this->roll_out = constrain(this->roll_out, -PWM_LIMIT, PWM_LIMIT);
@@ -105,19 +105,4 @@ void Controller::print()
   Serial.print(  this->pwm_out[FRONT_LEFT]);  Serial.print(", "); 
   Serial.print(  this->pwm_out[REAR_LEFT]);   Serial.print(", ");  
   Serial.println(this->pwm_out[REAR_RIGHT]);
-}
-
-
-double Controller::hmodRad(double h) {
-
-	double dh;
-	int i;
-
-	if (h > 0)
-		i = (int)(h / (2 * C_PI) + 0.5);
-	else
-		i = (int)(h / (2 * C_PI) - 0.5);
-	dh = h - C_PI * 2 * i;
-
-	return dh;
 }
