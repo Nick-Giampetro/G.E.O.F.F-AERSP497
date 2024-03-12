@@ -59,7 +59,7 @@ void Controller::attitude_controller(const sens_t& sens, const guidance_t& cmd)
   double KD[3] = {0.15, 0.15, 0.25} ;
 
   // attitude and rate control for roll and pitch
-  this->roll_out  = KP[0] * (cmd.ROLL - sens.euler[0]) - KD[0] * sens.gyr[0];
+  this->roll_out  = P_ROLL_ANGLE * (cmd.ROLL - sens.euler[0]) - KD[0] * sens.gyr[0];
   this->pitch_out = KP[1] * (cmd.PITCH - sens.euler[1]) - KD[1] * sens.gyr[1];
 
   this->yaw_out   = KP[2] * (float)this->hmodRad(cmd.YAW * C_PI / 180  - sens.euler[2]) - KD[2] * sens.gyr[2];
@@ -69,7 +69,6 @@ void Controller::attitude_controller(const sens_t& sens, const guidance_t& cmd)
     this->last_rate[i] = sens.gyr[i];
   }
 }
-*/
 
 void Controller::altitude_controller(const guidance_t& cmd)
 {
@@ -105,4 +104,18 @@ void Controller::print()
   Serial.print(  this->pwm_out[FRONT_LEFT]);  Serial.print(", "); 
   Serial.print(  this->pwm_out[REAR_LEFT]);   Serial.print(", ");  
   Serial.println(this->pwm_out[REAR_RIGHT]);
+}
+
+double Controller::hmodRad(double h) {
+
+	double dh;
+	int i;
+
+	if (h > 0)
+		i = (int)(h / (2 * C_PI) + 0.5);
+	else
+		i = (int)(h / (2 * C_PI) - 0.5);
+	dh = h - C_PI * 2 * i;
+
+	return dh;
 }
