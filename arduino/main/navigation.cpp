@@ -111,6 +111,6 @@ void Navigation::print()
   // Serial << this->s_dot;
   // Serial.println();
 
-  Serial << this->angles * RAD2DEG;
+  //Serial << this->angles * RAD2DEG;
   Serial.println();
 }

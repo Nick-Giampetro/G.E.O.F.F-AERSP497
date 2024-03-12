@@ -18,6 +18,7 @@
  * EndCopyright
  ***/
 
+#include "math_utils.h"
 #ifndef AERSP_SENSORS_H
 #define AERSP_SENSORS_H
 
@@ -34,7 +35,7 @@
 
 #define NUM_CALIBRATION 500
 #define LOWPASS_WEIGHT 0.9
-
+/*
 struct sens_t
 {
   float gyr[3];
@@ -43,7 +44,7 @@ struct sens_t
   float euler[3];
   float quat[4];
 };
-
+*/
 class Sensors
 {
 public:

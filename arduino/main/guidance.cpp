@@ -37,45 +37,8 @@ void Guidance::init()
 
 }
 
-void Guidance::update(const sens_t& sens, const rc_t& rc)
-{
-
-  this->cmd.THR = rc.THR; // throttle is passthrough since no altitude control (yet)
-  
-  if(rc.ROLL > rc.ROLL_MID){
-    this->cmd.ROLL = linear_map<float, int16_t>(rc.ROLL, rc.ROLL_MID, rc.ROLL_MAX, 0, ROLL_ANGLE_LIMIT);
-  }
-  else if(rc.ROLL < rc.ROLL_MID){
-    this->cmd.ROLL = linear_map<float, int16_t>(rc.ROLL, rc.ROLL_MIN, rc.ROLL_MID, -ROLL_ANGLE_LIMIT, 0);
-  }
-  else{
-    this->cmd.ROLL = 0;
-  }
-  
-  if(rc.PITCH > rc.PITCH_MID){
-    this->cmd.PITCH = linear_map<float, int16_t>(rc.PITCH, rc.PITCH_MID, rc.PITCH_MAX, 0, PITCH_ANGLE_LIMIT);
-  }
-  else if(rc.PITCH < rc.PITCH_MID){
-    this->cmd.PITCH = linear_map<float, int16_t>(rc.PITCH, rc.PITCH_MIN, rc.PITCH_MID, -PITCH_ANGLE_LIMIT, 0);
-  }
-  else{
-    this->cmd.PITCH = 0;
-  }
-
-  if(rc.YAW > rc.YAW_MID){
-    this->cmd.YAW = linear_map<float, int16_t>(rc.YAW, rc.YAW_MID, rc.YAW_MAX, 0, YAW_RATE_LIMIT);
-  }
-  else if(rc.YAW < rc.YAW_MID){
-    this->cmd.YAW = linear_map<float, int16_t>(rc.YAW, rc.YAW_MIN, rc.YAW_MID, -YAW_RATE_LIMIT, 0);
-  }
-  else{
-    this->cmd.YAW = 0;
-  }
-}
-
 void Guidance::update(const sens_t& sens, const state_t& state, const rc_t& rc)
 {
-
   this->cmd.THR = rc.THR; // throttle is passthrough since no altitude control (yet)
   
   if(rc.ROLL > rc.ROLL_MID){

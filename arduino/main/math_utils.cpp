@@ -113,3 +113,4 @@ void quat2euler( const quat_t& q, float& phi, float& theta, float& psi ) {
   float cosy_cosp = 1 - 2 * (q(2) * q(2) + q(3) * q(3));
   psi = atan2(siny_cosp, cosy_cosp);
 }
+

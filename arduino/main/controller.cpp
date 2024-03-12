@@ -48,8 +48,8 @@ void Controller::init()
 
 void Controller::update()
 {
-  //this->attitude_controller(sens, cmd);
-  this->altitude_controller(cmd);
+  this->attitude_controller(sens, cmd);
+  //this->altitude_controller(cmd);
   this->mixer();
 }
 
@@ -70,6 +70,7 @@ void Controller::attitude_controller(const sens_t& sens, const guidance_t& cmd)
   }
 }
 */
+/*
 void Controller::altitude_controller(const guidance_t& cmd)
 {
   // throttle is passthrough since no altitude control (yet)
