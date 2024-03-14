@@ -75,7 +75,7 @@ void loop() {
   digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
   rc.update();
   
-  //rc.print();
+  rc.print();
   //motors.print();
   thr = rc.rc_in.THR;
   yaw = rc.rc_in.YAW;
@@ -86,6 +86,7 @@ void loop() {
 
   int16_t pwm[4] = {thr,yaw,roll,pitch};
   
+  sens.update();
   gd.update(sens.data,nav.s,rc.rc_in);
   //gd.print();
   cntrl.update(sens.data, nav.s, gd.cmd);

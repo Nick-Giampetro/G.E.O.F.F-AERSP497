@@ -57,14 +57,11 @@ void Controller::update(const sens_t& sens, const state_t& state, const guidance
 
 void Controller::attitude_controller(const sens_t& sens, const guidance_t& cmd)
 {
-  double KP[3] = {0.35, 0.35, 0.25} ;
-  double KD[3] = {0.15, 0.15, 0.25} ;
-
   // attitude and rate control for roll and pitch
   this->roll_out  = P_ROLL_ANGLE * (cmd.ROLL - sens.euler[0]) - P_ROLL_RATE * sens.gyr[0];
-  this->pitch_out = P_PITCH_ANGLE * (cmd.PITCH - sens.euler[1]) - P_PITCH_RATE * sens.gyr[1];
+  this->pitch_out = P_PITCH_ANGLE *(cmd.PITCH - sens.euler[1]) - P_PITCH_RATE * sens.gyr[1];
 
-  this->yaw_out   = P_YAW_ANGLE * (float)this->hmodRad(cmd.YAW * C_PI / 180  - sens.euler[2]) - P_YAW_RATE * sens.gyr[2];
+  this->yaw_out   = P_YAW_ANGLE * (float)this->hmodRad(cmd.YAW  - sens.euler[2]) - P_YAW_RATE * sens.gyr[2];
 
   for(uint8_t i = 0; i < 3; i++)
   {
