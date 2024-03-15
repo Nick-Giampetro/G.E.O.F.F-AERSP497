@@ -75,7 +75,7 @@ void loop() {
   digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
   rc.update();
   
-  rc.print();
+  //rc.print();
   //motors.print();
   thr = rc.rc_in.THR;
   yaw = rc.rc_in.YAW;
