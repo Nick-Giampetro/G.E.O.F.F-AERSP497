@@ -98,7 +98,7 @@ void loop() {
     safe = 0;
   }
 
-  if (kill > 1500 && safe == 0){
+  if (kill > 1500 && safe == 0 && thr > 1050){
   
     //motors.update(pwm);
     //Serial.println(motors.limit(pwm[0] - pwm[2] + pwm[3] + pwm[1]));
