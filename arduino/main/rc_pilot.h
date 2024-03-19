@@ -22,6 +22,7 @@
 #define AERSP_RC_PILOT_H
 
 #include "Arduino.h"
+#include "math_utils.h"
 
 #define RC_CHANS 6
 
@@ -34,7 +35,7 @@ static uint8_t RX_Pins[RC_CHANS] = {15, 16, 17, 6, 8, 1};
 static uint16_t PCInt_RX_Pins[RC_CHANS] = {PCINT_RX_BITS};
 static volatile uint16_t rcValue[RC_CHANS];
 static volatile uint16_t edgeTime[RC_CHANS];
-
+/*
 enum rc 
 {
   ROLL,
@@ -75,7 +76,7 @@ struct rc_t
   int16_t AUX_MAX;
   int16_t AUX2_MAX;
 };
-
+*/
 class RC_PILOT
 {
 public:

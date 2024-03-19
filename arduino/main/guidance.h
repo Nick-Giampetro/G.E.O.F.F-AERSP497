@@ -18,48 +18,25 @@
  * EndCopyright
  ***/
 
+#ifndef GUIDANCE_H
+#define GUIDANCE_H
+
 #include "math_utils.h"
-#ifndef AERSP_SENSORS_H
-#define AERSP_SENSORS_H
 
-#define DEG2RAD 0.0174533
-#define RAD2DEG 57.2958
-#define MILLI2BASE 0.001
-
-#define POZYX_GYR_SCALE 0.0625
-#define POZYX_MAG_SCALE 0.0625
-#define POZYX_EULER_SCALE 0.0625
-#define POZYX_QUAT_SCALE 1.0/16384.0
-
-#define GRAVITY 9.81
-
-#define NUM_CALIBRATION 500
-#define LOWPASS_WEIGHT 0.9
-/*
-struct sens_t
-{
-  float gyr[3];
-  float acc[3];
-  float mag[3];
-  float euler[3];
-  float quat[4];
-};
-*/
-class Sensors
+class Guidance
 {
 public:
-  Sensors();
-  ~Sensors();
+	Guidance();
+	~Guidance();
 
-  void init();
-  void update();
+	void init();
+  void update(const sens_t&, const state_t&, const rc_t&);
   void print();
 
-  sens_t data;
+	guidance_t cmd;
 
 private:
-  sens_t bias;
-  bool calibration_flag;
+
 };
 
 #endif

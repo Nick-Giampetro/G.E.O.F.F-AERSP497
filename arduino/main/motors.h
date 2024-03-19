@@ -22,10 +22,8 @@
 #define AERSP_MOTORS_H
 
 #include "pwm.h"
+#include "math_utils.h"
 
-#define NUM_MOTORS 4
-#define MIN_PWM_OUT 900
-#define MAX_PWM_OUT 1900
 
 class Motors
 {
@@ -36,7 +34,8 @@ public:
   void init();
   void calibrate();
   void stop();
-  void update(uint16_t[NUM_MOTORS]);
+  void update(int16_t[MOTOR_NUM]);
+  void print();
 
 private:
   PwmOut motor[4] = {PwmOut(3), PwmOut(5), PwmOut(9), PwmOut(10)};
