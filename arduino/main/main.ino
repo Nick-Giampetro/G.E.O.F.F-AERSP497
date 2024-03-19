@@ -75,7 +75,7 @@ void loop() {
   digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
   rc.update();
   
-  //rc.print();
+  rc.print();
   //motors.print();
   thr = rc.rc_in.THR;
   yaw = rc.rc_in.YAW;
@@ -98,13 +98,15 @@ void loop() {
     safe = 0;
   }
 
-  if (kill > 1500 && safe == 0 && thr > 1050){
+  if (kill > 1500 && safe == 0){
   
     //motors.update(pwm);
     //Serial.println(motors.limit(pwm[0] - pwm[2] + pwm[3] + pwm[1]));
-    
-    motors.update(cntrl.pwm_out);
-    
+    if (thr > 1010)
+      motors.update(cntrl.pwm_out);
+    else
+      motors.stop();
+
   }
   else{
     
