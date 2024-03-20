@@ -47,6 +47,8 @@
 #define D_ROLL_RATE 1.0
 #define D_PITCH_RATE 1.0
 
+#define MAX_SPEED
+
 #define FF_ROLL 2
 #define FF_PITCH 2
 #define FF_YAW 2

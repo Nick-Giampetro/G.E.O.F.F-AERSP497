@@ -50,9 +50,21 @@ void Controller::init()
 
 void Controller::update(const sens_t& sens, const state_t& state, const guidance_t& cmd)
 {
+  this->velocity_controller(sens, cmd)
   this->attitude_controller(sens, cmd);
   this->altitude_controller(cmd);
   this->mixer();
+}
+
+void Controller::velocity_controller(const sens_t& sens, const guidance_t& cmd)
+{
+
+  
+
+  float VEL_X_CMD = LIMIT((P_X_VEL * POS_X_ERROR_HDG)) / P_X_POS, -MAX_SPEED , MAX_SPEED);
+  float VEL_Y_CMD = LIMIT((P_Y_VEL* POS_X_ERROR_HDG)) / P_Y_POS, -MAX_SPEED , MAX_SPEED);
+
+
 }
 
 void Controller::attitude_controller(const sens_t& sens, const guidance_t& cmd)
