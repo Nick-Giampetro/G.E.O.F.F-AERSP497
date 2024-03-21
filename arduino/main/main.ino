@@ -75,7 +75,7 @@ void loop() {
   digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
   rc.update();
   
-  rc.print();
+  //rc.print();
   //motors.print();
   thr = rc.rc_in.THR;
   yaw = rc.rc_in.YAW;
@@ -90,7 +90,7 @@ void loop() {
   gd.update(sens.data,nav.s,rc.rc_in);
   //gd.print();
   cntrl.update(sens.data, nav.s, gd.cmd);
-  cntrl.print();
+  //cntrl.print();
 
 
 
@@ -110,7 +110,7 @@ void loop() {
   }
   else{
     
-    Serial.println(safe);
+    //Serial.println(safe);
     motors.stop();
   
     safe = 1;
