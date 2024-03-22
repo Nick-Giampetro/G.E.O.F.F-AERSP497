@@ -81,8 +81,8 @@ void Controller::attitude_controller(const sens_t& sens, const guidance_t& cmd)
   this->roll_out  = P_ROLL_ANGLE * (cmd.ROLL + sens.euler[0]) + P_ROLL_RATE * sens.gyr[0] + D_ROLL_RATE*(sens.gyr[0] - this->last_rate[0]);
   this->pitch_out = - P_PITCH_ANGLE * (cmd.PITCH - sens.euler[1]) + P_PITCH_RATE * sens.gyr[1] + D_PITCH_RATE*(sens.gyr[1] - this->last_rate[1]);
 
-  // this->yaw_out   = P_YAW_ANGLE * (float)this->hmodRad(cmd.YAW  - sens.euler[2]) - P_YAW_RATE * sens.gyr[2];
-
+  //this->yaw_out   = P_YAW_ANGLE * (float)this->hmodRad(cmd.YAW  - sens.euler[2]) - P_YAW_RATE * sens.gyr[2];
+  //Serial.println(cmd.PITCH) ;
   this->yaw_out = P_YAW_RATE * (cmd.YAW - sens.gyr[2]);
 
   for(uint8_t i = 0; i < 3; i++)

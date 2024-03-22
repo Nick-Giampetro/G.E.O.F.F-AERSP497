@@ -91,7 +91,7 @@ void loop() {
   //gd.print();
   cntrl.update(sens.data, nav.s, gd.cmd);
   //cntrl.print();
-
+  //sens.print();
 
 
   if (thr < 1005 && safe == 1){
@@ -110,7 +110,7 @@ void loop() {
   }
   else{
     
-    //Serial.println(safe);
+    // Serial.println(safe);
     motors.stop();
   
     safe = 1;
