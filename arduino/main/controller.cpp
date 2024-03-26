@@ -19,6 +19,7 @@
  ***/
 
 #include "controller.h"
+#include <cmath>
 
 #ifndef C_PI
 #define C_PI 3.14159265358979323846264338327950288419716939937511
@@ -48,25 +49,38 @@ void Controller::init()
 
 }
 
-void Controller::update(const sens_t& sens, const state_t& state, const guidance_t& cmd)
+void Controller::update(const sens_t& sens, const state_t& state, const guidance_t& cmd, const float& dt)
 {
   //this->velocity_controller(sens, cmd)
   this->attitude_controller(sens, cmd);
-  this->altitude_controller(cmd);
+  this->altitude_controller(cmd,dt);
   this->mixer();
 }
 
-// void Controller::velocity_controller(const sens_t& sens, const guidance_t& cmd)
-// {
+void Controller::velocity_controller(const sens_t& sens, const guidance_t& cmd)
+{
+
+  // float crtc [2] = {0,0} ;
+
+  // float posError_Hdg[2] = {+cntrl->posError[0] * cos(sens.euler[2]) + cntrl->posError[1] * sin(sens.euler[1]) + crtc[0], 
+  //                           -cntrl->posError[0] * sin(sens.euler[2]) + cntrl->posError[1] * cos(sens.euler[2]) + crtc[1]}; 
+  
+  // float velError_Hdg[0]  {+nav_v_x * cos(sens.euler[2]) + nav_v_y * sin(sens.euler[2]),
+  //                         -nav_v_x * sin(sens.euler[2]) + nav_v_y * cos(sens.euler[2])};
 
 
+  // float VEL_X_CMD = LIMIT((P_X_VEL * POS_X_ERROR_HDG)) / P_X_POS, -MAX_SPEED , MAX_SPEED);
+  // float VEL_Y_CMD = LIMIT((P_Y_VEL* POS_Y_ERROR_HDG)) / P_Y_POS, -MAX_SPEED , MAX_SPEED);
 
-//   //float VEL_X_CMD = LIMIT((P_X_VEL * POS_X_ERROR_HDG)) / P_X_POS, -MAX_SPEED , MAX_SPEED);
-//   //float VEL_Y_CMD = LIMIT((P_Y_VEL* POS_Y_ERROR_HDG)) / P_Y_POS, -MAX_SPEED , MAX_SPEED);
+  // CMD_ROLL = +(cntrl->KDol[1] * (VEL_Y_CMD - cntrl->velError_Hdg[1]));
+  // CMD_PITCH = -(cntrl->KDol[0] * (VEL_X_CMD - cntrl->velError_Hdg[0]));
 
-//   //this->roll_out = +(cntrl->KDol[1] * (VEL_Y_CMD - cntrl->velError_Hdg[1]));
-//   //this->pitch_out = -(cntrl->KDol[0] * (VEL_X_CMD - cntrl->velError_Hdg[0]));
-// }
+  // this->roll_out  = P_ROLL_ANGLE * (CMD_ROLL + sens.euler[0]) + P_ROLL_RATE * sens.gyr[0] + D_ROLL_RATE*(sens.gyr[0] - this->last_rate[0]);
+  // this->pitch_out = - P_PITCH_ANGLE * (CMD_PITCH - sens.euler[1]) + P_PITCH_RATE * sens.gyr[1] + D_PITCH_RATE*(sens.gyr[1] - this->last_rate[1]);
+
+  // this->yaw_out   = P_YAW_ANGLE * (float)this->hmodRad(cmd.YAW  - sens.euler[2]) - P_YAW_RATE * sens.gyr[2];
+
+}
 
 void Controller::attitude_controller(const sens_t& sens, const guidance_t& cmd)
 {
@@ -78,14 +92,14 @@ void Controller::attitude_controller(const sens_t& sens, const guidance_t& cmd)
   //Serial.print(sens.gyr[0]) ; Serial.print(", ") , Serial.println(sens.gyr[1]) ;
   //Serial.println(sens.gyr[2]) ;
 
+
   // this->roll_out  = P_ROLL_ANGLE*(FF_ROLL*cmd.ROLL - sens.euler[0]) - P_ROLL_RATE*sens.gyr[0] - D_ROLL_RATE*(sens.gyr[0] - this->last_rate[0]);
   // this->pitch_out = P_PITCH_ANGLE*(FF_PITCH*cmd.PITCH - sens.euler[1]) - P_PITCH_RATE*sens.gyr[1] - D_PITCH_RATE*(sens.gyr[1] - this->last_rate[1]);
-
 
   this->roll_out  = P_ROLL_ANGLE * (cmd.ROLL + sens.euler[0]) + P_ROLL_RATE * sens.gyr[0] + D_ROLL_RATE*(sens.gyr[0] - this->last_rate[0]);
   this->pitch_out = - P_PITCH_ANGLE * (cmd.PITCH - sens.euler[1]) + P_PITCH_RATE * sens.gyr[1] + D_PITCH_RATE*(sens.gyr[1] - this->last_rate[1]);
 
-  //this->yaw_out   = P_YAW_ANGLE * (float)this->hmodRad(cmd.YAW  - sens.euler[2]) - P_YAW_RATE * sens.gyr[2];
+
   //Serial.println(cmd.PITCH) ;
   this->yaw_out = P_YAW_RATE * (cmd.YAW - sens.gyr[2]);
 
@@ -95,14 +109,14 @@ void Controller::attitude_controller(const sens_t& sens, const guidance_t& cmd)
   }
 }
 
-void Controller::altitude_controller(const guidance_t& cmd)
+void Controller::altitude_controller(const guidance_t& cmd, const float& dt)
 {
   // throttle is passthrough since no altitude control (yet)
   this->thr_out = cmd.THR;
 
   // working on the controller but need nav
   
-  // this->Altitude_integral += (float)cntrl->work->dt * (- posDes_z - nav_p_z);
+  // Altitude_integral += dt * (- posDes_z - nav_p_z);
   // this->Altitude_integral = LIMIT(this->Altitude_integral, -1000, 1000);
   // this->thr_out = - P_ALTITUDE_POS * ( - posDes_z - nav_p_z)
 	//                 - P_ALTITUDE_VEL * (-nav_v_z)

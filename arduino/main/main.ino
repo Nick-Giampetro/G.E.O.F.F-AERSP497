@@ -62,9 +62,12 @@ void setup() {
   rc.init();
   gd.init();
   cntrl.init();
+  
   //myservo.attach(11);
   // motors.calibrate();
   pinMode(LED_BUILTIN, OUTPUT);
+
+  float dt, cTime, lTime = 0 ;
 
 }
 
@@ -73,6 +76,12 @@ int safe = 0;
 void loop() {
   // put your main code here, to run repeatedly:
   digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+
+
+  cTime = millis();
+  dt = lTime - cTime;
+  lTime = cTime;
+
   rc.update();
   
   //rc.print();
