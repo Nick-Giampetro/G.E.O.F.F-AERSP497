@@ -26,13 +26,16 @@
 #include "motors.h"
 #include "Arduino.h"
 
-#define P_ROLL_ANGLE 2.3
-#define P_PITCH_ANGLE 2.3
+#define P_ROLL_ANGLE 0.7
+#define P_PITCH_ANGLE 0.7
 #define P_YAW_ANGLE 1
 
-#define P_ROLL_RATE 1.8
-#define P_PITCH_RATE 1.8
-#define P_YAW_RATE 2.24
+#define P_ROLL_RATE 0.08
+#define P_PITCH_RATE 0.08
+#define P_YAW_RATE 1.5
+
+#define D_ROLL_RATE 0.0
+#define D_PITCH_RATE 0.0
 
 #define P_X_POS 0.03
 #define P_Y_POS 0.03
@@ -43,9 +46,6 @@
 #define P_ALTITUDE_VEL 0.1
 
 #define P_ALTITUDE_INT 0.01
-
-#define D_ROLL_RATE 1.0
-#define D_PITCH_RATE 1.0
 
 #define MAX_SPEED
 
