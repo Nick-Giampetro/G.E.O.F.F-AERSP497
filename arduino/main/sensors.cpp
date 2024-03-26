@@ -143,10 +143,10 @@ void Sensors::print()
 //  Serial.print(",");
 //  Serial.print(this->data.mag[2]);
 //  Serial.print(",");
-  Serial.print(this->data.euler[0]);
-  Serial.print(",");
-  Serial.print(this->data.euler[1]);
-  Serial.print(",");
-  Serial.print(this->data.euler[2]);
+  // Serial.print(this->data.euler[0]);
+  // Serial.print(",");
+  // Serial.print(this->data.euler[1]);
+  // Serial.print(",");
+  // Serial.print(this->data.euler[2]);
   Serial.println();
 }

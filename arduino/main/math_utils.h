@@ -41,7 +41,7 @@
 
 #define ROLL_ANGLE_LIMIT 30 // deg
 #define PITCH_ANGLE_LIMIT 30 // deg
-#define YAW_RATE_LIMIT 5 // deg/s
+#define YAW_RATE_LIMIT 60 // deg/s
 #define PWM_LIMIT 500
 
 using state_t = Matrix<16, 1>;
