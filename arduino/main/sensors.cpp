@@ -81,6 +81,11 @@ void Sensors::init()
   this->calibration_flag = 1;
 }
 
+long duration, inches, cm;
+long microsecondsToCentimeters(long microseconds) {
+   return microseconds / 29 / 2;
+}
+
 void Sensors::update()
 {
 
