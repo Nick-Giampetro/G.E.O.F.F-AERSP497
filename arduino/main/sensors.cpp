@@ -29,6 +29,9 @@
 #define POZYX_EULER_SCALE 0.0625
 #define POZYX_QUAT_SCALE 1.0/16384.0
 
+const int pingPin = 7; // Trigger Pin of Ultrasonic Sensor
+const int echoPin = 6; // Echo Pin of Ultrasonic Sensor
+
 Sensors::Sensors()
 {
   for(uint8_t i = 0; i < 3; i++)
