@@ -38,6 +38,7 @@ Controller::Controller()
   roll_out = 0;
   pitch_out = 0;
   yaw_out = 0;
+  lTime = 0 ;
 }
 
 Controller::~Controller()
@@ -49,11 +50,15 @@ void Controller::init()
 
 }
 
-void Controller::update(const sens_t& sens, const state_t& state, const guidance_t& cmd, const float& dt)
+void Controller::update(const sens_t& sens, const state_t& state, const guidance_t& cmd)
 {
+  this->cTime = millis();
+  this->dt = this->lTime - this->cTime;
+  this->lTime = this->cTime;
+
   //this->velocity_controller(sens, cmd)
   this->attitude_controller(sens, cmd);
-  this->altitude_controller(cmd,dt);
+  this->altitude_controller(sens, cmd);
   this->mixer();
 }
 
@@ -79,7 +84,6 @@ void Controller::velocity_controller(const sens_t& sens, const guidance_t& cmd)
   // this->pitch_out = - P_PITCH_ANGLE * (CMD_PITCH - sens.euler[1]) + P_PITCH_RATE * sens.gyr[1] + D_PITCH_RATE*(sens.gyr[1] - this->last_rate[1]);
 
   // this->yaw_out   = P_YAW_ANGLE * (float)this->hmodRad(cmd.YAW  - sens.euler[2]) - P_YAW_RATE * sens.gyr[2];
-
 }
 
 void Controller::attitude_controller(const sens_t& sens, const guidance_t& cmd)
@@ -109,14 +113,14 @@ void Controller::attitude_controller(const sens_t& sens, const guidance_t& cmd)
   }
 }
 
-void Controller::altitude_controller(const guidance_t& cmd, const float& dt)
+void Controller::altitude_controller(const sens_t& sens, const guidance_t& cmd)
 {
   // throttle is passthrough since no altitude control (yet)
   this->thr_out = cmd.THR;
 
   // working on the controller but need nav
   
-  // Altitude_integral += dt * (- posDes_z - nav_p_z);
+  // Altitude_integral += this->dt * (- posDes_z - nav_p_z);
   // this->Altitude_integral = LIMIT(this->Altitude_integral, -1000, 1000);
   // this->thr_out = - P_ALTITUDE_POS * ( - posDes_z - nav_p_z)
 	//                 - P_ALTITUDE_VEL * (-nav_v_z)

@@ -67,8 +67,6 @@ void setup() {
   // motors.calibrate();
   pinMode(LED_BUILTIN, OUTPUT);
 
-  float dt, cTime, lTime = 0 ;
-
 }
 
 int safe = 0;
@@ -78,9 +76,6 @@ void loop() {
   digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
 
 
-  cTime = millis();
-  dt = lTime - cTime;
-  lTime = cTime;
 
   rc.update();
   

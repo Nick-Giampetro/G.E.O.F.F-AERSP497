@@ -72,11 +72,14 @@ public:
 
 private:
   
+  void velocity_controller(const sens_t&, const guidance_t&);
   void attitude_controller(const sens_t&, const guidance_t&);
-  void altitude_controller(const guidance_t&);
+  void altitude_controller(const sens_t&, const guidance_t&);
   void mixer();
   double hmodRad(double);
   float axs2ang(float, float);
+
+  float dt, cTime, lTime ;
 
   float last_rate[3];
   float Altitude_integral = 0;
