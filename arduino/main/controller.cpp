@@ -39,6 +39,7 @@ Controller::Controller()
   pitch_out = 0;
   yaw_out = 0;
   lTime = 0 ;
+
 }
 
 Controller::~Controller()
@@ -61,7 +62,6 @@ void Controller::update(const sens_t& sens, const state_t& state, const guidance
   this->altitude_controller(sens, cmd);
   this->mixer();
 }
-
 void Controller::velocity_controller(const sens_t& sens, const guidance_t& cmd)
 {
 
@@ -107,6 +107,12 @@ void Controller::attitude_controller(const sens_t& sens, const guidance_t& cmd)
   //Serial.println(cmd.PITCH) ;
   this->yaw_out = P_YAW_RATE * (cmd.YAW - sens.gyr[2]);
 
+  // Serial.print(cmd.YAW ) ;
+  // Serial.print(",") ;
+  // Serial.print(sens.gyr[2]) ;
+  //  Serial.println() ;
+  //Serial.println(cmd.YAW) ;
+ 
   for(uint8_t i = 0; i < 3; i++)
   {
     this->last_rate[i] = sens.gyr[i];
@@ -114,12 +120,14 @@ void Controller::attitude_controller(const sens_t& sens, const guidance_t& cmd)
 }
 
 void Controller::altitude_controller(const sens_t& sens, const guidance_t& cmd)
+
 {
   // throttle is passthrough since no altitude control (yet)
   this->thr_out = cmd.THR;
 
   // working on the controller but need nav
   
+
   // Altitude_integral += this->dt * (- posDes_z - nav_p_z);
   // this->Altitude_integral = LIMIT(this->Altitude_integral, -1000, 1000);
   // this->thr_out = - P_ALTITUDE_POS * ( - posDes_z - nav_p_z)

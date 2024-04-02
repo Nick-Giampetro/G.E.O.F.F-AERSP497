@@ -101,21 +101,21 @@ RC_PILOT::RC_PILOT()
   this->rc_in.ROLL_MIN  = 1000;
   this->rc_in.PITCH_MIN = 1000;
   this->rc_in.THR_MIN   = 1000;
-  this->rc_in.YAW_MIN   = 1000;
+  this->rc_in.YAW_MIN   = 988;
   this->rc_in.AUX_MIN   = 1000;
   this->rc_in.AUX2_MIN  = 1000;
 
-  this->rc_in.ROLL_MID  = 1500;
-  this->rc_in.PITCH_MID = 1500;
+  this->rc_in.ROLL_MID  = 1491;
+  this->rc_in.PITCH_MID = 1491;
   this->rc_in.THR_MID   = 1500;
-  this->rc_in.YAW_MID   = 1500;
+  this->rc_in.YAW_MID   = 1485;
   this->rc_in.AUX_MID   = 1500;
   this->rc_in.AUX2_MID  = 1500;
 
-  this->rc_in.ROLL_MAX  = 2000;
-  this->rc_in.PITCH_MAX = 2000;
-  this->rc_in.THR_MAX   = 2000;
-  this->rc_in.YAW_MAX   = 2000;
+  this->rc_in.ROLL_MAX  = 1992;
+  this->rc_in.PITCH_MAX = 1992;
+  this->rc_in.THR_MAX   = 1990;
+  this->rc_in.YAW_MAX   = 1974;
   this->rc_in.AUX_MAX   = 2000;
   this->rc_in.AUX2_MAX  = 2000;
 }
