@@ -100,8 +100,8 @@ void loop() {
   // gd.print();
   cntrl.update(sens.data, nav.s, gd.cmd);
   //cntrl.print();
-  // sens.print();
-  // rc.print();
+  //sens.print();
+  //rc.print();
 
 
   if (thr < 1005 && safe == 1){
