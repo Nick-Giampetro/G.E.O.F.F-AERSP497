@@ -30,7 +30,7 @@
 #define POZYX_QUAT_SCALE 1.0/16384.0
 
 const int pingPin = 7; // Trigger Pin of Ultrasonic Sensor
-const int echoPin = 6; // Echo Pin of Ultrasonic Sensor
+const int echoPin = 11; // Echo Pin of Ultrasonic Sensor
 
 Sensors::Sensors()
 {
