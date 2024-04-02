@@ -26,15 +26,28 @@
 #include "motors.h"
 #include "Arduino.h"
 
-#define P_ROLL_ANGLE 0.9
-#define P_PITCH_ANGLE 0.9
+#define P_ROLL_ANGLE 0.5
+#define P_PITCH_ANGLE 0.6
+#define P_YAW_ANGLE 1
 
-#define P_ROLL_RATE 0.12
-#define P_PITCH_RATE 0.12
-#define P_YAW_RATE 5.0
+#define P_ROLL_RATE 0.06
+#define P_PITCH_RATE 0.08
+#define P_YAW_RATE 2.2
 
-#define D_ROLL_RATE 1.0
-#define D_PITCH_RATE 1.0
+#define D_ROLL_RATE 0.0
+#define D_PITCH_RATE 0.0
+
+#define P_X_POS 0.03
+#define P_Y_POS 0.03
+#define P_ALTITUDE_POS 0.18
+
+#define P_X_VEL 0.08
+#define P_Y_VEL 0.08
+#define P_ALTITUDE_VEL 0.1
+
+#define P_ALTITUDE_INT 0.01
+
+#define MAX_SPEED
 
 #define FF_ROLL 2
 #define FF_PITCH 2
@@ -62,8 +75,11 @@ private:
   void attitude_controller(const sens_t&, const guidance_t&);
   void altitude_controller(const guidance_t&);
   void mixer();
+  double hmodRad(double);
+  float axs2ang(float, float);
 
   float last_rate[3];
+  float Altitude_integral = 0;
 };
 
 #endif

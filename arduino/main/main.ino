@@ -62,9 +62,12 @@ void setup() {
   rc.init();
   gd.init();
   cntrl.init();
+  
   //myservo.attach(11);
   // motors.calibrate();
   pinMode(LED_BUILTIN, OUTPUT);
+
+  float dt, cTime, lTime = 0 ;
 
 }
 
@@ -73,8 +76,14 @@ int safe = 0;
 void loop() {
   // put your main code here, to run repeatedly:
   digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+
+
+  //cTime = millis();
+  //dt = lTime - cTime;
+  //lTime = cTime;
+
   rc.update();
-  
+
   //rc.print();
   //motors.print();
   thr = rc.rc_in.THR;
@@ -86,11 +95,13 @@ void loop() {
 
   int16_t pwm[4] = {thr,yaw,roll,pitch};
   
+  sens.update();
   gd.update(sens.data,nav.s,rc.rc_in);
-  //gd.print();
+  // gd.print();
   cntrl.update(sens.data, nav.s, gd.cmd);
-  cntrl.print();
-
+  //cntrl.print();
+  // sens.print();
+  // rc.print();
 
 
   if (thr < 1005 && safe == 1){
@@ -101,13 +112,15 @@ void loop() {
   
     //motors.update(pwm);
     //Serial.println(motors.limit(pwm[0] - pwm[2] + pwm[3] + pwm[1]));
-    
-    motors.update(cntrl.pwm_out);
-    
+    if (thr > 1010)
+      motors.update(cntrl.pwm_out);
+    else
+      motors.stop();
+
   }
   else{
     
-    Serial.println(safe);
+    // Serial.println(safe);
     motors.stop();
   
     safe = 1;

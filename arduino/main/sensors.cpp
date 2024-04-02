@@ -29,6 +29,9 @@
 #define POZYX_EULER_SCALE 0.0625
 #define POZYX_QUAT_SCALE 1.0/16384.0
 
+const int pingPin = 7; // Trigger Pin of Ultrasonic Sensor
+const int echoPin = 6; // Echo Pin of Ultrasonic Sensor
+
 Sensors::Sensors()
 {
   for(uint8_t i = 0; i < 3; i++)
@@ -81,8 +84,27 @@ void Sensors::init()
   this->calibration_flag = 1;
 }
 
+long duration, inches, cm;
+long microsecondsToCentimeters(long microseconds) {
+   return microseconds / 29 / 2;
+}
+
 void Sensors::update()
 {
+
+  // pinMode(pingPin, OUTPUT);
+  // digitalWrite(pingPin, LOW);
+  // delayMicroseconds(2);
+  // digitalWrite(pingPin, HIGH);
+  // delayMicroseconds(10);
+  // digitalWrite(pingPin, LOW);
+  // pinMode(echoPin, INPUT);
+  // duration = pulseIn(echoPin, HIGH);
+  // cm = microsecondsToCentimeters(duration);
+  //Serial.print(cm);
+  //Serial.print("cm");
+  //Serial.println();
+
   sensor_raw_t sensor_raw;
   if (Pozyx.waitForFlag(POZYX_INT_STATUS_IMU, 10) == POZYX_SUCCESS){
     Pozyx.getRawSensorData(&sensor_raw);
@@ -143,10 +165,10 @@ void Sensors::print()
 //  Serial.print(",");
 //  Serial.print(this->data.mag[2]);
 //  Serial.print(",");
-  Serial.print(this->data.euler[0]);
-  Serial.print(",");
-  Serial.print(this->data.euler[1]);
-  Serial.print(",");
-  Serial.print(this->data.euler[2]);
+  // Serial.print(this->data.euler[0]);
+  // Serial.print(",");
+  // Serial.print(this->data.euler[1]);
+  // Serial.print(",");
+  // Serial.print(this->data.euler[2]);
   Serial.println();
 }
