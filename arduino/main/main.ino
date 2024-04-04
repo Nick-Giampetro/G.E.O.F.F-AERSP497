@@ -75,10 +75,8 @@ void loop() {
   // put your main code here, to run repeatedly:
   digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
 
-
-
   rc.update();
-  
+ 
   //rc.print();
   //motors.print();
   thr = rc.rc_in.THR;
@@ -92,10 +90,12 @@ void loop() {
   
   sens.update();
   gd.update(sens.data,nav.s,rc.rc_in);
-  //gd.print();
+  
+  // gd.print();
   cntrl.update(sens.data, nav.s, gd.cmd);
   //cntrl.print();
-  // sens.print();
+  //sens.print();
+  //rc.print();
 
 
   if (thr < 1005 && safe == 1){
