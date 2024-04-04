@@ -62,6 +62,7 @@ public:
 private:
   sens_t bias;
   bool calibration_flag;
+  float duration, distance;
 };
 
 #endif
