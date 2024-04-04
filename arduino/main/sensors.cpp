@@ -29,8 +29,8 @@
 #define POZYX_EULER_SCALE 0.0625
 #define POZYX_QUAT_SCALE 1.0/16384.0
 
-// #define trigPin 9
-// #define echoPin 10
+#define trigPin 12
+#define echoPin 11
 
 Sensors::Sensors()
 {
@@ -83,8 +83,8 @@ void Sensors::init()
   }
   this->calibration_flag = 1;
 
-  // pinMode(trigPin, OUTPUT);
-  // pinMode(echoPin, INPUT);
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
 }
 
 long duration, inches, cm;
@@ -95,17 +95,17 @@ long microsecondsToCentimeters(long microseconds) {
 void Sensors::update()
 {
 
-  // digitalWrite(trigPin, LOW);
-  // delayMicroseconds(2);
-  // digitalWrite(trigPin, HIGH);
-  // delayMicroseconds(10);
-  // digitalWrite(trigPin, LOW);
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
 
-  // this->duration = pulseIn(echoPin, HIGH);
-  // this->distance = (this->duration*.0343)/2;
-  // Serial.print("Distance: ");
-  // Serial.println(this->distance);
-  
+  this->duration = pulseIn(echoPin, HIGH);
+  this->distance = (this->duration*.0343)/2;
+  Serial.print("Distance: ");
+  Serial.println(this->distance);
+
 
   sensor_raw_t sensor_raw;
   if (Pozyx.waitForFlag(POZYX_INT_STATUS_IMU, 10) == POZYX_SUCCESS){
