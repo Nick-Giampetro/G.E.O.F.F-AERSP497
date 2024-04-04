@@ -29,9 +29,6 @@
 #define POZYX_EULER_SCALE 0.0625
 #define POZYX_QUAT_SCALE 1.0/16384.0
 
-const int pingPin = 7; // Trigger Pin of Ultrasonic Sensor
-const int echoPin = 11; // Echo Pin of Ultrasonic Sensor
-
 Sensors::Sensors()
 {
   for(uint8_t i = 0; i < 3; i++)
@@ -82,6 +79,11 @@ void Sensors::init()
     this->data.euler[i] = 0;
   }
   this->calibration_flag = 1;
+
+  const int trigPin = 7;
+  const int echoPin = 11;
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
 }
 
 long duration, inches, cm;
@@ -92,18 +94,18 @@ long microsecondsToCentimeters(long microseconds) {
 void Sensors::update()
 {
 
-  // pinMode(pingPin, OUTPUT);
-  // digitalWrite(pingPin, LOW);
-  // delayMicroseconds(2);
-  // digitalWrite(pingPin, HIGH);
-  // delayMicroseconds(10);
-  // digitalWrite(pingPin, LOW);
-  // pinMode(echoPin, INPUT);
-  // duration = pulseIn(echoPin, HIGH);
-  // cm = microsecondsToCentimeters(duration);
-  //Serial.print(cm);
-  //Serial.print("cm");
-  //Serial.println();
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  duration = pulseIn(echoPin, HIGH);
+  distance = (duration*.0343)/2;
+  Serial.print("Distance: ");
+  Serial.println(distance);
+  delay(100);
+
 
   sensor_raw_t sensor_raw;
   if (Pozyx.waitForFlag(POZYX_INT_STATUS_IMU, 10) == POZYX_SUCCESS){
