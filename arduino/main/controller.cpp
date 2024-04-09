@@ -136,6 +136,8 @@ void Controller::altitude_controller(const sens_t& sens, const guidance_t& cmd)
   this->thr_out = - P_ALTITUDE_POS * ( - posDes_z - this->dist)
 	                - P_ALTITUDE_VEL * (this->dist)
 	                - P_ALTITUDE_INT * this->Altitude_integral ;
+
+  Serial.println(thr_out) ;
 }
 
 void Controller::mixer()
