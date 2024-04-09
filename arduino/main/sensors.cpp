@@ -94,7 +94,6 @@ long microsecondsToCentimeters(long microseconds) {
 
 void Sensors::update()
 {
-
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
   digitalWrite(trigPin, HIGH);
@@ -105,7 +104,6 @@ void Sensors::update()
   this->distance = (this->duration*.0343)/2;
   Serial.print("Distance: ");
   Serial.println(this->distance);
-
 
   sensor_raw_t sensor_raw;
   if (Pozyx.waitForFlag(POZYX_INT_STATUS_IMU, 10) == POZYX_SUCCESS){
