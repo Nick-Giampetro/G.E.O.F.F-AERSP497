@@ -29,8 +29,6 @@
 #define POZYX_EULER_SCALE 0.0625
 #define POZYX_QUAT_SCALE 1.0/16384.0
 
-#define trigPin 12
-#define echoPin 11
 
 Sensors::Sensors()
 {
@@ -50,6 +48,7 @@ Sensors::Sensors()
   }
   this->data.quat[0] = 1;
   this->calibration_flag = 0;
+ 
 }
 
 Sensors::~Sensors() {}
@@ -83,13 +82,8 @@ void Sensors::init()
   }
   this->calibration_flag = 1;
 
-  pinMode(trigPin, OUTPUT);
-  pinMode(echoPin, INPUT);
 }
 
-long microsecondsToCentimeters(long microseconds) {
-   return microseconds / 29 / 2;
-}
 
 void Sensors::update()
 {
@@ -132,6 +126,7 @@ void Sensors::update()
     this->data.gyr[1] = sensor_raw.angular_vel[0] * POZYX_GYR_SCALE * -1.0; // convert to deg/s
     this->data.gyr[2] = sensor_raw.angular_vel[2] * POZYX_GYR_SCALE * -1.0; // convert to deg/s
   }
+  
 }
 
 void Sensors::print()

@@ -62,13 +62,14 @@ public:
 	void init();
   void update(const sens_t&, const state_t&, const guidance_t&);
   void print();
-
+  float distance(float);
 	int16_t pwm_out[MOTOR_NUM];
 
   float thr_out;
   float roll_out;
   float pitch_out;
   float yaw_out;
+  float dist;
 
 private:
   

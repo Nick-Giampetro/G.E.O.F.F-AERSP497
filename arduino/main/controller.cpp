@@ -164,7 +164,11 @@ void Controller::print()
   Serial.print(  this->pwm_out[REAR_LEFT]);   Serial.print(", ");  
   Serial.println(this->pwm_out[REAR_RIGHT]);
 }
-
+float Controller::distance(float dist)
+{
+  Serial.print("Distance: ");
+  Serial.println(dist);
+}
 double Controller::hmodRad(double h) {
 
 	double dh;
