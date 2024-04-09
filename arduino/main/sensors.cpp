@@ -87,24 +87,13 @@ void Sensors::init()
   pinMode(echoPin, INPUT);
 }
 
-long duration, inches, cm;
 long microsecondsToCentimeters(long microseconds) {
    return microseconds / 29 / 2;
 }
 
 void Sensors::update()
 {
-  digitalWrite(trigPin, LOW);
-  delayMicroseconds(2);
-  digitalWrite(trigPin, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(trigPin, LOW);
-
-  this->duration = pulseIn(echoPin, HIGH);
-  this->distance = (this->duration*.0343)/2;
-  Serial.print("Distance: ");
-  Serial.println(this->distance);
-
+ 
   sensor_raw_t sensor_raw;
   if (Pozyx.waitForFlag(POZYX_INT_STATUS_IMU, 10) == POZYX_SUCCESS){
     Pozyx.getRawSensorData(&sensor_raw);
