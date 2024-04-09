@@ -80,7 +80,7 @@ private:
   double hmodRad(double);
   float axs2ang(float, float);
 
-  float dt, cTime, lTime ;
+  float dt, cTime, lTime = 0 ;
 
   float last_rate[3];
   float Altitude_integral = 0;

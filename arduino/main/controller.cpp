@@ -57,6 +57,8 @@ void Controller::update(const sens_t& sens, const state_t& state, const guidance
   this->dt = this->lTime - this->cTime;
   this->lTime = this->cTime;
 
+  Serial.print(dt);
+
   //this->velocity_controller(sens, cmd)
   this->attitude_controller(sens, cmd);
   this->altitude_controller(sens, cmd);
@@ -125,14 +127,15 @@ void Controller::altitude_controller(const sens_t& sens, const guidance_t& cmd)
   // throttle is passthrough since no altitude control (yet)
   this->thr_out = cmd.THR;
 
+  float posDes_z = 1 ;
+
   // working on the controller but need nav
   
-
-  // Altitude_integral += this->dt * (- posDes_z - nav_p_z);
-  // this->Altitude_integral = LIMIT(this->Altitude_integral, -1000, 1000);
-  // this->thr_out = - P_ALTITUDE_POS * ( - posDes_z - nav_p_z)
-	//                 - P_ALTITUDE_VEL * (-nav_v_z)
-	//                 - P_ALTITUDE_INT * this->Altitude_integral ;
+  Altitude_integral += this->dt * (- posDes_z - distance * 0.0328084);
+  this->Altitude_integral = LIMIT(this->Altitude_integral, -1000, 1000);
+  this->thr_out = - P_ALTITUDE_POS * ( - posDes_z - distance * 0.0328084)
+	                - P_ALTITUDE_VEL * (distance * 0.0328084)
+	                - P_ALTITUDE_INT * this->Altitude_integral ;
 }
 
 void Controller::mixer()
