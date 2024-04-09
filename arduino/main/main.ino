@@ -47,18 +47,16 @@ Controller cntrl;
 Navigation nav;
 Guidance gd;
 
-
-
-int pos = 0;
-uint16_t i, thr, yaw, roll, pitch, kill, servo;
-
-
-// defines pins numbers
 const int trigPin = 12;
 const int echoPin = 11;
 // defines variables
 long duration;
-int distance;
+float distance;
+int pos = 0;
+uint16_t i, thr, yaw, roll, pitch, kill, servo;
+
+
+
 
 
 void setup() {
@@ -86,9 +84,6 @@ void loop() {
   digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
 
   rc.update();
- 
-  //rc.print();
-  //motors.print();
   thr = rc.rc_in.THR;
   yaw = rc.rc_in.YAW;
   roll = rc.rc_in.ROLL;
@@ -100,26 +95,29 @@ void loop() {
   
   sens.update();
   gd.update(sens.data,nav.s,rc.rc_in);
-  
+  //motors.print();
   // gd.print();
   cntrl.update(sens.data, nav.s, gd.cmd);
   //cntrl.print();
   //sens.print();
   //rc.print();
+ 
+
   // Clears the trigPin
   digitalWrite(trigPin, LOW);
-  delayMicroseconds(2);
+  delayMicroseconds(1);
   // Sets the trigPin on HIGH state for 10 micro seconds
   digitalWrite(trigPin, HIGH);
-  delayMicroseconds(10);
+  delayMicroseconds(1);
   digitalWrite(trigPin, LOW);
   // Reads the echoPin, returns the sound wave travel time in microseconds
   duration = pulseIn(echoPin, HIGH);
   // Calculating the distance
   distance = duration * 0.034 / 2;
   // Prints the distance on the Serial Monitor
-  Serial.print("Distance: ");
-  Serial.println(distance);
+  cntrl.distance(distance);
+  // Serial.print("Distance: ");
+  // Serial.println(distance);
 
   if (thr < 1005 && safe == 1){
     safe = 0;
