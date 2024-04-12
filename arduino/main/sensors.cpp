@@ -32,6 +32,21 @@
 #define trigPin 12
 #define echoPin 11
 
+uint16_t remote_id = 0x6843;                            // set this to the ID of the remote device
+bool remote = false;                                    // set this to true to use the remote ID
+
+boolean use_processing = false;                         // set this to true to output data for the processing sketch
+
+const uint8_t num_anchors = 6;                                    // the number of anchors
+uint16_t anchors[num_anchors] =  {0x1251, 0x125e, 0x117a, 0x113f, 0x122e, 1148};     // {BL,BR,TLT,TLB,TRT,TRB} the network id of the anchors: change these to the network ids of your anchors.
+int32_t anchors_x[num_anchors] = {-3262,  2834,   -3262,  -3262,  2834,   2834};               // anchor x-coorindates in mm
+int32_t anchors_y[num_anchors] = {921,    921,    5595,   5595,   5595,   5595};                  // anchor y-coordinates in mm
+int32_t heights[num_anchors] =   {7,      7,      7,      2616,   2616,   8};              // anchor z-coordinates in mm
+
+uint8_t algorithm = POZYX_POS_ALG_UWB_ONLY;             // positioning algorithm to use. try POZYX_POS_ALG_TRACKING for fast moving objects.
+uint8_t dimension = POZYX_3D;                           // positioning dimension
+int32_t height = 1000;                                  // height of device, required in 2.5D positioning
+
 Sensors::Sensors()
 {
   for(uint8_t i = 0; i < 3; i++)
@@ -41,12 +56,14 @@ Sensors::Sensors()
     this->data.mag[i]   = 0;
     this->data.euler[i] = 0;
     this->data.quat[i]  = 0;
+    this->data.pos[i]   = 0;
 
     this->bias.gyr[i]   = 0;
     this->bias.acc[i]   = 0;
     this->bias.mag[i]   = 0;
     this->bias.euler[i] = 0;
     this->bias.quat[i]  = 0;
+    this->bias.pos[i]   = 0;
   }
   this->data.quat[0] = 1;
   this->calibration_flag = 0;
@@ -56,6 +73,13 @@ Sensors::~Sensors() {}
 
 void Sensors::init()
 {
+  Serial.begin(115200);
+
+  if(!remote)
+  {
+  remote_id = NULL;
+  }
+
   Serial.println("Init");
   if(Pozyx.begin(true, MODE_INTERRUPT, POZYX_INT_MASK_IMU, 0x02) == POZYX_FAILURE)
   {
@@ -81,6 +105,14 @@ void Sensors::init()
     this->data.gyr[i]   = 0;
     this->data.euler[i] = 0;
   }
+
+  // clear all previous pozyx devices in the device list
+  Pozyx.clearDevices(remote_id);
+  // sets the anchor manually
+  setAnchorsManual();
+  // sets the positioning algorithm
+  Pozyx.setPositionAlgorithm(algorithm, dimension, remote_id);
+  
   this->calibration_flag = 1;
 
   pinMode(trigPin, OUTPUT);
@@ -116,6 +148,20 @@ void Sensors::update()
     return;
   }
   
+  // pozyx stuffs
+  coordinates_t position;
+  int status;
+  if(remote){
+    status = Pozyx.doRemotePositioning(remote_id, &position, dimension, height, algorithm);
+  }else{
+    status = Pozyx.doPositioning(&position, dimension, height, algorithm);
+  }
+
+  // gathering 
+  this->data.pos[0] = position.x;
+  this->data.pos[1] = position.y;
+  this->data.pos[2] = position.z;
+
   // YPR to RPY and NED
   this->data.euler[0] = sensor_raw.euler_angles[1] * POZYX_EULER_SCALE; // convert to deg
   this->data.euler[1] = sensor_raw.euler_angles[2] * POZYX_EULER_SCALE; // convert to deg
@@ -173,4 +219,20 @@ void Sensors::print()
   // Serial.print(",");
   // Serial.print(this->data.euler[2]);
   Serial.println();
+}
+
+// function to manually set the anchor coordinates
+void Sensors::setAnchorsManual(){
+  for(int i = 0; i < num_anchors; i++){
+    device_coordinates_t anchor;
+    anchor.network_id = anchors[i];
+    anchor.flag = 0x1;
+    anchor.pos.x = anchors_x[i];
+    anchor.pos.y = anchors_y[i];
+    anchor.pos.z = heights[i];
+    Pozyx.addDevice(anchor, remote_id);
+  }
+  if (num_anchors > 4){
+    Pozyx.setSelectionOfAnchors(POZYX_ANCHOR_SEL_AUTO, num_anchors, remote_id);
+  }
 }

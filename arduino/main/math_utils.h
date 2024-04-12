@@ -58,6 +58,7 @@ struct sens_t
   float mag[3];
   float euler[3];
   float quat[4];
+  float pos[3];
 };
 
 struct rc_t
