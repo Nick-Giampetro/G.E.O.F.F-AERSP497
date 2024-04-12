@@ -57,7 +57,7 @@ void Controller::update(const sens_t& sens, const state_t& state, const guidance
   this->dt = (this->cTime - this->lTime)/1000;
   this->lTime = this->cTime;
 
-  //Serial.println(dt);
+  Serial.println(dt);
 
   //this->velocity_controller(sens, cmd)
   this->attitude_controller(sens, cmd);
@@ -121,12 +121,13 @@ void Controller::attitude_controller(const sens_t& sens, const guidance_t& cmd)
   }
 }
 
+void Controller::altitude_hold(bool nm){
+  this->alt_mode = nm ;
+}
+
 void Controller::altitude_controller(const sens_t& sens, const guidance_t& cmd)
-
-{
-  // throttle is passthrough since no altitude control (yet)
-  this->thr_out = cmd.THR;
-
+{  
+  if(this->alt_mode) {
   float posDes_z = 1 ;
 
   // working on the controller but need nav
@@ -136,8 +137,13 @@ void Controller::altitude_controller(const sens_t& sens, const guidance_t& cmd)
   this->thr_out = - P_ALTITUDE_POS * ( - posDes_z - this->dist)
 	                - P_ALTITUDE_VEL * (this->dist)
 	                - P_ALTITUDE_INT * this->Altitude_integral ;
+  
+  
+  //Serial.println(thr_out) ;
+  }
+  else
+    this->thr_out = cmd.THR;
 
-  Serial.println(thr_out) ;
 }
 
 void Controller::mixer()
@@ -171,10 +177,11 @@ void Controller::print()
 }
 float Controller::distance(float d)
 {
-  this->dist = d  * -0.0328084 ;
+  this->dist = d * -0.032808399 ;
   Serial.print("Distance: ");
   Serial.println(dist);
 }
+
 double Controller::hmodRad(double h) {
 
 	double dh;

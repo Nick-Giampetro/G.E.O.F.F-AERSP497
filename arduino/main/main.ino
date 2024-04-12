@@ -53,7 +53,7 @@ const int echoPin = 11;
 long duration;
 float distance;
 int pos = 0;
-uint16_t i, thr, yaw, roll, pitch, kill, servo;
+uint16_t i, thr, yaw, roll, pitch, kill, multi;
 
 
 
@@ -89,7 +89,7 @@ void loop() {
   roll = rc.rc_in.ROLL;
   pitch = rc.rc_in.PITCH;
   kill = rc.rc_in.AUX;
-  servo = rc.rc_in.AUX2;
+  multi = rc.rc_in.AUX2;
 
   int16_t pwm[4] = {thr,yaw,roll,pitch};
   
@@ -124,13 +124,29 @@ void loop() {
   }
 
   if (kill > 1500 && safe == 0){
-  
+    
     //motors.update(pwm);
     //Serial.println(motors.limit(pwm[0] - pwm[2] + pwm[3] + pwm[1]));
-    if (thr > 1010)
-      motors.update(cntrl.pwm_out);
-    else
-      motors.stop();
+
+    if (multi > 1450 && multi < 1550){
+      cntrl.altitude_hold(true);
+      if (thr > 1010)
+        motors.update(cntrl.pwm_out);
+      else
+        motors.stop();
+      
+  
+    }
+    else if (multi > 1950 && multi <= 2000) {
+
+    }
+    else{
+      cntrl.altitude_hold(false);
+      if (thr > 1010)
+        motors.update(cntrl.pwm_out);
+      else
+        motors.stop();
+    }
 
   }
   else{
