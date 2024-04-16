@@ -101,7 +101,7 @@ void loop() {
   //cntrl.print();
   //sens.print();
   //rc.print();
- 
+  Serial.println(multi);
 
   // Clears the trigPin
   digitalWrite(trigPin, LOW);
@@ -127,6 +127,8 @@ void loop() {
     
     //motors.update(pwm);
     //Serial.println(motors.limit(pwm[0] - pwm[2] + pwm[3] + pwm[1]));
+
+    
 
     if (multi > 1450 && multi < 1550){
       cntrl.altitude_hold(true);

@@ -82,9 +82,10 @@ private:
   double hmodRad(double);
   float axs2ang(float, float);
 
-  float dt, cTime, lTime = 0 ;
+  float dt, cTime, lTime = 0, lDist = 0 ;
 
   float last_rate[3];
+  float Atitude_integral[2] = {0,0} ;
   float Altitude_integral = 0;
   bool alt_mode = false ;
 };

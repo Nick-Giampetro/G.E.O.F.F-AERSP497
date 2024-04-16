@@ -57,7 +57,7 @@ void Controller::update(const sens_t& sens, const state_t& state, const guidance
   this->dt = (this->cTime - this->lTime)/1000;
   this->lTime = this->cTime;
 
-  Serial.println(dt);
+  //Serial.println(dt);
 
   //this->velocity_controller(sens, cmd)
   this->attitude_controller(sens, cmd);
@@ -135,14 +135,16 @@ void Controller::altitude_controller(const sens_t& sens, const guidance_t& cmd)
   Altitude_integral += this->dt * (- posDes_z - this->dist );
   this->Altitude_integral = LIMIT(this->Altitude_integral, -1000, 1000);
   this->thr_out = - P_ALTITUDE_POS * ( - posDes_z - this->dist)
-	                - P_ALTITUDE_VEL * (this->dist)
+	                - P_ALTITUDE_VEL * ((this->dist - this->lDist) * dt)
 	                - P_ALTITUDE_INT * this->Altitude_integral ;
-  
-  
-  //Serial.println(thr_out) ;
+
+  this->lDist = this->dist ;
+
   }
   else
     this->thr_out = cmd.THR;
+
+    Serial.println(thr_out) ;
 
 }
 
@@ -178,8 +180,8 @@ void Controller::print()
 float Controller::distance(float d)
 {
   this->dist = d * -0.032808399 ;
-  Serial.print("Distance: ");
-  Serial.println(dist);
+  //Serial.print("Distance: ");
+  //Serial.println(dist);
 }
 
 double Controller::hmodRad(double h) {
