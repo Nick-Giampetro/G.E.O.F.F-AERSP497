@@ -46,6 +46,8 @@
 #define P_ALTITUDE_VEL 0.1
 
 #define P_ALTITUDE_INT 0.01
+#define P_ROLL_INT 0.01
+#define P_PITCH_INT 0.01
 
 #define MAX_SPEED
 
@@ -85,7 +87,7 @@ private:
   float dt, cTime, lTime = 0, lDist = 0 ;
 
   float last_rate[3];
-  float Atitude_integral[2] = {0,0} ;
+  float Attitude_integral[2] = {0,0} ;
   float Altitude_integral = 0;
   bool alt_mode = false ;
 };

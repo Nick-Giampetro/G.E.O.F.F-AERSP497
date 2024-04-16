@@ -102,8 +102,11 @@ void Controller::attitude_controller(const sens_t& sens, const guidance_t& cmd)
   // this->roll_out  = P_ROLL_ANGLE*(FF_ROLL*cmd.ROLL - sens.euler[0]) - P_ROLL_RATE*sens.gyr[0] - D_ROLL_RATE*(sens.gyr[0] - this->last_rate[0]);
   // this->pitch_out = P_PITCH_ANGLE*(FF_PITCH*cmd.PITCH - sens.euler[1]) - P_PITCH_RATE*sens.gyr[1] - D_PITCH_RATE*(sens.gyr[1] - this->last_rate[1]);
 
-  this->roll_out  = P_ROLL_ANGLE * (cmd.ROLL + sens.euler[0]) + P_ROLL_RATE * sens.gyr[0] + D_ROLL_RATE*(sens.gyr[0] - this->last_rate[0]);
-  this->pitch_out = - P_PITCH_ANGLE * (cmd.PITCH - sens.euler[1]) + P_PITCH_RATE * sens.gyr[1] + D_PITCH_RATE*(sens.gyr[1] - this->last_rate[1]);
+  this->Attitude_integral[0] = dt*(cmd.ROLL + sens.euler[0]);
+  this->roll_out  = P_ROLL_ANGLE * (cmd.ROLL + sens.euler[0]) + P_ROLL_RATE * sens.gyr[0] + D_ROLL_RATE*(sens.gyr[0] - this->last_rate[0]) - ;
+  
+  this->Attitude_integral[1] = dt*(cmd.PITCH - sens.euler[1]);;
+  this->pitch_out = - P_PITCH_ANGLE * (cmd.PITCH - sens.euler[1]) + P_PITCH_RATE * sens.gyr[1] + D_PITCH_RATE*(sens.gyr[1] - this->last_rate[1]) - ;
 
 
   //Serial.println(cmd.PITCH) ;
@@ -135,7 +138,7 @@ void Controller::altitude_controller(const sens_t& sens, const guidance_t& cmd)
   Altitude_integral += this->dt * (- posDes_z - this->dist );
   this->Altitude_integral = LIMIT(this->Altitude_integral, -1000, 1000);
   this->thr_out = - P_ALTITUDE_POS * ( - posDes_z - this->dist)
-	                - P_ALTITUDE_VEL * ((this->dist - this->lDist) * dt)
+	                - P_ALTITUDE_VEL * ((this->dist - this->lDist) / dt)
 	                - P_ALTITUDE_INT * this->Altitude_integral ;
 
   this->lDist = this->dist ;
