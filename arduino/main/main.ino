@@ -96,7 +96,7 @@ void loop() {
 
   cntrl.update(sens.data, nav.s, gd.cmd);
   //cntrl.print();
-  //sens.print();
+  sens.print();
   //rc.print();
   //motors.print();
   // gd.print();
