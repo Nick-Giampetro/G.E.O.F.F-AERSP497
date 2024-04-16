@@ -32,7 +32,7 @@
 #define trigPin 12
 #define echoPin 11
 
-uint16_t remote_id = 0x6843;                            // set this to the ID of the remote device
+uint16_t remote_id = 0x6838;                            // set this to the ID of the remote device
 bool remote = false;                                    // set this to true to use the remote ID
 
 boolean use_processing = false;                         // set this to true to output data for the processing sketch
@@ -127,16 +127,16 @@ long microsecondsToCentimeters(long microseconds) {
 void Sensors::update()
 {
 
-  digitalWrite(trigPin, LOW);
-  delayMicroseconds(2);
-  digitalWrite(trigPin, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(trigPin, LOW);
+  // digitalWrite(trigPin, LOW);
+  // delayMicroseconds(2);
+  // digitalWrite(trigPin, HIGH);
+  // delayMicroseconds(10);
+  // digitalWrite(trigPin, LOW);
 
-  this->duration = pulseIn(echoPin, HIGH);
-  this->distance = (this->duration*.0343)/2;
-  Serial.print("Distance: ");
-  Serial.println(this->distance);
+  // this->duration = pulseIn(echoPin, HIGH);
+  // this->distance = (this->duration*.0343)/2;
+  // Serial.print("Distance: ");
+  // Serial.println(this->distance);
 
 
   sensor_raw_t sensor_raw;
@@ -218,6 +218,12 @@ void Sensors::print()
   // Serial.print(this->data.euler[1]);
   // Serial.print(",");
   // Serial.print(this->data.euler[2]);
+Serial.print("x(mm): ");
+Serial.print(this->data.pos[0]);
+Serial.print(", y(mm): ");
+Serial.print(this->data.pos[1]);
+Serial.print(", z(mm): ");
+Serial.print(this->data.pos[2]);
   Serial.println();
 }
 
