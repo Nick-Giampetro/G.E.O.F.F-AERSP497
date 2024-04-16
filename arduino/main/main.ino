@@ -47,10 +47,16 @@ Controller cntrl;
 Navigation nav;
 Guidance gd;
 
-
-
+const int trigPin = 12;
+const int echoPin = 11;
+// defines variables
+long duration;
+float distance;
 int pos = 0;
-uint16_t i, thr, yaw, roll, pitch, kill, servo;
+uint16_t i, thr, yaw, roll, pitch, kill, multi;
+
+
+
 
 
 void setup() {
@@ -63,65 +69,61 @@ void setup() {
   gd.init();
   cntrl.init();
   
-  //myservo.attach(11);
+  pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
+  pinMode(echoPin, INPUT); // Sets the echoPin as an Input
+  myservo.attach(13);
   // motors.calibrate();
   pinMode(LED_BUILTIN, OUTPUT);
 
 }
-
-int safe = 0;
 
 void loop() {
   // put your main code here, to run repeatedly:
   digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
 
   rc.update();
- 
-  //rc.print();
-  //motors.print();
   thr = rc.rc_in.THR;
   yaw = rc.rc_in.YAW;
   roll = rc.rc_in.ROLL;
   pitch = rc.rc_in.PITCH;
   kill = rc.rc_in.AUX;
-  servo = rc.rc_in.AUX2;
+  multi = rc.rc_in.AUX2;
 
   int16_t pwm[4] = {thr,yaw,roll,pitch};
   
   sens.update();
   gd.update(sens.data,nav.s,rc.rc_in);
-  
-  // gd.print();
+
   cntrl.update(sens.data, nav.s, gd.cmd);
   //cntrl.print();
   sens.print();
   //rc.print();
+  //motors.print();
+  // gd.print();
 
 
-  if (thr < 1005 && safe == 1){
-    safe = 0;
-  }
+  digitalWrite(trigPin, LOW);
+  digitalWrite(trigPin, HIGH);
+  digitalWrite(trigPin, LOW);
+  duration = pulseIn(echoPin, HIGH);
+  distance = duration * 0.034 / 2;
+  cntrl.distance(distance);
 
-  if (kill > 1500 && safe == 0){
-  
-    //motors.update(pwm);
-    //Serial.println(motors.limit(pwm[0] - pwm[2] + pwm[3] + pwm[1]));
+
+
+  if (kill > 1500) {
     if (thr > 1010)
-      motors.update(cntrl.pwm_out);
+     motors.update(cntrl.pwm_out);
     else
-      motors.stop();
-
+     motors.stop();
   }
-  else{
-    
-    // Serial.println(safe);
+  else {
     motors.stop();
-  
-    safe = 1;
   }
-
-  
-  
-  //delay(1); // just for testing a motor
-  
+  if(multi >1450 && multi < 1550){
+    myservo.write(180);  
+  }
+  if(multi > 1950 && multi <= 2000) {
+    myservo.write(0);   
+  }
 }
