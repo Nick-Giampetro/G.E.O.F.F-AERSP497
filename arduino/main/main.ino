@@ -77,8 +77,6 @@ void setup() {
 
 }
 
-int safe = 0;
-
 void loop() {
   // put your main code here, to run repeatedly:
   digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
@@ -95,81 +93,37 @@ void loop() {
   
   sens.update();
   gd.update(sens.data,nav.s,rc.rc_in);
-  //motors.print();
-  // gd.print();
+
   cntrl.update(sens.data, nav.s, gd.cmd);
   //cntrl.print();
   //sens.print();
   //rc.print();
-  Serial.println(multi);
+  //motors.print();
+  // gd.print();
 
-  // Clears the trigPin
+
   digitalWrite(trigPin, LOW);
-  //delayMicroseconds(1);
-  // Sets the trigPin on HIGH state for 10 micro seconds
   digitalWrite(trigPin, HIGH);
-  //delayMicroseconds(1);
   digitalWrite(trigPin, LOW);
-  // Reads the echoPin, returns the sound wave travel time in microseconds
   duration = pulseIn(echoPin, HIGH);
-  // Calculating the distance
   distance = duration * 0.034 / 2;
-  // Prints the distance on the Serial Monitor
   cntrl.distance(distance);
-  // Serial.print("Distance: ");
-  // Serial.println(distance);
 
-  if (thr < 1005 && safe == 1){
-    safe = 0;
+
+
+  if (kill > 1500) {
+    if (thr > 1010)
+     motors.update(cntrl.pwm_out);
+    else
+     motors.stop();
   }
-
-  if (kill > 1500 && safe == 0){
-    
-    //motors.update(pwm);
-    //Serial.println(motors.limit(pwm[0] - pwm[2] + pwm[3] + pwm[1]));
-
-    
-
-    if (multi > 1450 && multi < 1550){
-      cntrl.altitude_hold(true);
-      if (thr > 1010)
-        motors.update(cntrl.pwm_out);
-      else
-        motors.stop();
-      
-  
-    }
-    else if (multi > 1950 && multi <= 2000) {
-      cntrl.altitude_hold(true);
-      for (pos = 0; pos <= 180; pos += 1) { // goes from 0 degrees to 180 degrees
-        // in steps of 1 degree
-        myservo.write(pos);              // tell servo to go to position in variable 'pos'
-        //delay(15);                       // waits 15ms for the servo to reach the position
-      }
-      for (pos = 180; pos >= 0; pos -= 1) { // goes from 180 degrees to 0 degrees
-        myservo.write(pos);              // tell servo to go to position in variable 'pos'
-        //delay(15);                       // waits 15ms for the servo to reach the position
-      }
-    }
-    else{
-      cntrl.altitude_hold(false);
-      if (thr > 1010)
-        motors.update(cntrl.pwm_out);
-      else
-        motors.stop();
-    }
-
-  }
-  else{
-    
-    // Serial.println(safe);
+  else {
     motors.stop();
-  
-    safe = 1;
   }
-
-  
-  
-  //delay(1); // just for testing a motor
-  
+  if(multi >1450 && multi < 1550){
+    myservo.write(180);  
+  }
+  if(multi > 1950 && multi <= 2000) {
+    myservo.write(0);   
+  }
 }
