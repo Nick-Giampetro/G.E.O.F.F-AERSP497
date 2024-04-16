@@ -93,29 +93,23 @@ void loop() {
   
   sens.update();
   gd.update(sens.data,nav.s,rc.rc_in);
-  //motors.print();
-  // gd.print();
+
   cntrl.update(sens.data, nav.s, gd.cmd);
   //cntrl.print();
   //sens.print();
   //rc.print();
-  Serial.println(multi);
+  //motors.print();
+  // gd.print();
 
-  // Clears the trigPin
+
   digitalWrite(trigPin, LOW);
-  //delayMicroseconds(1);
-  // Sets the trigPin on HIGH state for 10 micro seconds
   digitalWrite(trigPin, HIGH);
-  //delayMicroseconds(1);
   digitalWrite(trigPin, LOW);
-  // Reads the echoPin, returns the sound wave travel time in microseconds
   duration = pulseIn(echoPin, HIGH);
-  // Calculating the distance
   distance = duration * 0.034 / 2;
-  // Prints the distance on the Serial Monitor
   cntrl.distance(distance);
-  // Serial.print("Distance: ");
-  // Serial.println(distance);
+
+
 
   if (kill > 1500) {
     if (thr > 1010)
