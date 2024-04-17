@@ -52,6 +52,7 @@ const int echoPin = 11;
 // defines variables
 long duration;
 float distance;
+bool safe = false ;
 int pos = 0;
 uint16_t i, thr, yaw, roll, pitch, kill, multi;
 
@@ -68,6 +69,7 @@ void setup() {
   rc.init();
   gd.init();
   cntrl.init();
+  cntrl.altitude_hold(false);
   
   pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
   pinMode(echoPin, INPUT); // Sets the echoPin as an Input
@@ -107,18 +109,20 @@ void loop() {
   digitalWrite(trigPin, LOW);
   duration = pulseIn(echoPin, HIGH);
   distance = duration * 0.034 / 2;
-  cntrl.distance(distance);
+  cntrl.distance(distance,sens.data);
 
+  if(safe == false && ((thr < 1010 && !cntrl.get_mode())))
+    safe = true ;
 
-
-  if (kill > 1500) {
-    if (thr > 1010){
+  if (kill > 1500 && safe) {
+    if ((thr > 1010 && !cntrl.get_mode()) || cntrl.get_mode()){
      motors.update(cntrl.pwm_out);
     }
     else
      motors.stop();
   }
   else {
+    safe = false;
     motors.stop();
   }
 

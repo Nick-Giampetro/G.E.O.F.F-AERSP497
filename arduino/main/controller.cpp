@@ -123,10 +123,19 @@ void Controller::attitude_controller(const sens_t& sens, const guidance_t& cmd)
   {
     this->last_rate[i] = sens.gyr[i];
   }
+      for(uint8_t i = 0; i < 3; i++)
+  {
+    this->last_acc[i] = sens.acc[i];
+  }
+  this->lDist = this->dist ;
 }
 
 void Controller::altitude_hold(bool nm){
   this->alt_mode = nm ;
+}
+
+bool Controller::get_mode(){
+  return this->alt_mode ;
 }
 
 void Controller::altitude_controller(const sens_t& sens, const guidance_t& cmd)
@@ -137,19 +146,22 @@ void Controller::altitude_controller(const sens_t& sens, const guidance_t& cmd)
   // working on the controller but need nav
   
   Altitude_integral += this->dt * (- posDes_z - this->dist );
-  this->Altitude_integral = LIMIT(this->Altitude_integral, -1000, 1000);
+  this->Altitude_integral = LIMIT(this->Altitude_integral, -500, 500);
   this->thr_out = - P_ALTITUDE_POS * ( - posDes_z - (( this->dist + this->lDist ) / 2 ))
-	                - P_ALTITUDE_VEL * ((this->dist - this->lDist) / dt)  // need to fix this
+	                - P_ALTITUDE_VEL * ((sens.acc[2] + this->last_acc[2])/2) * dt  // need to fix this
 	                - P_ALTITUDE_INT * this->Altitude_integral 
-                  + ALTITUDE_BIAS;
+                  + ALTITUDE_BIAS ;
 
-  this->lDist = this->dist ;
+  this->thr_out = LIMIT(this->thr_out,1000,2000);
+
+  
 
   }
   else
     this->thr_out = cmd.THR;
 
-    Serial.println(thr_out) ;
+  Serial.println(((sens.acc[2] + this->last_acc[2])/2) * dt);
+  Serial.println(thr_out) ;
 
 }
 
@@ -182,10 +194,10 @@ void Controller::print()
   Serial.print(  this->pwm_out[REAR_LEFT]);   Serial.print(", ");  
   Serial.println(this->pwm_out[REAR_RIGHT]);
 }
-float Controller::distance(float d)
+float Controller::distance(float d,const sens_t& sens)
 {
-  this->dist = d * -0.032808399 ;
-  //Serial.print("Distance: ");
+  this->dist = (d * -0.032808399) ;
+  //Serial.print("Distance (ft): ");
   //Serial.println(dist);
 }
 
