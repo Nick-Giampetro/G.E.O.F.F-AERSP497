@@ -141,7 +141,7 @@ void Controller::altitude_controller(const sens_t& sens, const guidance_t& cmd)
   this->thr_out = - P_ALTITUDE_POS * ( - posDes_z - this->dist)
 	                - P_ALTITUDE_VEL * ((this->dist - this->lDist) / dt)  // need to fix this
 	                - P_ALTITUDE_INT * this->Altitude_integral 
-                  + Altitude_Bias;
+                  + ALTITUDE_BIAS;
 
   this->lDist = this->dist ;
 

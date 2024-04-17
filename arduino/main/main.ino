@@ -120,6 +120,7 @@ void loop() {
   else {
     motors.stop();
   }
+  
   if(multi >1450 && multi < 1550){
     myservo.write(180);
     myservo.detach();  
