@@ -96,7 +96,7 @@ void loop() {
 
   cntrl.update(sens.data, nav.s, gd.cmd);
   //cntrl.print();
-  sens.print();
+  //sens.print();
   //rc.print();
   //motors.print();
   // gd.print();
@@ -121,9 +121,11 @@ void loop() {
     motors.stop();
   }
   if(multi >1450 && multi < 1550){
-    myservo.write(180);  
+    myservo.write(180);
+    myservo.detach();  
   }
   if(multi > 1950 && multi <= 2000) {
-    myservo.write(0);   
+    myservo.write(0);
+    myservo.detach();   
   }
 }

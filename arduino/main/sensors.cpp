@@ -120,20 +120,6 @@ void Sensors::init()
 void Sensors::update()
 {
 
-
-  // digitalWrite(trigPin, LOW);
-  // delayMicroseconds(2);
-  // digitalWrite(trigPin, HIGH);
-  // delayMicroseconds(10);
-  // digitalWrite(trigPin, LOW);
-
-  // this->duration = pulseIn(echoPin, HIGH);
-  // this->distance = (this->duration*.0343)/2;
-  // Serial.print("Distance: ");
-  // Serial.println(this->distance);
-
-
-
   sensor_raw_t sensor_raw;
   if (Pozyx.waitForFlag(POZYX_INT_STATUS_IMU, 10) == POZYX_SUCCESS){
     Pozyx.getRawSensorData(&sensor_raw);
@@ -161,6 +147,12 @@ void Sensors::update()
   this->data.euler[0] = sensor_raw.euler_angles[1] * POZYX_EULER_SCALE; // convert to deg
   this->data.euler[1] = sensor_raw.euler_angles[2] * POZYX_EULER_SCALE; // convert to deg
   this->data.euler[2] = sensor_raw.euler_angles[0] * POZYX_EULER_SCALE; // convert to deg
+
+  //Linear acceleration (No idea what type of data is this)
+  this->data.acc[0] = sensor_raw.linear_acceleration[0];
+  this->data.acc[1] = sensor_raw.linear_acceleration[1];
+  this->data.acc[2] = sensor_raw.linear_acceleration[2];
+
 
   if(this->calibration_flag) // regular reading
   {
@@ -209,18 +201,18 @@ void Sensors::print()
 //  Serial.print(",");
 //  Serial.print(this->data.mag[2]);
 //  Serial.print(",");
-  // Serial.print(this->data.euler[0]);
-  // Serial.print(",");
-  // Serial.print(this->data.euler[1]);
-  // Serial.print(",");
-  // Serial.print(this->data.euler[2]);
+// Serial.print(this->data.euler[0]);
+// Serial.print(",");
+// Serial.print(this->data.euler[1]);
+// Serial.print(",");
+// Serial.print(this->data.euler[2]);
 Serial.print("x(mm): ");
 Serial.print(this->data.pos[0]);
 Serial.print(", y(mm): ");
 Serial.print(this->data.pos[1]);
 Serial.print(", z(mm): ");
 Serial.print(this->data.pos[2]);
-  Serial.println();
+Serial.println();
 }
 
 // function to manually set the anchor coordinates
