@@ -39,13 +39,13 @@
 
 #define P_X_POS 0.03
 #define P_Y_POS 0.03
-#define P_ALTITUDE_POS 0.18
+#define P_ALTITUDE_POS 2
 
 #define P_X_VEL 0.08
 #define P_Y_VEL 0.08
-#define P_ALTITUDE_VEL 0.1
+#define P_ALTITUDE_VEL 0.5
 
-#define P_ALTITUDE_INT 0.01
+#define P_ALTITUDE_INT 10
 #define P_ROLL_INT 0.01
 #define P_PITCH_INT 0.01
 

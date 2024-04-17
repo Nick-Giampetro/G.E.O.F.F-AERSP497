@@ -112,21 +112,26 @@ void loop() {
 
 
   if (kill > 1500) {
-    if (thr > 1010)
+    if (thr > 1010){
      motors.update(cntrl.pwm_out);
+    }
     else
      motors.stop();
   }
   else {
     motors.stop();
   }
-  
+
   if(multi >1450 && multi < 1550){
+    cntrl.altitude_hold(true);
     myservo.write(180);
     myservo.detach();  
   }
-  if(multi > 1950 && multi <= 2000) {
+  else if(multi > 1950 && multi <= 2000) {
+    cntrl.altitude_hold(true);
     myservo.write(0);
     myservo.detach();   
   }
+  else
+    cntrl.altitude_hold(false);
 }
