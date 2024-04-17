@@ -55,6 +55,8 @@
 #define FF_PITCH 2
 #define FF_YAW 2
 
+#define ALTITUDE_BIAS 1500
+
 class Controller
 {
 public:
