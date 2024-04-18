@@ -67,7 +67,7 @@ public:
   void update(const sens_t&, const state_t&, const guidance_t&);
   void print();
   void altitude_hold(bool);
-  void reset_integral(float);
+  void reset_integral();
   bool get_mode();
   float distance(float,const sens_t&);
 	int16_t pwm_out[MOTOR_NUM];

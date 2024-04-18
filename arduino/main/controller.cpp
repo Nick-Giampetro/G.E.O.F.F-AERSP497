@@ -140,8 +140,8 @@ bool Controller::get_mode(){
   return this->alt_mode ;
 }
 
-void Controller::reset_integral(float val){
-  this->Altitude_integral = val ;
+void Controller::reset_integral(){
+  this->Altitude_integral = 0 ;
 }
 
 void Controller::altitude_controller(const sens_t& sens, const guidance_t& cmd)

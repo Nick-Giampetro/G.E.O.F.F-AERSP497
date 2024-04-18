@@ -129,7 +129,7 @@ void loop() {
     cntrl.altitude_hold(true);
   else {
     cntrl.altitude_hold(false);
-    cntrl.reset_integral(1350);
+    cntrl.reset_integral();
   }
   // if( serv > 1500 )
   //   myservo.write(0); 
