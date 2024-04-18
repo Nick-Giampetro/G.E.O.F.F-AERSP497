@@ -125,15 +125,14 @@ void loop() {
     motors.stop();
   }
 
-  if(multi > 1450 && multi < 1550)
+  if (multi > 1950 && multi <= 2000) 
     cntrl.altitude_hold(true);
-  else if(multi > 1950 && multi <= 2000) 
-    cntrl.altitude_hold(true);
-  else
+  else {
     cntrl.altitude_hold(false);
-
-  if( serv > 1500 )
-    myservo.write(0); 
-  else
-    myservo.write(180); 
+    cntrl.reset_integral(1350);
+  }
+  // if( serv > 1500 )
+  //   myservo.write(0); 
+  // else
+  //   myservo.write(180); 
 }

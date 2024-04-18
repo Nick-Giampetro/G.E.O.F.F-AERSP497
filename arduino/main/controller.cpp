@@ -64,6 +64,7 @@ void Controller::update(const sens_t& sens, const state_t& state, const guidance
   this->altitude_controller(sens, cmd);
   this->mixer();
 }
+
 void Controller::velocity_controller(const sens_t& sens, const guidance_t& cmd)
 {
 
@@ -139,6 +140,10 @@ bool Controller::get_mode(){
   return this->alt_mode ;
 }
 
+void Controller::reset_integral(float val){
+  this->Altitude_integral = val ;
+}
+
 void Controller::altitude_controller(const sens_t& sens, const guidance_t& cmd)
 {  
   if(this->alt_mode) {
@@ -146,7 +151,7 @@ void Controller::altitude_controller(const sens_t& sens, const guidance_t& cmd)
 
   // working on the controller but need nav
   
-  Altitude_integral += this->dt * (- posDes_z - this->dist );
+  this->Altitude_integral += this->dt * (- posDes_z - this->dist );
   this->Altitude_integral = LIMIT(this->Altitude_integral, -500, 500);
   this->thr_out = - P_ALTITUDE_POS * ( - posDes_z - (( this->dist + this->lDist ) / 2 ))
 	                - P_ALTITUDE_VEL * ((sens.acc[2] + this->last_acc[2])/2) * dt  // need to fix this

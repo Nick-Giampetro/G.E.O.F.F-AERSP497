@@ -55,7 +55,7 @@
 #define FF_PITCH 2
 #define FF_YAW 2
 
-#define ALTITUDE_BIAS 1500
+#define ALTITUDE_BIAS 1350
 
 class Controller
 {
@@ -67,6 +67,7 @@ public:
   void update(const sens_t&, const state_t&, const guidance_t&);
   void print();
   void altitude_hold(bool);
+  void reset_integral(float);
   bool get_mode();
   float distance(float,const sens_t&);
 	int16_t pwm_out[MOTOR_NUM];
