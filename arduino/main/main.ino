@@ -82,7 +82,6 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
-
   rc.update();
   thr = rc.rc_in.THR;
   yaw = rc.rc_in.YAW;
@@ -133,7 +132,6 @@ void loop() {
   else if(multi > 1950 && multi <= 2000) {
     //cntrl.altitude_hold(true);
     myservo.write(0); 
-    myservo.detach();
   }
     //cntrl.altitude_hold(false);
 }
