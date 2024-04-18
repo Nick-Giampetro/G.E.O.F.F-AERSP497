@@ -63,19 +63,19 @@ uint16_t i, thr, yaw, roll, pitch, kill, multi;
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
-  motors.init();
   sens.init();
   nav.init();
   rc.init();
   gd.init();
   cntrl.init();
+  motors.init();
   cntrl.altitude_hold(false);
   
   pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
   pinMode(echoPin, INPUT); // Sets the echoPin as an Input
   myservo.attach(13);
   // motors.calibrate();
-  pinMode(LED_BUILTIN, OUTPUT);
+  //pinMode(LED_BUILTIN, OUTPUT);
 
 }
 
@@ -109,7 +109,7 @@ void loop() {
   digitalWrite(trigPin, LOW);
   duration = pulseIn(echoPin, HIGH);
   distance = duration * 0.034 / 2;
-  cntrl.distance(distance,sens.data);
+  //cntrl.distance(distance,sens.data);
 
   if(safe == false && ((thr < 1010 && !cntrl.get_mode())))
     safe = true ;
@@ -127,15 +127,13 @@ void loop() {
   }
 
   if(multi >1450 && multi < 1550){
-    cntrl.altitude_hold(true);
-    myservo.write(180);
-    myservo.detach();  
+    //cntrl.altitude_hold(true);
+    myservo.write(180); 
   }
   else if(multi > 1950 && multi <= 2000) {
-    cntrl.altitude_hold(true);
-    myservo.write(0);
-    myservo.detach();   
+    //cntrl.altitude_hold(true);
+    myservo.write(0); 
+    myservo.detach();
   }
-  else
-    cntrl.altitude_hold(false);
+    //cntrl.altitude_hold(false);
 }
