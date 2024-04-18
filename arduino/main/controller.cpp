@@ -110,7 +110,8 @@ void Controller::attitude_controller(const sens_t& sens, const guidance_t& cmd)
   this->pitch_out = - P_PITCH_ANGLE * (cmd.PITCH - sens.euler[1]) + P_PITCH_RATE * sens.gyr[1] + D_PITCH_RATE*(sens.gyr[1] - this->last_rate[1]) - P_PITCH_INT * this->Attitude_integral[1];
 
 
-  //Serial.println(cmd.PITCH) ;
+  Serial.println(this->roll_out) ;
+  //Serial.println(this->pitch_out) ;
   this->yaw_out = P_YAW_RATE * (cmd.YAW - sens.gyr[2]);
 
   // Serial.print(cmd.YAW ) ;
@@ -160,8 +161,8 @@ void Controller::altitude_controller(const sens_t& sens, const guidance_t& cmd)
   else
     this->thr_out = cmd.THR;
 
-  Serial.println(((sens.acc[2] + this->last_acc[2])/2) * dt);
-  Serial.println(thr_out) ;
+  //Serial.println(((sens.acc[2] + this->last_acc[2])/2) * dt);
+  Serial.println(this->thr_out) ;
 
 }
 

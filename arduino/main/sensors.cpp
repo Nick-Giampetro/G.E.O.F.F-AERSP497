@@ -189,11 +189,11 @@ void Sensors::print()
   Serial.print(",");
   Serial.print(this->data.gyr[2]);
   Serial.print(",");
-//  Serial.print(this->data.acc[0]);
-//  Serial.print(",");
-//  Serial.print(this->data.acc[1]);
-//  Serial.print(",");
-//  Serial.print(this->data.acc[2]);
+  Serial.print(this->data.acc[0]);
+  Serial.print(",");
+  Serial.print(this->data.acc[1]);
+  Serial.print(",");
+  Serial.print(this->data.acc[2]);
 //  Serial.print(",");
 //  Serial.print(this->data.mag[0]);
 //  Serial.print(",");

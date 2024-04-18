@@ -46,8 +46,8 @@
 #define P_ALTITUDE_VEL 0.5
 
 #define P_ALTITUDE_INT 5
-#define P_ROLL_INT 1
-#define P_PITCH_INT 1
+#define P_ROLL_INT 10
+#define P_PITCH_INT 10
 
 #define MAX_SPEED
 

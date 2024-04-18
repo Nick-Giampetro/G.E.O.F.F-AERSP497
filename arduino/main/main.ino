@@ -54,7 +54,7 @@ long duration;
 float distance;
 bool safe = false ;
 int pos = 0;
-uint16_t i, thr, yaw, roll, pitch, kill, multi;
+uint16_t i, thr, yaw, roll, pitch, serv, multi;
 
 
 
@@ -75,7 +75,7 @@ void setup() {
   pinMode(echoPin, INPUT); // Sets the echoPin as an Input
   myservo.attach(13);
   // motors.calibrate();
-  //pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(LED_BUILTIN, OUTPUT);
 
 }
 
@@ -87,7 +87,7 @@ void loop() {
   yaw = rc.rc_in.YAW;
   roll = rc.rc_in.ROLL;
   pitch = rc.rc_in.PITCH;
-  kill = rc.rc_in.AUX;
+  serv = rc.rc_in.AUX;
   multi = rc.rc_in.AUX2;
 
   int16_t pwm[4] = {thr,yaw,roll,pitch};
@@ -108,12 +108,12 @@ void loop() {
   digitalWrite(trigPin, LOW);
   duration = pulseIn(echoPin, HIGH);
   distance = duration * 0.034 / 2;
-  //cntrl.distance(distance,sens.data);
+  cntrl.distance(distance,sens.data);
 
   if(safe == false && ((thr < 1010 && !cntrl.get_mode())))
     safe = true ;
 
-  if (kill > 1500 && safe) {
+  if (multi > 1450 && safe) {
     if ((thr > 1010 && !cntrl.get_mode()) || cntrl.get_mode()){
      motors.update(cntrl.pwm_out);
     }
@@ -125,13 +125,15 @@ void loop() {
     motors.stop();
   }
 
-  if(multi >1450 && multi < 1550){
-    //cntrl.altitude_hold(true);
-    myservo.write(180); 
-  }
-  else if(multi > 1950 && multi <= 2000) {
-    //cntrl.altitude_hold(true);
+  if(multi > 1450 && multi < 1550)
+    cntrl.altitude_hold(true);
+  else if(multi > 1950 && multi <= 2000) 
+    cntrl.altitude_hold(true);
+  else
+    cntrl.altitude_hold(false);
+
+  if( serv > 1500 )
     myservo.write(0); 
-  }
-    //cntrl.altitude_hold(false);
+  else
+    myservo.write(180); 
 }
