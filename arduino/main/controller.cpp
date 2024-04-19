@@ -104,14 +104,16 @@ void Controller::attitude_controller(const sens_t& sens, const guidance_t& cmd)
   // this->pitch_out = P_PITCH_ANGLE*(FF_PITCH*cmd.PITCH - sens.euler[1]) - P_PITCH_RATE*sens.gyr[1] - D_PITCH_RATE*(sens.gyr[1] - this->last_rate[1]);
 
 
-  this->Attitude_integral[0] = dt*(cmd.ROLL + (sens.euler[0]));
-  this->roll_out  = P_ROLL_ANGLE * (cmd.ROLL + sens.euler[0]) + P_ROLL_RATE * sens.gyr[0] + D_ROLL_RATE*(sens.gyr[0] - this->last_rate[0]) - P_ROLL_INT * this->Attitude_integral[0];
+  this->Attitude_integral[0] += dt*(cmd.ROLL + sens.euler[0]);
+  this->Attitude_integral[0] = LIMIT(this->Attitude_integral[0], -100, 100);
+  this->roll_out  = P_ROLL_ANGLE * (cmd.ROLL + sens.euler[0]) + P_ROLL_RATE * sens.gyr[0] + D_ROLL_RATE*(sens.gyr[0] - this->last_rate[0]) + P_ROLL_INT * this->Attitude_integral[0];
   
-  this->Attitude_integral[1] = dt*(cmd.PITCH - sens.euler[1]);
+  this->Attitude_integral[1] += dt*(cmd.PITCH - sens.euler[1]);
+  this->Attitude_integral[1] = LIMIT(this->Attitude_integral[1], -100, 100);
   this->pitch_out = - P_PITCH_ANGLE * (cmd.PITCH - sens.euler[1]) + P_PITCH_RATE * sens.gyr[1] + D_PITCH_RATE*(sens.gyr[1] - this->last_rate[1]) - P_PITCH_INT * this->Attitude_integral[1];
 
 
-  Serial.println(this->roll_out) ;
+  //Serial.println(this->roll_out) ;
   //Serial.println(this->pitch_out) ;
   this->yaw_out = P_YAW_RATE * (cmd.YAW - sens.gyr[2]);
 
@@ -152,7 +154,7 @@ void Controller::altitude_controller(const sens_t& sens, const guidance_t& cmd)
   // working on the controller but need nav
   
   this->Altitude_integral += this->dt * (- posDes_z - this->dist );
-  this->Altitude_integral = LIMIT(this->Altitude_integral, -500, 500);
+  this->Altitude_integral = LIMIT(this->Altitude_integral, -250, 250);
   this->thr_out = - P_ALTITUDE_POS * ( - posDes_z - (( this->dist + this->lDist ) / 2 ))
 	                - P_ALTITUDE_VEL * ((sens.acc[2] + this->last_acc[2])/2) * dt  // need to fix this
 	                - P_ALTITUDE_INT * this->Altitude_integral 
@@ -167,7 +169,7 @@ void Controller::altitude_controller(const sens_t& sens, const guidance_t& cmd)
     this->thr_out = cmd.THR;
 
   //Serial.println(((sens.acc[2] + this->last_acc[2])/2) * dt);
-  Serial.println(this->thr_out) ;
+  //Serial.println(this->thr_out) ;
 
 }
 
