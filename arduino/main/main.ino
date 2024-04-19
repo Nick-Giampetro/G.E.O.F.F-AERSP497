@@ -26,6 +26,7 @@
   - Front Left  -> Pin 10, CW
 */
 #include "sensors.h"
+#include "Pozyx_only.h"
 #include "motors.h"
 #include "rc_pilot.h"
 #include "controller.h"

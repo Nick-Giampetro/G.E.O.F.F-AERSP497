@@ -50,18 +50,14 @@ Sensors::Sensors()
   for(uint8_t i = 0; i < 3; i++)
   {
     this->data.gyr[i]   = 0;
-    this->data.acc[i]   = 0;
     this->data.mag[i]   = 0;
     this->data.euler[i] = 0;
     this->data.quat[i]  = 0;
-    this->data.pos[i]   = 0;
 
     this->bias.gyr[i]   = 0;
-    this->bias.acc[i]   = 0;
     this->bias.mag[i]   = 0;
     this->bias.euler[i] = 0;
     this->bias.quat[i]  = 0;
-    this->bias.pos[i]   = 0;
   }
   this->data.quat[0] = 1;
   this->calibration_flag = 0;
@@ -152,16 +148,17 @@ void Sensors::update()
     status = Pozyx.doPositioning(&position, dimension, height, algorithm);
   }
 
-  // gathering 
-  this->data.pos[0] = position.x;
-  this->data.pos[1] = position.y;
-  this->data.pos[2] = position.z;
 
   // YPR to RPY and NED
   this->data.euler[0] = sensor_raw.euler_angles[1] * POZYX_EULER_SCALE; // convert to deg
   this->data.euler[1] = sensor_raw.euler_angles[2] * POZYX_EULER_SCALE; // convert to deg
   this->data.euler[2] = sensor_raw.euler_angles[0] * POZYX_EULER_SCALE; // convert to deg
 
+<<<<<<< Updated upstream
+=======
+
+
+>>>>>>> Stashed changes
   if(this->calibration_flag) // regular reading
   {
     float temp_gyr[3];
@@ -191,6 +188,7 @@ void Sensors::update()
 
 void Sensors::print()
 {
+<<<<<<< Updated upstream
   Serial.print(this->data.gyr[0]);
   Serial.print(",");
   Serial.print(this->data.gyr[1]);
@@ -203,12 +201,27 @@ void Sensors::print()
 //  Serial.print(",");
 //  Serial.print(this->data.acc[2]);
 //  Serial.print(",");
+=======
+  // Serial.print(this->data.gyr[0]);
+  // Serial.print(",");
+  // Serial.print(this->data.gyr[1]);
+  // Serial.print(",");
+  // Serial.print(this->data.gyr[2]);
+  // Serial.print(",");
+  // Serial.print(this->data.acc[0]);
+  // Serial.print(",");
+  // Serial.print(this->data.acc[1]);
+  // Serial.print(",");
+  // Serial.print(this->data.acc[2]);
+  // Serial.print(",");
+>>>>>>> Stashed changes
 //  Serial.print(this->data.mag[0]);
 //  Serial.print(",");
 //  Serial.print(this->data.mag[1]);
 //  Serial.print(",");
 //  Serial.print(this->data.mag[2]);
 //  Serial.print(",");
+<<<<<<< Updated upstream
   // Serial.print(this->data.euler[0]);
   // Serial.print(",");
   // Serial.print(this->data.euler[1]);
@@ -221,6 +234,20 @@ Serial.print(this->data.pos[1]);
 Serial.print(", z(mm): ");
 Serial.print(this->data.pos[2]);
   Serial.println();
+=======
+// Serial.print(this->data.euler[0]);
+// Serial.print(",");
+// Serial.print(this->data.euler[1]);
+// Serial.print(",");
+// Serial.print(this->data.euler[2]);
+// Serial.print("x(mm): ");
+// Serial.print(this->data.pos[0]);
+// Serial.print(", y(mm): ");
+// Serial.print(this->data.pos[1]);
+// Serial.print(", z(mm): ");
+// Serial.print(this->data.pos[2]);
+Serial.println();
+>>>>>>> Stashed changes
 }
 
 // function to manually set the anchor coordinates
