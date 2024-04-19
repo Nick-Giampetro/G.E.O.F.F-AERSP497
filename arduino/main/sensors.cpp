@@ -183,18 +183,18 @@ void Sensors::update()
 
 void Sensors::print()
 {
-  Serial.print(this->data.gyr[0]);
-  Serial.print(",");
-  Serial.print(this->data.gyr[1]);
-  Serial.print(",");
-  Serial.print(this->data.gyr[2]);
-  Serial.print(",");
+  // Serial.print(this->data.gyr[0]);
+  // Serial.print(",");
+  // Serial.print(this->data.gyr[1]);
+  // Serial.print(",");
+  // Serial.print(this->data.gyr[2]);
+  // Serial.print(",");
   Serial.print(this->data.acc[0]);
   Serial.print(",");
   Serial.print(this->data.acc[1]);
   Serial.print(",");
   Serial.print(this->data.acc[2]);
-//  Serial.print(",");
+  Serial.print(",");
 //  Serial.print(this->data.mag[0]);
 //  Serial.print(",");
 //  Serial.print(this->data.mag[1]);
@@ -206,12 +206,12 @@ void Sensors::print()
 // Serial.print(this->data.euler[1]);
 // Serial.print(",");
 // Serial.print(this->data.euler[2]);
-Serial.print("x(mm): ");
-Serial.print(this->data.pos[0]);
-Serial.print(", y(mm): ");
-Serial.print(this->data.pos[1]);
-Serial.print(", z(mm): ");
-Serial.print(this->data.pos[2]);
+// Serial.print("x(mm): ");
+// Serial.print(this->data.pos[0]);
+// Serial.print(", y(mm): ");
+// Serial.print(this->data.pos[1]);
+// Serial.print(", z(mm): ");
+// Serial.print(this->data.pos[2]);
 Serial.println();
 }
 
