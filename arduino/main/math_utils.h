@@ -61,6 +61,11 @@ struct sens_t
   float pos[3];
 };
 
+struct psens_t{
+  float pos[3];
+  float acc[3];
+};
+
 struct rc_t
 {
   int16_t ROLL;

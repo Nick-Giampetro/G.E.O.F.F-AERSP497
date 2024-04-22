@@ -20,7 +20,6 @@
 
 #include "Pozyx_only.h"
 #include "sensors.h"
-
 #include "Pozyx.h"
 #include "Pozyx_definitions.h"
 #include <Wire.h>
@@ -56,7 +55,8 @@ Pozyx_only::Pozyx_only()
  
 }
 
-Pozyx_only::~Pozyx_only() {}
+Pozyx_only::~Pozyx_only() {
+}
 
 void Pozyx_only::init()
 {

@@ -26,12 +26,12 @@
   - Front Left  -> Pin 10, CW
 */
 #include "sensors.h"
-#include "Pozyx_only.h"
 #include "motors.h"
 #include "rc_pilot.h"
 #include "controller.h"
 #include "guidance.h"
 #include "navigation.h"
+#include "Pozyx_only.h"
 #include <Servo.h>
 
 #define NUM_MOTORS 4
@@ -41,6 +41,7 @@
 #define MAX_PWM_OUT_O 1900
 
 Sensors sens;
+Pozyx_only poxy;
 RC_PILOT rc;
 Motors motors;
 Servo myservo;
@@ -65,6 +66,7 @@ void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
   sens.init();
+  poxy.init();
   nav.init();
   rc.init();
   gd.init();

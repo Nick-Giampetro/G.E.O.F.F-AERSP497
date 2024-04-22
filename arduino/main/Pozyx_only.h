@@ -18,9 +18,12 @@
  * EndCopyright
  ***/
 
+#include "Pozyx.h"
+#include "Pozyx_definitions.h"
+#include <Wire.h>
 #include "math_utils.h"
-#ifndef AERSP_SENSORS_H
-#define AERSP_SENSORS_H
+#ifndef AERSP_PSENSORS_H
+#define AERSP_PSENSORS_H
 
 #define DEG2RAD 0.0174533
 #define RAD2DEG 57.2958
@@ -44,7 +47,7 @@ public:
   void print();
   void setAnchorsManual();
 
-  sens_t data;
+  psens_t data;
 
 private:
   sens_t bias;

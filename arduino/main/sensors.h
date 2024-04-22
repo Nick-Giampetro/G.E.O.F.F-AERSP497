@@ -56,7 +56,6 @@ public:
   void init();
   void update();
   void print();
-  void setAnchorsManual();
 
   sens_t data;
 

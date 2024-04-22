@@ -104,9 +104,6 @@ void Sensors::init()
   // clear all previous pozyx devices in the device list
   Pozyx.clearDevices(remote_id);
   // sets the anchor manually
-  setAnchorsManual();
-  // sets the positioning algorithm
-  Pozyx.setPositionAlgorithm(algorithm, dimension, remote_id);
   
   this->calibration_flag = 1;
 
@@ -174,12 +171,12 @@ void Sensors::update()
 
 void Sensors::print()
 {
-  Serial.print(this->data.gyr[0]);
-  Serial.print(",");
-  Serial.print(this->data.acc[1]);
-  Serial.print(",");
-  Serial.print(this->data.acc[2]);
-  Serial.print(",");
+  // Serial.print(this->data.gyr[0]);
+  // Serial.print(",");
+  // Serial.print(this->data.gyr[1]);
+  // Serial.print(",");
+  // Serial.print(this->data.gyr[2]);
+  // Serial.print(",");
 //  Serial.print(this->data.acc[0]);
 //  Serial.print(",");
 //  Serial.print(this->data.acc[1]);
@@ -197,18 +194,6 @@ void Sensors::print()
 // Serial.print(this->data.euler[1]);
 // Serial.print(",");
 // Serial.print(this->data.euler[2]);
-Serial.print("x(mm): ");
-Serial.print(this->data.pos[0]);
-Serial.print(", y(mm): ");
-Serial.print(this->data.pos[1]);
-Serial.print(", z(mm): ");
-Serial.print(this->data.pos[2]);
-  Serial.println();
-// Serial.print(this->data.euler[0]);
-// Serial.print(",");
-// Serial.print(this->data.euler[1]);
-// Serial.print(",");
-// Serial.print(this->data.euler[2]);
 // Serial.print("x(mm): ");
 // Serial.print(this->data.pos[0]);
 // Serial.print(", y(mm): ");
@@ -216,19 +201,19 @@ Serial.print(this->data.pos[2]);
 // Serial.print(", z(mm): ");
 // Serial.print(this->data.pos[2]);
 Serial.println();
-
-// function to manually set the anchor coordinates
-void Sensors::setAnchorsManual(){
-  for(int i = 0; i < num_anchors; i++){
-    device_coordinates_t anchor;
-    anchor.network_id = anchors[i];
-    anchor.flag = 0x1;
-    anchor.pos.x = anchors_x[i];
-    anchor.pos.y = anchors_y[i];
-    anchor.pos.z = heights[i];
-    Pozyx.addDevice(anchor, remote_id);
-  }
-  if (num_anchors > 4){
-    Pozyx.setSelectionOfAnchors(POZYX_ANCHOR_SEL_AUTO, num_anchors, remote_id);
-  }
 }
+// function to manually set the anchor coordinates
+// void Sensors::setAnchorsManual(){
+//   for(int i = 0; i < num_anchors; i++){
+//     device_coordinates_t anchor;
+//     anchor.network_id = anchors[i];
+//     anchor.flag = 0x1;
+//     anchor.pos.x = anchors_x[i];
+//     anchor.pos.y = anchors_y[i];
+//     anchor.pos.z = heights[i];
+//     Pozyx.addDevice(anchor, remote_id);
+//   }
+//   if (num_anchors > 4){
+//     Pozyx.setSelectionOfAnchors(POZYX_ANCHOR_SEL_AUTO, num_anchors, remote_id);
+//   }
+// }
