@@ -125,7 +125,7 @@ void loop() {
   digitalWrite(trigPin, LOW);
   duration = pulseIn(echoPin, HIGH);
   distance = duration * 0.034 / 2;
-  //cntrl.distance(distance,sens.data);
+  cntrl.distance(distance,sens.data);
 
   if(safe == false && ((thr < 1010 && !cntrl.get_mode())))
     safe = true ;
@@ -143,7 +143,7 @@ void loop() {
   }
 
   if (multi > 1950 && multi <= 2000){ 
-    //cntrl.altitude_hold(true);
+    cntrl.altitude_hold(true);
   }
   else{
     cntrl.altitude_hold(false);

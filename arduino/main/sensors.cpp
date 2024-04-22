@@ -132,7 +132,7 @@ void Sensors::update()
   //Linear acceleration (No idea what type of data is this)
   this->data.acc[0] = sensor_raw.acceleration[0]*POZYX_ACC_SCALE;
   this->data.acc[1] = sensor_raw.acceleration[1]*POZYX_ACC_SCALE;
-  this->data.acc[2] = sensor_raw.acceleration[2]*POZYX_ACC_SCALE;
+  this->data.acc[2] = (sensor_raw.acceleration[2] - 980)*POZYX_ACC_SCALE;
 
   if(this->calibration_flag) // regular reading
   {

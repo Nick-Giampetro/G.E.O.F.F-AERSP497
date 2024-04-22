@@ -45,7 +45,7 @@
 #define P_Y_VEL 0.08
 #define P_ALTITUDE_VEL 0.5
 
-#define P_ALTITUDE_INT 0.5
+#define P_ALTITUDE_INT 1
 #define P_ROLL_INT 0.01
 #define P_PITCH_INT 0.01
 
@@ -56,8 +56,8 @@
 #define FF_YAW 2
 
 #define ALTITUDE_BIAS 1350
-#define ROLL_BIAS 0
-#define PITCH_BIAS 0
+#define ROLL_BIAS 1.5
+#define PITCH_BIAS 3.9
 
 class Controller
 {
