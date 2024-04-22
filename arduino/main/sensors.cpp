@@ -50,18 +50,14 @@ Sensors::Sensors()
   for(uint8_t i = 0; i < 3; i++)
   {
     this->data.gyr[i]   = 0;
-    this->data.acc[i]   = 0;
     this->data.mag[i]   = 0;
     this->data.euler[i] = 0;
     this->data.quat[i]  = 0;
-    this->data.pos[i]   = 0;
 
     this->bias.gyr[i]   = 0;
-    this->bias.acc[i]   = 0;
     this->bias.mag[i]   = 0;
     this->bias.euler[i] = 0;
     this->bias.quat[i]  = 0;
-    this->bias.pos[i]   = 0;
   }
   this->data.quat[0] = 1;
   this->calibration_flag = 0;
@@ -138,10 +134,6 @@ void Sensors::update()
     status = Pozyx.doPositioning(&position, dimension, height, algorithm);
   }
 
-  // gathering 
-  this->data.pos[0] = position.x;
-  this->data.pos[1] = position.y;
-  this->data.pos[2] = position.z;
 
   // YPR to RPY and NED
   this->data.euler[0] = sensor_raw.euler_angles[1] * POZYX_EULER_SCALE; // convert to deg
@@ -152,7 +144,6 @@ void Sensors::update()
   this->data.acc[0] = sensor_raw.linear_acceleration[0];
   this->data.acc[1] = sensor_raw.linear_acceleration[1];
   this->data.acc[2] = sensor_raw.linear_acceleration[2];
-
 
   if(this->calibration_flag) // regular reading
   {
@@ -183,24 +174,36 @@ void Sensors::update()
 
 void Sensors::print()
 {
-  // Serial.print(this->data.gyr[0]);
-  // Serial.print(",");
-  // Serial.print(this->data.gyr[1]);
-  // Serial.print(",");
-  // Serial.print(this->data.gyr[2]);
-  // Serial.print(",");
-  Serial.print(this->data.acc[0]);
+  Serial.print(this->data.gyr[0]);
   Serial.print(",");
   Serial.print(this->data.acc[1]);
   Serial.print(",");
   Serial.print(this->data.acc[2]);
   Serial.print(",");
+//  Serial.print(this->data.acc[0]);
+//  Serial.print(",");
+//  Serial.print(this->data.acc[1]);
+//  Serial.print(",");
+//  Serial.print(this->data.acc[2]);
+//  Serial.print(",");
 //  Serial.print(this->data.mag[0]);
 //  Serial.print(",");
 //  Serial.print(this->data.mag[1]);
 //  Serial.print(",");
 //  Serial.print(this->data.mag[2]);
 //  Serial.print(",");
+// Serial.print(this->data.euler[0]);
+// Serial.print(",");
+// Serial.print(this->data.euler[1]);
+// Serial.print(",");
+// Serial.print(this->data.euler[2]);
+Serial.print("x(mm): ");
+Serial.print(this->data.pos[0]);
+Serial.print(", y(mm): ");
+Serial.print(this->data.pos[1]);
+Serial.print(", z(mm): ");
+Serial.print(this->data.pos[2]);
+  Serial.println();
 // Serial.print(this->data.euler[0]);
 // Serial.print(",");
 // Serial.print(this->data.euler[1]);
@@ -213,7 +216,6 @@ void Sensors::print()
 // Serial.print(", z(mm): ");
 // Serial.print(this->data.pos[2]);
 Serial.println();
-}
 
 // function to manually set the anchor coordinates
 void Sensors::setAnchorsManual(){
