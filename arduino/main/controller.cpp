@@ -106,11 +106,11 @@ void Controller::attitude_controller(const sens_t& sens, const guidance_t& cmd)
 
   this->Attitude_integral[0] += dt*(cmd.ROLL + sens.euler[0]);
   this->Attitude_integral[0] = LIMIT(this->Attitude_integral[0], -100, 100);
-  this->roll_out  = P_ROLL_ANGLE * (cmd.ROLL + sens.euler[0]) + P_ROLL_RATE * sens.gyr[0] ;//+ P_ROLL_INT * this->Attitude_integral[0];
+  this->roll_out  = P_ROLL_ANGLE * (cmd.ROLL + sens.euler[0]) + P_ROLL_RATE * sens.gyr[0] + ROLL_BIAS;//+ P_ROLL_INT * this->Attitude_integral[0];
   
   this->Attitude_integral[1] += dt*(cmd.PITCH - sens.euler[1]);
   this->Attitude_integral[1] = LIMIT(this->Attitude_integral[1], -100, 100);
-  this->pitch_out = - P_PITCH_ANGLE * (cmd.PITCH - sens.euler[1]) + P_PITCH_RATE * sens.gyr[1] ;// - P_PITCH_INT * this->Attitude_integral[1];
+  this->pitch_out = - P_PITCH_ANGLE * (cmd.PITCH - sens.euler[1]) + P_PITCH_RATE * sens.gyr[1] + PITCH_BIAS;// - P_PITCH_INT * this->Attitude_integral[1];
 
 
   //Serial.println(this->roll_out) ;
