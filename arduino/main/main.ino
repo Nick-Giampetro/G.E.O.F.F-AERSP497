@@ -96,14 +96,16 @@ void loop() {
   int16_t pwm[4] = {thr,yaw,roll,pitch};
   
   sens.update();
+  poxy.update();
   gd.update(sens.data,nav.s,rc.rc_in);
 
   cntrl.update(sens.data, nav.s, gd.cmd);
   //cntrl.print();
-  sens.print();
+  //sens.print();
   //rc.print();
   //motors.print();
   // gd.print();
+  poxy.print();
 
 
   digitalWrite(trigPin, LOW);
