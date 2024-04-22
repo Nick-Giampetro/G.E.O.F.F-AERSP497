@@ -31,7 +31,6 @@
 #include "controller.h"
 #include "guidance.h"
 #include "navigation.h"
-#include "Pozyx_only.h"
 #include <Servo.h>
 
 #define NUM_MOTORS 4
@@ -41,7 +40,6 @@
 #define MAX_PWM_OUT_O 1900
 
 Sensors sens;
-Pozyx_only poxy;
 RC_PILOT rc;
 Motors motors;
 Servo myservo;
@@ -59,6 +57,10 @@ int pos = 0;
 uint16_t i, thr, yaw, roll, pitch, serv, multi;
 
 
+unsigned long previousMillis = 0;  // will store last time LED was updated
+
+// constants won't change:
+const long interval = 1000;  // interval at which to blink (milliseconds)
 
 
 
@@ -66,7 +68,7 @@ void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
   sens.init();
-  poxy.init();
+  //poxy.init();
   nav.init();
   rc.init();
   gd.init();
@@ -96,16 +98,26 @@ void loop() {
   int16_t pwm[4] = {thr,yaw,roll,pitch};
   
   sens.update();
-  poxy.update();
   gd.update(sens.data,nav.s,rc.rc_in);
-
   cntrl.update(sens.data, nav.s, gd.cmd);
+   
+  //  unsigned long currentMillis = millis();
+
+  // if (currentMillis - previousMillis >= interval) {
+  //   // save the last time you blinked the LED
+  //   previousMillis = currentMillis;
+  //   poxy.update();
+    
+  // }
+
+
+
   //cntrl.print();
   //sens.print();
   //rc.print();
   //motors.print();
-  // gd.print();
-  poxy.print();
+  //gd.print();
+  //poxy.print();
 
 
   digitalWrite(trigPin, LOW);

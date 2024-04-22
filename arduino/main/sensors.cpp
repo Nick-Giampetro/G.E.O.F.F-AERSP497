@@ -122,14 +122,6 @@ void Sensors::update()
     return;
   }
   
-  // pozyx stuffs
-  coordinates_t position;
-  int status;
-  if(remote){
-    status = Pozyx.doRemotePositioning(remote_id, &position, dimension, height, algorithm);
-  }else{
-    status = Pozyx.doPositioning(&position, dimension, height, algorithm);
-  }
 
 
   // YPR to RPY and NED
@@ -138,9 +130,9 @@ void Sensors::update()
   this->data.euler[2] = sensor_raw.euler_angles[0] * POZYX_EULER_SCALE; // convert to deg
 
   //Linear acceleration (No idea what type of data is this)
-  this->data.acc[0] = sensor_raw.linear_acceleration[0];
-  this->data.acc[1] = sensor_raw.linear_acceleration[1];
-  this->data.acc[2] = sensor_raw.linear_acceleration[2];
+  this->data.acc[0] = sensor_raw.acceleration[0]*POZYX_ACC_SCALE;
+  this->data.acc[1] = sensor_raw.acceleration[1]*POZYX_ACC_SCALE;
+  this->data.acc[2] = sensor_raw.acceleration[2]*POZYX_ACC_SCALE;
 
   if(this->calibration_flag) // regular reading
   {
@@ -177,12 +169,12 @@ void Sensors::print()
   // Serial.print(",");
   // Serial.print(this->data.gyr[2]);
   // Serial.print(",");
-//  Serial.print(this->data.acc[0]);
-//  Serial.print(",");
-//  Serial.print(this->data.acc[1]);
-//  Serial.print(",");
-//  Serial.print(this->data.acc[2]);
-//  Serial.print(",");
+ Serial.print(this->data.acc[0]);
+ Serial.print(",");
+ Serial.print(this->data.acc[1]);
+ Serial.print(",");
+ Serial.print(this->data.acc[2]);
+ Serial.print(",");
 //  Serial.print(this->data.mag[0]);
 //  Serial.print(",");
 //  Serial.print(this->data.mag[1]);
@@ -202,18 +194,3 @@ void Sensors::print()
 // Serial.print(this->data.pos[2]);
 Serial.println();
 }
-// function to manually set the anchor coordinates
-// void Sensors::setAnchorsManual(){
-//   for(int i = 0; i < num_anchors; i++){
-//     device_coordinates_t anchor;
-//     anchor.network_id = anchors[i];
-//     anchor.flag = 0x1;
-//     anchor.pos.x = anchors_x[i];
-//     anchor.pos.y = anchors_y[i];
-//     anchor.pos.z = heights[i];
-//     Pozyx.addDevice(anchor, remote_id);
-//   }
-//   if (num_anchors > 4){
-//     Pozyx.setSelectionOfAnchors(POZYX_ANCHOR_SEL_AUTO, num_anchors, remote_id);
-//   }
-// }
