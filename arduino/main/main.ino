@@ -53,8 +53,9 @@ const int echoPin = 11;
 // defines variables
 long duration;
 float distance;
+bool safe = false ;
 int pos = 0;
-uint16_t i, thr, yaw, roll, pitch, kill, multi;
+uint16_t i, thr, yaw, roll, pitch, serv, multi;
 
 
 
@@ -63,12 +64,13 @@ uint16_t i, thr, yaw, roll, pitch, kill, multi;
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
-  motors.init();
   sens.init();
   nav.init();
   rc.init();
   gd.init();
   cntrl.init();
+  motors.init();
+  cntrl.altitude_hold(false);
   
   pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
   pinMode(echoPin, INPUT); // Sets the echoPin as an Input
@@ -81,13 +83,12 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
-
   rc.update();
   thr = rc.rc_in.THR;
   yaw = rc.rc_in.YAW;
   roll = rc.rc_in.ROLL;
   pitch = rc.rc_in.PITCH;
-  kill = rc.rc_in.AUX;
+  serv = rc.rc_in.AUX;
   multi = rc.rc_in.AUX2;
 
   int16_t pwm[4] = {thr,yaw,roll,pitch};
@@ -108,23 +109,32 @@ void loop() {
   digitalWrite(trigPin, LOW);
   duration = pulseIn(echoPin, HIGH);
   distance = duration * 0.034 / 2;
-  cntrl.distance(distance);
+  //cntrl.distance(distance,sens.data);
 
+  if(safe == false && ((thr < 1010 && !cntrl.get_mode())))
+    safe = true ;
 
-
-  if (kill > 1500) {
-    if (thr > 1010)
+  if (multi > 1450 && safe) {
+    if ((thr > 1010 && !cntrl.get_mode()) || cntrl.get_mode()){
      motors.update(cntrl.pwm_out);
+    }
     else
      motors.stop();
   }
   else {
+    safe = false;
     motors.stop();
   }
-  if(multi >1450 && multi < 1550){
-    myservo.write(180);  
+
+  if (multi > 1950 && multi <= 2000){ 
+    //cntrl.altitude_hold(true);
   }
-  if(multi > 1950 && multi <= 2000) {
-    myservo.write(0);   
+  else{
+    cntrl.altitude_hold(false);
+    cntrl.reset_integral();
   }
+  // if( serv > 1500 )
+  //   myservo.write(0); 
+  // else
+  //   myservo.write(180); 
 }
