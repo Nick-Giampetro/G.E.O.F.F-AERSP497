@@ -149,7 +149,7 @@ void Controller::reset_integral(){
 void Controller::altitude_controller(const sens_t& sens, const guidance_t& cmd)
 {  
   if(this->alt_mode) {
-  float posDes_z = 1 ;
+  float posDes_z = 2.8 ;
 
   // working on the controller but need nav
   
@@ -167,8 +167,8 @@ void Controller::altitude_controller(const sens_t& sens, const guidance_t& cmd)
     this->thr_out = cmd.THR;
 
   double zVel = ((sens.acc[2] + this->last_acc[2])/2) * dt ;
-  Serial.println(zVel);
-  Serial.println(this->thr_out) ;
+  // Serial.println(zVel);
+  // Serial.println(this->thr_out) ;
 
 }
 
@@ -204,8 +204,8 @@ void Controller::print()
 float Controller::distance(float d,const sens_t& sens)
 {
   this->dist = (d * -0.032808399) ;
-  //Serial.print("Distance (ft): ");
-  //Serial.println(dist);
+  // Serial.print("Distance (ft): ");
+  // Serial.println(dist);
 }
 
 double Controller::hmodRad(double h) {
