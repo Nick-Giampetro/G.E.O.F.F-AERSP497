@@ -101,15 +101,7 @@ void loop() {
   gd.update(sens.data,nav.s,rc.rc_in);
   cntrl.update(sens.data, nav.s, gd.cmd);
    
-  //  unsigned long currentMillis = millis();
-
-  // if (currentMillis - previousMillis >= interval) {
-  //   // save the last time you blinked the LED
-  //   previousMillis = currentMillis;
-  //   poxy.update();
-    
-  // }
-
+ 
 
 
   //cntrl.print();
@@ -148,9 +140,5 @@ void loop() {
   else{
     cntrl.altitude_hold(false);
     cntrl.reset_integral();
-  }
-  // if( serv > 1500 )
-  //   myservo.write(0); 
-  // else
-  //   myservo.write(180); 
+  } 
 }

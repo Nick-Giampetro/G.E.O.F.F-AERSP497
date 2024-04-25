@@ -163,12 +163,12 @@ void Sensors::update()
 
 void Sensors::print()
 {
-  // Serial.print(this->data.gyr[0]);
-  // Serial.print(",");
-  // Serial.print(this->data.gyr[1]);
-  // Serial.print(",");
-  // Serial.print(this->data.gyr[2]);
-  // Serial.print(",");
+  Serial.print(this->data.gyr[0]);
+  Serial.print(",");
+  Serial.print(this->data.gyr[1]);
+  Serial.print(",");
+  Serial.print(this->data.gyr[2]);
+  Serial.print(",");
  Serial.print(this->data.acc[0]);
  Serial.print(",");
  Serial.print(this->data.acc[1]);
